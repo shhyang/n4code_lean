@@ -1,0 +1,17 @@
+.lake/
+build/
+*.olean
+*.ilean
+*.c
+.DS_Store
+FormalProof/* [0-9].lean
+scripts/* [0-9].sh
+
+# LaTeX build artifacts (paper drafts)
+*.aux
+*.log
+*.out
+*.pdf
+*.fdb_latexmk
+*.fls
+*.synctex.gz

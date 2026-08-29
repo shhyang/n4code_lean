@@ -1,0 +1,11 @@
+name = "N4Code"
+version = "0.1.0"
+defaultTargets = ["N4Code"]
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "6f1ef4e5dd604a435bddba4747b13970cd65d2a1"
+
+[[lean_lib]]
+name = "N4Code"
