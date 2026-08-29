@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use this formalization in your work, please cite it as the software artifact and cite the paper it formalizes."
+type: software
+title: "N4Code: a machine-checked proof of the Dong-Yang classification of optimal finite-length (n,4) binary codes for binary symmetric channels"
+abstract: >-
+  A Lean 4 + mathlib formalization of the main classification theorems of Dong
+  and Yang, "On Optimal Finite-Length Block Codes of Size Four for Binary
+  Symmetric Channels" (IEEE Transactions on Information Theory, 2025):
+  optimal (n,4) codes are equivalent to linear, Class-I, or Class-II codes.
+authors:
+  - family-names: Yang
+    given-names: Shenghao
+  - family-names: Dong
+    given-names: Yanyan
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.22154942
+    description: Zenodo DOI for this release
+repository-code: "https://github.com/shhyang/n4code_lean"
+keywords:
+  - Lean 4
+  - mathlib
+  - formal verification
+  - interactive theorem proving
+  - coding theory
+  - binary symmetric channel
+  - optimal codes
+license: Apache-2.0
+date-released: "2026-08-29"
+preferred-citation:
+  type: article
+  title: "On Optimal Finite-Length Block Codes of Size Four for Binary Symmetric Channels"
+  authors:
+    - family-names: Dong
+      given-names: Yanyan
+    - family-names: Yang
+      given-names: Shenghao
+  journal: "IEEE Transactions on Information Theory"
+  volume: 71
+  number: 1
+  pages: "138-166"
+  year: 2025
+  doi: 10.1109/TIT.2024.3504823
