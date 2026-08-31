@@ -47,12 +47,7 @@ lemma linearCode_hDist_01 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 3 ≠ k.testBit 2) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 3 ≠ (colVal (linearCode a b c t)).testBit 2 then 1 else 0) = b + c
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨1, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
   have h3b : (3 : ℕ).testBit 2 = false := by native_decide
   have h5a : (5 : ℕ).testBit 3 = false := by native_decide
@@ -72,12 +67,7 @@ lemma linearCode_hDist_02 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 3 ≠ k.testBit 1) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 3 ≠ (colVal (linearCode a b c t)).testBit 1 then 1 else 0) = a + c
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨2, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
   have h3b : (3 : ℕ).testBit 1 = true := by native_decide
   have h5a : (5 : ℕ).testBit 3 = false := by native_decide
@@ -97,12 +87,7 @@ lemma linearCode_hDist_03 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 3 ≠ k.testBit 0) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 3 ≠ (colVal (linearCode a b c t)).testBit 0 then 1 else 0) = a + b
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
   have h3b : (3 : ℕ).testBit 0 = true := by native_decide
   have h5a : (5 : ℕ).testBit 3 = false := by native_decide
@@ -122,12 +107,7 @@ lemma linearCode_hDist_12 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 2 ≠ k.testBit 1) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 2 ≠ (colVal (linearCode a b c t)).testBit 1 then 1 else 0) = a + b
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨1, by decide⟩ ⟨2, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 2 = false := by native_decide
   have h3b : (3 : ℕ).testBit 1 = true := by native_decide
   have h5a : (5 : ℕ).testBit 2 = true := by native_decide
@@ -147,12 +127,7 @@ lemma linearCode_hDist_13 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 2 ≠ k.testBit 0) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 2 ≠ (colVal (linearCode a b c t)).testBit 0 then 1 else 0) = a + c
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨1, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 2 = false := by native_decide
   have h3b : (3 : ℕ).testBit 0 = true := by native_decide
   have h5a : (5 : ℕ).testBit 2 = true := by native_decide
@@ -172,12 +147,7 @@ lemma linearCode_hDist_23 (a b c : ℕ) :
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types (linearCode a b c) ({3, 5, 6} : Finset ℕ)
-    (fun k => k.testBit 1 ≠ k.testBit 0) hS
-  rw [hammingDist_row_eq_indicator]
-  change (∑ t : Fin (a + b + c),
-    if (colVal (linearCode a b c t)).testBit 1 ≠ (colVal (linearCode a b c t)).testBit 0 then 1 else 0) = b + c
-  rw [hsum]
+  rw [hammingDist_rows_of_types (linearCode a b c) ⟨2, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
   have h3a : (3 : ℕ).testBit 1 = true := by native_decide
   have h3b : (3 : ℕ).testBit 0 = true := by native_decide
   have h5a : (5 : ℕ).testBit 1 = false := by native_decide
@@ -2094,7 +2064,8 @@ lemma classI_descend_one {n : ℕ} (_hn : n > 3)
                 · rw [hD_6]; exact hOdd.1
     rcases class2_to_class1 D hD with ⟨C2, hC2, hEq21, hc2⟩
     have hb1 : UniversalBetter C1 C := by simpa [C1, harg] using hcond C h hge3 t ht
-    have hEqD : UniversalEqual D C1 := class1_lambda_swap36 C1 htypesC1
+    have hEqD : UniversalEqual D C1 :=
+      universalEqual_of_equivalent C1 D (Equivalent_swap36Code C1 htypesC1)
     have hEq2 : UniversalEqual C2 C1 := universalEqual_trans hEq21 hEqD
     have hb2 : UniversalBetter C2 C := universalBetter_of_equal_left C2 C1 C hEq2 hb1
     refine ⟨C2, hC2, ?_, hb2⟩
@@ -2146,20 +2117,13 @@ lemma classI_not_optimal_under_cond {n : ℕ} (hn : n > 3)
   have hkC : lambda Ck ε ≥ lambda C ε := hbk ε h0 h1
   linarith
 
-/-- Theorem `thm:nbig3` (Theorem 3): for n > 3, every optimal code is equivalent to a
-linear, Class-I, or Class-II code.  (Depends on `thm:linearopt` (Theorem 2), Phase F.) -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
-theorem optimal_equivalent_linear_class1_class2 (n : ℕ) (hn : n > 3) :
-    ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → ∀ C : Code n,
-      OptimalAt C ε →
-        ∃ C' : Code n, Equivalent C C' ∧
-          (IsLinear C' ∨ ClassI C' ∨ ClassII C') := by
-  intro ε hε0 hε1 C hOpt
-  have hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False := by
-    intro D hD
-    have hgt : lambda D ε > lambda C ε := hD ε hε0 hε1
-    have hge : lambda C ε ≥ lambda D ε := hOpt D
-    linarith
+/-- Contrapositive of Theorem `thm:nbig3` (Theorem 3), `universal_strict_better_of_not_class`:
+if no code is universally strictly better than `C`, then `C` is equivalent to a linear,
+Class-I, or Class-II code. -/
+theorem equivalent_class_of_no_universal_strict_better (n : ℕ) (hn : n > 3) (C : Code n)
+    (hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False) :
+    ∃ C' : Code n, Equivalent C C' ∧
+      (IsLinear C' ∨ ClassI C' ∨ ClassII C') := by
   have hcols : ∀ t : Fin n, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 14 := by
     intro t
     constructor
@@ -2195,22 +2159,43 @@ theorem optimal_equivalent_linear_class1_class2 (n : ℕ) (hn : n > 3) :
       noStrict_of_equiv hnoStrict hEq
     exact classIII_not_optimal hn hciii hnoStrictC'
 
-/-- Theorem `thm:condition_optimalcode` (Theorem 4): if every Class-I code with |1| ≥ 3 is
-not better than the code obtained by replacing a type-1 column by the argmin
-type, then all optimal codes are equivalent to linear codes. -/
-theorem condition_optimalcode (n : ℕ) (hn : n > 3)
-    (hcond : ∀ C : Code n, ClassI C → count C 1 ≥ 3 →
-      ∀ t : Fin n, C t = col1 →
-        UniversalBetter (replaceColumn C t (argminType C)) C) :
+/-- Theorem `thm:nbig3` (Theorem 3): if `C` is not equivalent to a linear, Class-I, or
+Class-II code, then some code is universally strictly better than `C`. -/
+theorem universal_strict_better_of_not_class (n : ℕ) (hn : n > 3) (C : Code n)
+    (hnot : ∀ C' : Code n, Equivalent C C' →
+      ¬ (IsLinear C' ∨ ClassI C' ∨ ClassII C')) :
+    ∃ D : Code n, UniversalStrictBetter D C := by
+  by_contra hnone
+  rcases equivalent_class_of_no_universal_strict_better n hn C (by
+    intro D hD
+    exact hnone ⟨D, hD⟩) with ⟨C', hEq, hcl⟩
+  exact hnot C' hEq hcl
+
+/-- Per-ε corollary of Theorem `thm:nbig3` (Theorem 3): for n > 3, every code optimal at a
+fixed crossover probability ε is equivalent to a linear, Class-I, or Class-II code. -/
+-- native_decide: Mechanical · n=any · checked 2026-08-27
+theorem optimal_equivalent_linear_class1_class2 (n : ℕ) (hn : n > 3) :
     ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → ∀ C : Code n,
-      OptimalAt C ε → ∃ C' : Code n, Equivalent C C' ∧ IsLinear C' := by
+      OptimalAt C ε →
+        ∃ C' : Code n, Equivalent C C' ∧
+          (IsLinear C' ∨ ClassI C' ∨ ClassII C') := by
   intro ε hε0 hε1 C hOpt
-  have hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False := by
+  exact equivalent_class_of_no_universal_strict_better n hn C (by
     intro D hD
     have hgt : lambda D ε > lambda C ε := hD ε hε0 hε1
     have hge : lambda C ε ≥ lambda D ε := hOpt D
-    linarith
-  rcases optimal_equivalent_linear_class1_class2 n hn ε hε0 hε1 C hOpt with ⟨C', hEq, hcl⟩
+    linarith)
+
+/-- Under the `thm:condition_optimalcode` (Theorem 4) hypothesis, if no code is universally
+strictly better than `C`, then `C` is equivalent to a linear code. -/
+theorem equivalent_linear_of_no_universal_strict_better (n : ℕ) (hn : n > 3)
+    (hcond : ∀ C : Code n, ClassI C → count C 1 ≥ 3 →
+      ∀ t : Fin n, C t = col1 →
+        UniversalBetter (replaceColumn C t (argminType C)) C)
+    (C : Code n)
+    (hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False) :
+    ∃ C' : Code n, Equivalent C C' ∧ IsLinear C' := by
+  rcases equivalent_class_of_no_universal_strict_better n hn C hnoStrict with ⟨C', hEq, hcl⟩
   rcases hcl with hlin | hci | hcii
   · exact ⟨C', hEq, hlin⟩
   · exfalso
@@ -2224,5 +2209,38 @@ theorem condition_optimalcode (n : ℕ) (hn : n > 3)
     have hnoStrictC'' : ∀ D : Code n, UniversalStrictBetter D C'' → False :=
       noStrict_of_equal hEq'' hnoStrictC'
     exact classI_not_optimal_under_cond hn hcond hCI hnoStrictC''
+
+/-- Theorem `thm:condition_optimalcode` (Theorem 4): under the stated Class-I condition,
+if `C` is not equivalent to a linear code, then some code is universally strictly better
+than `C`. -/
+theorem universal_strict_better_of_not_linear (n : ℕ) (hn : n > 3)
+    (hcond : ∀ C : Code n, ClassI C → count C 1 ≥ 3 →
+      ∀ t : Fin n, C t = col1 →
+        UniversalBetter (replaceColumn C t (argminType C)) C) :
+    ∀ C : Code n,
+      (∀ C' : Code n, Equivalent C C' → ¬ IsLinear C') →
+        ∃ D : Code n, UniversalStrictBetter D C := by
+  intro C hnotLinear
+  by_contra hnone
+  rcases equivalent_linear_of_no_universal_strict_better n hn hcond C (by
+    intro D hD
+    exact hnone ⟨D, hD⟩) with ⟨C', hEq, hlin⟩
+  exact hnotLinear C' hEq hlin
+
+/-- Per-ε corollary of Theorem `thm:condition_optimalcode` (Theorem 4): under the stated
+Class-I condition, every code optimal at one fixed crossover probability is equivalent to
+a linear code. -/
+theorem condition_optimalcode (n : ℕ) (hn : n > 3)
+    (hcond : ∀ C : Code n, ClassI C → count C 1 ≥ 3 →
+      ∀ t : Fin n, C t = col1 →
+        UniversalBetter (replaceColumn C t (argminType C)) C) :
+    ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → ∀ C : Code n,
+      OptimalAt C ε → ∃ C' : Code n, Equivalent C C' ∧ IsLinear C' := by
+  intro ε hε0 hε1 C hOpt
+  exact equivalent_linear_of_no_universal_strict_better n hn hcond C (by
+    intro D hD
+    have hgt : lambda D ε > lambda C ε := hD ε hε0 hε1
+    have hge : lambda C ε ≥ lambda D ε := hOpt D
+    linarith)
 
 end N4Code

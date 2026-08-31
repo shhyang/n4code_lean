@@ -1083,16 +1083,7 @@ lemma exists_goodWord {n : ℕ} (C : Code n) (k : ℕ → ℕ)
 -- native_decide: Mechanical · n=any · checked 2026-08-27
 /-- A column with type number 0 is the zero column. -/
 lemma colVal_eq_zero_iff_col0 (c : Column) : colVal c = 0 ↔ c = col0 := by
-  constructor
-  · intro h
-    funext j
-    have hb : colBit j c = false := by
-      rw [colBit_eq_testBit, h]
-      simp
-    exact hb
-  · intro h
-    rw [h]
-    native_decide
+  simpa [show colOfNat 0 = col0 by native_decide] using (colVal_eq_iff_colOfNat c 0 (by norm_num))
 
 /-- Columns07 means all type numbers are at most 7. -/
 lemma Columns07_le7 {n : ℕ} (C : Code n) (h : Columns07 C) (t : Fin n) : colVal (C t) ≤ 7 := by
@@ -2099,11 +2090,8 @@ lemma sum_counts_4_7 {n : ℕ} (C : Code n) (h07 : Columns07 C) :
 /-- A code with a 0-column has a position with the zero column. -/
 lemma exists_col0_of_count_pos {n : ℕ} (C : Code n) (h : 1 ≤ count C 0) :
     ∃ t : Fin n, C t = col0 := by
-  have hcard : 1 ≤ (Finset.univ.filter fun t : Fin n => colVal (C t) = 0).card := by
-    simpa [count_eq_card] using h
-  rcases Finset.card_pos.mp (by omega : 0 < (Finset.univ.filter fun t : Fin n => colVal (C t) = 0).card)
-    with ⟨t, ht⟩
-  exact ⟨t, (colVal_eq_zero_iff_col0 (C t)).mp (Finset.mem_filter.mp ht).2⟩
+  rcases (count_pos_iff_exists C 0).mp (by omega : count C 0 > 0) with ⟨t, ht⟩
+  exact ⟨t, (colVal_eq_zero_iff_col0 (C t)).mp ht⟩
 
 /-- The normalized code keeps a 0-column. -/
 lemma count0_normalize {n : ℕ} (C : Code n) (i j : Fin 4) (_hij : i ≠ j)
@@ -2827,39 +2815,8 @@ lemma twobitCount_replace_0_5 {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col
 lemma count_replace_0_nonzero {n : ℕ} (C : Code n) (t : Fin n) (s' : Column)
     (h0 : C t = col0) (hs : s' ≠ col0) :
     count (replaceColumn C t s') 0 = count C 0 - 1 := by
-  rw [count_eq_card (replaceColumn C t s') 0, count_eq_card C 0]
-  have hfilter : (Finset.univ.filter fun u : Fin n => colVal ((replaceColumn C t s') u) = 0) =
-      (Finset.univ.filter fun u : Fin n => colVal (C u) = 0).erase t := by
-    ext u
-    by_cases hu : u = t
-    · subst u
-      have hs0 : colVal s' ≠ 0 := by
-        intro h
-        exact hs ((colVal_eq_zero_iff_col0 s').mp h)
-      constructor
-      · intro ht
-        exfalso
-        exact hs0 (by simpa [replaceColumn] using (Finset.mem_filter.mp ht).2)
-      · intro hmem
-        simp at hmem
-    · constructor
-      · intro ht
-        have hcol : colVal (C u) = 0 := by
-          have ht' := (Finset.mem_filter.mp ht).2
-          have hreplace : replaceColumn C t s' u = C u := by simp [replaceColumn, hu]
-          rwa [hreplace] at ht'
-        exact Finset.mem_erase.mpr ⟨hu, Finset.mem_filter.mpr ⟨by simp, hcol⟩⟩
-      · intro ht
-        have hcol : colVal (C u) = 0 :=
-          (Finset.mem_filter.mp (Finset.mem_of_mem_erase ht)).2
-        have hreplace : replaceColumn C t s' u = C u := by simp [replaceColumn, hu]
-        exact Finset.mem_filter.mpr ⟨by simp, by
-          rw [hreplace]
-          exact hcol⟩
-  rw [hfilter]
-  have hmem : t ∈ Finset.univ.filter fun u : Fin n => colVal (C u) = 0 := by
-    simp [colVal_eq_zero_iff_col0, h0]
-  rw [Finset.card_erase_of_mem hmem]
+  exact count_replace_dec C t s' 0 (by rw [h0]; native_decide)
+    (by intro h; exact hs ((colVal_eq_zero_iff_col0 s').mp h))
 
 -- native_decide: Mechanical · n=any · checked 2026-08-27
 /-- A column of type 3, 5, or 6 is not the zero column. -/

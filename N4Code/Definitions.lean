@@ -5,6 +5,7 @@ import Mathlib.Data.Finset.Interval
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FinCases
+import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -398,49 +399,38 @@ lemma colOfNat_colVal (c : Column) : colOfNat (colVal c) = c := by
   funext r
   simpa [colBit, colOfNat] using (colBit_eq_testBit c r).symm
 
+/-- The type number of `colOfNat k` is `k`, for `k ≤ 15`. -/
+lemma colVal_colOfNat (k : ℕ) (hk : k ≤ 15) : colVal (colOfNat k) = k := by
+  interval_cases k <;> native_decide
+
+/-- The type-number function is injective on the 4-bit range. -/
+lemma colVal_eq_iff_colOfNat (c : Column) (k : ℕ) (hk : k ≤ 15) :
+    colVal c = k ↔ c = colOfNat k := by
+  constructor
+  · intro h
+    rw [← colOfNat_colVal c, h]
+  · intro h
+    rw [h, colVal_colOfNat k hk]
+
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 1 exactly when it is `col1`. -/
 lemma colVal_eq_one_iff_col1 (c : Column) : colVal c = 1 ↔ c = col1 := by
-  constructor
-  · intro h
-    funext j
-    fin_cases j
-    · change colBit ⟨0, by decide⟩ c = false
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨1, by decide⟩ c = false
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨2, by decide⟩ c = false
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨3, by decide⟩ c = true
-      rw [colBit_eq_testBit, h]
-      native_decide
-  · intro h
-    rw [h]
-    native_decide
+  simpa [show colOfNat 1 = col1 by native_decide] using (colVal_eq_iff_colOfNat c 1 (by norm_num))
 
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 3 exactly when it is `col3`. -/
 lemma colVal_eq_three_iff_col3 (c : Column) : colVal c = 3 ↔ c = col3 := by
-  constructor
-  · intro h; rw [← colOfNat_colVal c, h]; native_decide
-  · intro h; rw [h]; native_decide
+  simpa [show colOfNat 3 = col3 by native_decide] using (colVal_eq_iff_colOfNat c 3 (by norm_num))
 
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 5 exactly when it is `col5`. -/
 lemma colVal_eq_five_iff_col5 (c : Column) : colVal c = 5 ↔ c = col5 := by
-  constructor
-  · intro h; rw [← colOfNat_colVal c, h]; native_decide
-  · intro h; rw [h]; native_decide
+  simpa [show colOfNat 5 = col5 by native_decide] using (colVal_eq_iff_colOfNat c 5 (by norm_num))
 
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 6 exactly when it is `col6`. -/
 lemma colVal_eq_six_iff_col6 (c : Column) : colVal c = 6 ↔ c = col6 := by
-  constructor
-  · intro h; rw [← colOfNat_colVal c, h]; native_decide
-  · intro h; rw [h]; native_decide
+  simpa [show colOfNat 6 = col6 by native_decide] using (colVal_eq_iff_colOfNat c 6 (by norm_num))
 
 /-- The paper's (7,4) example code: column t has type t.val + 1. -/
 def example74 : Code 7 := fun t => colOfNat (t.val + 1)

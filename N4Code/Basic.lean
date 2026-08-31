@@ -170,6 +170,64 @@ lemma hammingDist_row_eq_indicator {n : ℕ} (C : Code n) (i j : Fin 4) :
   intro t _
   simp [row, colBit_eq_testBit]
 
+/-- Group a per-position indicator sum by the types in S (all columns are in S). -/
+lemma sum_indicator_of_types {n : ℕ} (C : Code n) (S : Finset ℕ) (p : ℕ → Prop)
+    [DecidablePred p] (hS : ∀ t : Fin n, colVal (C t) ∈ S) :
+    (∑ t : Fin n, if p (colVal (C t)) then 1 else 0) =
+      ∑ i ∈ S, count C i * (if p i then 1 else 0) := by
+  rw [show (∑ t : Fin n, if p (colVal (C t)) then 1 else 0) =
+        ∑ t : Fin n, ∑ i ∈ S, if colVal (C t) = i then (if p i then 1 else 0) else 0 by
+        apply Finset.sum_congr rfl
+        intro t _
+        have ht := hS t
+        rw [Finset.sum_ite_eq]
+        simp [ht]]
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro i _
+  calc
+    (∑ t : Fin n, if colVal (C t) = i then (if p i then 1 else 0) else 0)
+        = (∑ t : Fin n, if colVal (C t) = i then 1 else 0) * (if p i then 1 else 0) := by
+          rw [Finset.sum_mul]
+          apply Finset.sum_congr rfl
+          intro t _
+          by_cases h : colVal (C t) = i <;> by_cases hp : p i <;> simp [h, hp]
+    _ = count C i * (if p i then 1 else 0) := by rfl
+
+/-- The Hamming distance between rows i and j is the weighted sum of the counts
+of the column types for which the i-th and j-th bits differ. -/
+lemma hammingDist_rows_of_types {n : ℕ} (C : Code n) (i j : Fin 4)
+    (S : Finset ℕ) (hS : ∀ t : Fin n, colVal (C t) ∈ S) :
+    hammingDist (row C i) (row C j) =
+      ∑ k ∈ S, count C k *
+        if k.testBit (3 - i.val) ≠ k.testBit (3 - j.val) then 1 else 0 := by
+  rw [hammingDist_row_eq_indicator C i j]
+  exact sum_indicator_of_types C S
+    (fun k => k.testBit (3 - i.val) ≠ k.testBit (3 - j.val)) hS
+
+/-- Counts transport across an involutive type relabelling: if `colVal (C' t)`
+is the image of `colVal (C t)` under the involution `gv`, then `|i|_{C'}` is
+the count of `gv i` in `C`. -/
+lemma count_involution_map {n : ℕ} (C C' : Code n) (gv : ℕ → ℕ)
+    (hcol : ∀ t : Fin n, colVal (C' t) = gv (colVal (C t)))
+    (hIdem : ∀ i : ℕ, gv (gv i) = i) (i : ℕ) :
+    count C' i = count C (gv i) := by
+  unfold count
+  apply Finset.sum_congr rfl
+  intro t _
+  rw [hcol t]
+  have hiff : gv (colVal (C t)) = i ↔ colVal (C t) = gv i := by
+    constructor
+    · intro h
+      have h1 := congrArg gv h
+      rwa [hIdem] at h1
+    · intro h
+      rw [h]
+      exact hIdem i
+  by_cases h : gv (colVal (C t)) = i
+  · rw [if_pos h, if_pos (hiff.mp h)]
+  · rw [if_neg h, if_neg (hiff.not.mp h)]
+
 /-- The code distance of any word is at most n. -/
 lemma dCode_le {n : ℕ} (C : Code n) (y : Word n) : dCode C y ≤ n := by
   exact (dCode_le_dRow C ⟨0, by decide⟩ y).trans (hammingDist_le _ _)

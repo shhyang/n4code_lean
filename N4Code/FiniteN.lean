@@ -154,6 +154,45 @@ lemma n2_opt_distinct {C : Code 2} (hopt : ∀ D : Code 2, UniversalBetter C D) 
     hoptF2 (1 / 4 : ℝ) (by norm_num) (by norm_num)
   linarith
 
+/-- If a `(2,4)` code has repeated rows, then the full space `F2` is universally
+strictly better than it. -/
+lemma n2_strict_better_of_not_distinct {C : Code 2} (hnd : ¬ DistinctRows C) :
+    UniversalStrictBetter F2 C := by
+  have hnew : ∃ j' : Fin 4, ∀ j : Fin 4, row C j ≠ row F2 j' := by
+    by_contra hnot
+    have hall : ∀ j' : Fin 4, ∃ j : Fin 4, row C j = row F2 j' := by
+      intro j'
+      by_contra h
+      exact hnot ⟨j', by intro j hj; exact h ⟨j, hj⟩⟩
+    have himg : (Finset.univ : Finset (Word 2)) ⊆
+        (Finset.univ.image (fun j : Fin 4 => row C j)) := by
+      intro y hy
+      rcases F2_rows_all y with ⟨j', hj'⟩
+      rcases hall j' with ⟨j, hj⟩
+      exact Finset.mem_image.mpr ⟨j, Finset.mem_univ j, by rw [hj, hj']⟩
+    have hcard : (Finset.univ.image (fun j : Fin 4 => row C j)).card = 4 := by
+      have hle : (Finset.univ.image (fun j : Fin 4 => row C j)).card ≤
+          (Finset.univ : Finset (Word 2)).card :=
+        Finset.card_le_card (by intro x hx; exact Finset.mem_univ x)
+      have hge : (Finset.univ : Finset (Word 2)).card ≤
+          (Finset.univ.image (fun j : Fin 4 => row C j)).card := Finset.card_le_card himg
+      have hcw : (Finset.univ : Finset (Word 2)).card = 4 := word2_card
+      omega
+    have hdist' : DistinctRows C := by
+      have hinj : Set.InjOn (fun j : Fin 4 => row C j) (Finset.univ : Finset (Fin 4)) := by
+        apply (Finset.card_image_iff).mp
+        rw [hcard]
+        rw [Finset.card_univ]
+        norm_num
+      intro i j hij hrow
+      exact hij (hinj (by simp) (by simp) hrow)
+    exact hnd hdist'
+  have hsup : ∀ j : Fin 4, ∃ j' : Fin 4, row C j = row F2 j' := by
+    intro j
+    rcases F2_rows_all (row C j) with ⟨j', hj'⟩
+    exact ⟨j', hj'.symm⟩
+  exact universalStrictBetter_of_rows_subset C F2 hsup hnew
+
 /-- A `(2,4)` code with distinct rows has all four words as rows, so it is a
 row permutation of `F2` (hence equivalent to it). -/
 -- native_decide: Contentful · n=2 · checked 2026-08-28
@@ -216,12 +255,15 @@ lemma n2_distinct_equiv_F2 {C : Code 2} (hdist : DistinctRows C) :
   have hf : (row C (ρ j)) t = (row F2 j) t := congrFun hrowj t
   simpa [row, rowPermute, colBit] using hf.symm
 
-/-- The n = 2 case of `thm:n8` (Theorem 5): every optimal `(2,4)` code is equivalent to
-a linear code. -/
-lemma n2_optimal_linear (C : Code 2) (hopt : ∀ D : Code 2, UniversalBetter C D) :
-    ∃ C' : Code 2, Equivalent C C' ∧ IsLinear C' := by
-  have hdist := n2_opt_distinct (C := C) hopt
-  exact ⟨F2, n2_distinct_equiv_F2 (C := C) hdist, F2_linear⟩
+/-- Strong n = 2 branch of Theorem `thm:n8` (Theorem 5): if a `(2,4)` code is not
+equivalent to a linear code, then some code is universally strictly better than it. -/
+lemma n2_strict_better_of_not_linear (C : Code 2)
+    (hnot : ∀ C' : Code 2, Equivalent C C' → ¬ IsLinear C') :
+    ∃ D : Code 2, UniversalStrictBetter D C := by
+  by_cases hdist : DistinctRows C
+  · exfalso
+    exact hnot F2 (n2_distinct_equiv_F2 hdist) F2_linear
+  · exact ⟨F2, n2_strict_better_of_not_distinct hdist⟩
 
 /-! ## n = 3 (paper `thm:n8` (Theorem 5), second case)
 
@@ -571,37 +613,56 @@ lemma n3_c0form_equiv_CA (C0 : Code 3) (h : C0form C0) : Equivalent C0 CA := by
     simp [CA, hp, hc6]
     native_decide
 
-/-- An optimal `(3,4)` code with a type-0 column is equivalent to C_A (the
-C0-form case of `thm:0column` (Theorem 6)), or is contradicted by `zero_column_strict`. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
-lemma n3_opt_col0 {C : Code 3} (hopt : ∀ D : Code 3, UniversalBetter C D)
-    (t : Fin 3) (ht0 : C t = col0) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+/-- Membership in the five-code list up to equivalence. -/
+def InSet3 (C : Code 3) : Prop := ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C'
+
+/-- Some code is universally strictly better than `C`. -/
+def StrictBetter3 (C : Code 3) : Prop := ∃ D : Code 3, UniversalStrictBetter D C
+
+/-- Lift `InSet3` along an equivalence. -/
+lemma inSet3_of_equiv {C Ct : Code 3} (hEq : Equivalent C Ct) (hIn : InSet3 Ct) :
+    InSet3 C := by
+  rcases hIn with ⟨C', hEq', hIn'⟩
+  exact ⟨C', equivalent_trans hEq hEq', hIn'⟩
+
+/-- Lift `StrictBetter3` along an equivalence. -/
+lemma strictBetter3_of_equiv {C Ct : Code 3} (hEq : Equivalent C Ct) (hS : StrictBetter3 Ct) :
+    StrictBetter3 C := by
+  rcases hS with ⟨D, hD⟩
+  exact ⟨D, universalStrictBetter_of_eq_left hD
+    (universalEqual_of_equivalent C Ct hEq)⟩
+
+/-- Lift the n=3 classification disjunction along an equivalence. -/
+lemma classify3_of_equiv {C Ct : Code 3} (hEq : Equivalent C Ct)
+    (h : InSet3 Ct ∨ StrictBetter3 Ct) :
+    InSet3 C ∨ StrictBetter3 C := by
+  rcases h with hIn | hStrict
+  · exact Or.inl (inSet3_of_equiv hEq hIn)
+  · exact Or.inr (strictBetter3_of_equiv hEq hStrict)
+
+/-- Strong n = 3 type-0 branch: either equivalent to one of the five codes, or some code
+is universally strictly better. -/
+lemma n3_classify_col0 (C : Code 3) (t : Fin 3) (ht0 : C t = col0) :
+    InSet3 C ∨ StrictBetter3 C := by
   by_cases hc0 : ∃ C0 : Code 3, Equivalent C C0 ∧
       count C0 0 + count C0 5 + count C0 6 = 3 ∧ Odd (count C0 5) ∧ Odd (count C0 6)
   · rcases hc0 with ⟨C0, hEq, hcnt, h5o, h6o⟩
     have hc0f : C0form C0 := ⟨hcnt, h5o, h6o⟩
     have hCA : Equivalent C0 CA := n3_c0form_equiv_CA C0 hc0f
-    exact ⟨CA, equivalent_trans hEq hCA, by simp [InOptimal3]⟩
+    exact Or.inl ⟨CA, equivalent_trans hEq hCA, by simp [InOptimal3]⟩
   · have h0pos : 1 ≤ count C 0 := by
       have hcv : colVal (C t) = 0 := by rw [ht0]; native_decide
       exact count_pos_of_colVal C t hcv
     rcases zero_column_strict C h0pos hc0 with ⟨t', ht'0, s', hs', hstrict⟩
-    rcases hstrict (1 / 4 : ℝ) (by norm_num) (by norm_num) with hgt
-    have hge := (hopt (replaceColumn C t' s')) (1 / 4 : ℝ) (by norm_num) (by norm_num)
-    exfalso
-    linarith
+    exact Or.inr ⟨replaceColumn C t' s', hstrict⟩
 
-/-- An optimal `(3,4)` code with a type-0 or type-15 column is equivalent to
-one of the five codes of `thm:n8` (Theorem 5) (the type-15 case flips the column to
-type 0, an equivalence, and reduces to `n3_opt_col0`). -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
-lemma n3_opt_has_0_or_15 {C : Code 3} (hopt : ∀ D : Code 3, UniversalBetter C D)
+/-- Strong n = 3 type-0/15 branch. -/
+lemma n3_classify_has_0_or_15 (C : Code 3)
     (h : ∃ t : Fin 3, C t = col0 ∨ C t = col15) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+    InSet3 C ∨ StrictBetter3 C := by
   rcases h with ⟨t, ht⟩
   rcases ht with ht0 | ht15
-  · exact n3_opt_col0 (C := C) hopt t ht0
+  · exact n3_classify_col0 C t ht0
   · let Ct : Code 3 := replaceColumn C t col0
     have hflip : Ct t = col0 := by simp [Ct, replaceColumn]
     have hfc : flipCol (C t) = col0 := by rw [ht15]; native_decide
@@ -612,12 +673,9 @@ lemma n3_opt_has_0_or_15 {C : Code 3} (hopt : ∀ D : Code 3, UniversalBetter C 
     have hEq : Equivalent C Ct := by
       rw [hcodes] at h1
       exact h1
-    have hoptC : ∀ D : Code 3, UniversalBetter Ct D := by
-      intro D ε hε0 hε1
-      have hl : lambda C ε = lambda Ct ε := (lambda_equiv C Ct hEq ε).symm
-      exact le_trans (hopt D ε hε0 hε1) (le_of_eq hl)
-    rcases n3_opt_col0 (C := Ct) hoptC t hflip with ⟨C', hEqC, hIn⟩
-    exact ⟨C', equivalent_trans hEq hEqC, hIn⟩
+    rcases n3_classify_col0 Ct t hflip with hIn | hStrict
+    · exact Or.inl (inSet3_of_equiv hEq hIn)
+    · exact Or.inr (strictBetter3_of_equiv hEq hStrict)
 
 /-! ## n = 3: Class-I and Class-II codes are not optimal
 
@@ -649,6 +707,66 @@ lemma universalStrictBetter_of_dCode_le_lt {n : ℕ} (C C' : Code n)
     (1 / 4 : ℝ) * (∑ y : Word n, weight n ε (dCode C y))
   have hquarter : 0 < (1 / 4 : ℝ) := by norm_num
   nlinarith [mul_lt_mul_of_pos_left hsum hquarter]
+
+/-- Equal `dCode` functions give equal `λ` at every crossover probability. -/
+lemma universalEqual_of_dCode_eq {n : ℕ} {C D : Code n}
+    (h : ∀ y : Word n, dCode C y = dCode D y) :
+    UniversalEqual C D := by
+  intro ε hε0 hε1
+  unfold lambda
+  congr 1
+  apply Finset.sum_congr rfl
+  intro y hy
+  rw [h y]
+
+/-- Equal distance distributions give equal `λ` at every crossover probability. -/
+lemma universalEqual_of_alpha_eq {n : ℕ} {C D : Code n}
+    (h : ∀ d ∈ Finset.Icc 0 n, alpha C d = alpha D d) :
+    UniversalEqual C D := by
+  intro ε hε0 hε1
+  unfold lambda
+  congr 1
+  have hC := Finset.sum_fiberwise_of_maps_to (s := (Finset.univ : Finset (Word n)))
+      (t := Finset.Icc 0 n) (g := fun y => dCode C y)
+      (f := fun y => (1 - ε) ^ (n - dCode C y) * ε ^ (dCode C y))
+      (by intro y hy; rw [Finset.mem_Icc]; exact ⟨Nat.zero_le _, dCode_le C y⟩)
+  have hD := Finset.sum_fiberwise_of_maps_to (s := (Finset.univ : Finset (Word n)))
+      (t := Finset.Icc 0 n) (g := fun y => dCode D y)
+      (f := fun y => (1 - ε) ^ (n - dCode D y) * ε ^ (dCode D y))
+      (by intro y hy; rw [Finset.mem_Icc]; exact ⟨Nat.zero_le _, dCode_le D y⟩)
+  rw [← hC, ← hD]
+  apply Finset.sum_congr rfl
+  intro d hd
+  have hsumC : (∑ y ∈ (Finset.univ : Finset (Word n)).filter (fun y => dCode C y = d),
+      (1 - ε) ^ (n - d) * ε ^ d) = alpha C d * ((1 - ε) ^ (n - d) * ε ^ d) := by
+    rw [alpha_eq_card C d]
+    rw [Finset.sum_const]
+    simp [nsmul_eq_mul]
+  have hsumD : (∑ y ∈ (Finset.univ : Finset (Word n)).filter (fun y => dCode D y = d),
+      (1 - ε) ^ (n - d) * ε ^ d) = alpha D d * ((1 - ε) ^ (n - d) * ε ^ d) := by
+    rw [alpha_eq_card D d]
+    rw [Finset.sum_const]
+    simp [nsmul_eq_mul]
+  calc
+    (∑ i with dCode C i = d, (1 - ε) ^ (n - dCode C i) * ε ^ (dCode C i))
+        = alpha C d * ((1 - ε) ^ (n - d) * ε ^ d) := by
+            trans (∑ y ∈ (Finset.univ : Finset (Word n)).filter (fun y => dCode C y = d),
+                (1 - ε) ^ (n - d) * ε ^ d)
+            · apply Finset.sum_congr rfl
+              intro y hy
+              rw [Finset.mem_filter] at hy
+              rw [hy.2]
+            · exact hsumC
+    _ = alpha D d * ((1 - ε) ^ (n - d) * ε ^ d) := by
+            rw [h d hd]
+    _ = ∑ i with dCode D i = d, (1 - ε) ^ (n - dCode D i) * ε ^ (dCode D i) := by
+            trans (∑ y ∈ (Finset.univ : Finset (Word n)).filter (fun y => dCode D y = d),
+                (1 - ε) ^ (n - d) * ε ^ d)
+            · exact hsumD.symm
+            · apply Finset.sum_congr rfl
+              intro y hy
+              rw [Finset.mem_filter] at hy
+              rw [hy.2]
 
 /-- The fiber of type i has exactly tu, tv when |i| = 2. -/
 lemma colVal_fiber_eq_two {n : ℕ} {C : Code n} {i : ℕ} (tu tv : Fin n)
@@ -926,11 +1044,9 @@ lemma n3_class1_equiv_111 (C : Code 3) (_h : ClassI C) (h1 : count C 1 = 3) :
   rw [heq]
   exact equivalent_refl code111
 
-/-- Class-I `(3,4)` codes are not optimal: each equivalence class has a
-strictly better code (`thm:11` (Theorem 16)/`thm:301` (Theorem 17) chain, with dCode-wise and
-row-superset witnesses computed for the four representatives). -/
-lemma n3_class1_not_optimal {C : Code 3} (h : ClassI C)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) : False := by
+/-- Strong Class-I n = 3 branch: every Class-I code has a universally strictly better
+code. -/
+lemma n3_classify_class1 (C : Code 3) (h : ClassI C) : StrictBetter3 C := by
   have hodd1 : Odd (count C 1) := h.1
   have hpar := h.2.1
   have htot := h.2.2
@@ -950,58 +1066,29 @@ lemma n3_class1_not_optimal {C : Code 3} (h : ClassI C)
         omega
       rcases hcases with h3 | h5 | h6
       · have heq := n3_class1_equiv_133 C h h1 h3
-        have hl : lambda C (1 / 4 : ℝ) = lambda code133 (1 / 4 : ℝ) :=
-          (lambda_equiv C code133 heq (1 / 4 : ℝ)).symm
-        have hstrict : lambda (linearCode 1 2 0) (1 / 4 : ℝ) > lambda code133 (1 / 4 : ℝ) :=
-          n3_strict_133 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        have hge : lambda C (1 / 4 : ℝ) ≥ lambda (linearCode 1 2 0) (1 / 4 : ℝ) :=
-          hopt (linearCode 1 2 0) (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        rw [hl] at hge
-        linarith
+        exact ⟨linearCode 1 2 0, universalStrictBetter_of_eq_left n3_strict_133
+          (universalEqual_of_equivalent C code133 heq)⟩
       · have heq := n3_class1_equiv_155 C h h1 h5
-        have hl : lambda C (1 / 4 : ℝ) = lambda code155 (1 / 4 : ℝ) :=
-          (lambda_equiv C code155 heq (1 / 4 : ℝ)).symm
-        have hstrict : lambda (linearCode 1 2 0) (1 / 4 : ℝ) > lambda code155 (1 / 4 : ℝ) :=
-          n3_strict_155 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        have hge : lambda C (1 / 4 : ℝ) ≥ lambda (linearCode 1 2 0) (1 / 4 : ℝ) :=
-          hopt (linearCode 1 2 0) (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        rw [hl] at hge
-        linarith
+        exact ⟨linearCode 1 2 0, universalStrictBetter_of_eq_left n3_strict_155
+          (universalEqual_of_equivalent C code155 heq)⟩
       · have heq := n3_class1_equiv_166 C h h1 h6
-        have hl : lambda C (1 / 4 : ℝ) = lambda code166 (1 / 4 : ℝ) :=
-          (lambda_equiv C code166 heq (1 / 4 : ℝ)).symm
-        have hstrict : lambda (linearCode 1 2 0) (1 / 4 : ℝ) > lambda code166 (1 / 4 : ℝ) :=
-          n3_strict_166 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        have hge : lambda C (1 / 4 : ℝ) ≥ lambda (linearCode 1 2 0) (1 / 4 : ℝ) :=
-          hopt (linearCode 1 2 0) (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        rw [hl] at hge
-        linarith
+        exact ⟨linearCode 1 2 0, universalStrictBetter_of_eq_left n3_strict_166
+          (universalEqual_of_equivalent C code166 heq)⟩
     · rcases hO with ⟨h3o, h5o, h6o⟩
       rcases h3o with ⟨a, ha3⟩
       rcases h5o with ⟨b, hb5⟩
       rcases h6o with ⟨c, hc6⟩
-      exfalso
       omega
   · have heq := n3_class1_equiv_111 C h h1
-    have hl : lambda C (1 / 4 : ℝ) = lambda code111 (1 / 4 : ℝ) :=
-      (lambda_equiv C code111 heq (1 / 4 : ℝ)).symm
-    have hstrict : lambda code113 (1 / 4 : ℝ) > lambda code111 (1 / 4 : ℝ) :=
-      n3_strict_111 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-    have hge : lambda C (1 / 4 : ℝ) ≥ lambda code113 (1 / 4 : ℝ) :=
-      hopt code113 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-    rw [hl] at hge
-    linarith
+    exact ⟨code113, universalStrictBetter_of_eq_left n3_strict_111
+      (universalEqual_of_equivalent C code111 heq)⟩
 
-/-- Class-II `(3,4)` codes are not optimal: they equal a Class-I code
-(`thm:class2` (Lemma 14)), which is not optimal. -/
-lemma n3_class2_not_optimal {C : Code 3} (h : ClassII C)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) : False := by
+/-- Strong Class-II n = 3 branch: every Class-II code has a universally strictly better
+code. -/
+lemma n3_classify_class2 (C : Code 3) (h : ClassII C) : StrictBetter3 C := by
   rcases class2_to_class1 C h with ⟨C', hclass1, heq, hcnt⟩
-  have hopt' : ∀ D : Code 3, UniversalBetter C' D := by
-    intro D ε hε0 hε1
-    have h1 : lambda C' ε = lambda C ε := heq ε hε0 hε1
-    exact le_trans (hopt D ε hε0 hε1) (le_of_eq h1.symm)
-  exact n3_class1_not_optimal (C := C') hclass1 hopt'
+  rcases n3_classify_class1 C' hclass1 with ⟨D, hD⟩
+  exact ⟨D, universalStrictBetter_of_eq_left hD heq⟩
 
 /-! ## n = 3: Case A and the Case-B row-swap reduction
 
@@ -1014,18 +1101,15 @@ row swaps: swap rows 2,3 maps type 2 to 1; swap rows 1,3 maps type 4 to 1;
 swap rows 0,3 maps type 7 to 14 and `flipHighColumns` flips it to 1.
 -/
 
-/-- Case A: columns only of types 3, 5, 6 — linear (hence one of the
-`thm:n8` (Theorem 5) five codes up to equivalence) or a strictly better linear code
-contradicts optimality. -/
-lemma n3_columns356 (C : Code 3)
-    (hcols : ∀ t : Fin 3, colVal (C t) = 3 ∨ colVal (C t) = 5 ∨ colVal (C t) = 6)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+/-- Strong Case-A n = 3 branch. -/
+lemma n3_classify_columns356 (C : Code 3)
+    (hcols : ∀ t : Fin 3, colVal (C t) = 3 ∨ colVal (C t) = 5 ∨ colVal (C t) = 6) :
+    InSet3 C ∨ StrictBetter3 C := by
   by_cases hlin : IsLinear C
   · rcases linear3_classified C hlin with hCA | h111 | h120
-    · exact ⟨CA, equivalent_symm hCA, by simp [InOptimal3]⟩
-    · exact ⟨linearCode 1 1 1, equivalent_symm h111, by simp [InOptimal3]⟩
-    · exact ⟨linearCode 1 2 0, equivalent_symm h120, by simp [InOptimal3]⟩
+    · exact Or.inl ⟨CA, equivalent_symm hCA, by simp [InOptimal3]⟩
+    · exact Or.inl ⟨linearCode 1 1 1, equivalent_symm h111, by simp [InOptimal3]⟩
+    · exact Or.inl ⟨linearCode 1 2 0, equivalent_symm h120, by simp [InOptimal3]⟩
   · have hc1 : count C 1 = 0 := by
       unfold count
       apply Finset.sum_eq_zero
@@ -1056,12 +1140,7 @@ lemma n3_columns356 (C : Code 3)
       simp [Finset.sum_insert, hc1]
       omega
     rcases degenerate_to_linear_strict C (by norm_num : 2 ≤ 3) htot hc1 hlin with ⟨C', hlin', hstrict⟩
-    have hgt : lambda C' (1 / 4 : ℝ) > lambda C (1 / 4 : ℝ) :=
-      hstrict (1 / 4 : ℝ) (by norm_num) (by norm_num)
-    have hge : lambda C (1 / 4 : ℝ) ≥ lambda C' (1 / 4 : ℝ) :=
-      hopt C' (1 / 4 : ℝ) (by norm_num) (by norm_num)
-    exfalso
-    linarith
+    exact Or.inr ⟨C', hstrict⟩
 
 /-- The 3 columns of a {1..7}-code sum to 3 over types 1..7. -/
 lemma n3_columns17_total (C : Code 3)
@@ -1641,13 +1720,11 @@ lemma n3_types_116 (C : Code 3) (hcols : ∀ t : Fin 3, colVal (C t) = 1 ∨ col
   · exfalso; have hp : 1 ≤ count C 5 := count_pos_of_colVal C t hv5; omega
   · right; exact hv6
 
--- Case-1 (|1|>0, columns in {1,3,5,6}): the n=3 count analysis
--- native_decide: Contentful · n=3 · checked 2026-08-28
-lemma n3_caseB_analysis (C : Code 3)
+/-- Strong Case-B n = 3 branch. -/
+lemma n3_classify_caseB_analysis (C : Code 3)
     (hcols : ∀ t : Fin 3, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨ colVal (C t) = 5 ∨ colVal (C t) = 6)
-    (h1pos : 0 < count C 1)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+    (h1pos : 0 < count C 1) :
+    InSet3 C ∨ StrictBetter3 C := by
   have htot : totalCounts C ({1, 3, 5, 6} : Finset ℕ) = 3 := by
     unfold totalCounts count
     rw [Finset.sum_comm]
@@ -1672,63 +1749,49 @@ lemma n3_caseB_analysis (C : Code 3)
     by_cases h3z : count C 3 = 0
     · by_cases h5z : count C 5 = 0
       · have h6 : count C 6 = 2 := by omega
-        exact False.elim (n3_class1_not_optimal (C := C) (n3_classI_166 C h1 h3z h5z h6) hopt)
+        exact Or.inr (n3_classify_class1 C (n3_classI_166 C h1 h3z h5z h6))
       · by_cases h6z : count C 6 = 0
         · have h5 : count C 5 = 2 := by omega
-          exact False.elim (n3_class1_not_optimal (C := C) (n3_classI_155 C h1 h3z h5 h6z) hopt)
+          exact Or.inr (n3_classify_class1 C (n3_classI_155 C h1 h3z h5 h6z))
         · have h5 : count C 5 = 1 := by omega
           have h6 : count C 6 = 1 := by omega
           have hEq : Equivalent C code136 := n3_156_equiv_136 C h1 h5 h6 h3z hcols
-          exact ⟨code136, hEq, by simp [InOptimal3]⟩
+          exact Or.inl ⟨code136, hEq, by simp [InOptimal3]⟩
     · by_cases h6z : count C 6 = 0
       · by_cases h5z : count C 5 = 0
         · have h3 : count C 3 = 2 := by omega
-          exact False.elim (n3_class1_not_optimal (C := C) (n3_classI_133 C h1 h3 h5z h6z) hopt)
+          exact Or.inr (n3_classify_class1 C (n3_classI_133 C h1 h3 h5z h6z))
         · have h3 : count C 3 = 1 := by omega
           have h5 : count C 5 = 1 := by omega
           have hEq : Equivalent C code136 := n3_135_equiv_136 C h1 h3 h5 h6z hcols
-          exact ⟨code136, hEq, by simp [InOptimal3]⟩
+          exact Or.inl ⟨code136, hEq, by simp [InOptimal3]⟩
       · have h3 : count C 3 = 1 := by omega
         have h6 : count C 6 = 1 := by omega
         rcases n3_class3_equiv C (n3_classIII_136 C h1 h3 h6 hcols) with hEq | hEq
-        · exact ⟨code135, hEq, by simp [InOptimal3]⟩
-        · exact ⟨code136, hEq, by simp [InOptimal3]⟩
+        · exact Or.inl ⟨code135, hEq, by simp [InOptimal3]⟩
+        · exact Or.inl ⟨code136, hEq, by simp [InOptimal3]⟩
   · have h356 : count C 3 + count C 5 + count C 6 = 1 := by omega
     by_cases h3z : count C 3 = 0
     · by_cases h5z : count C 5 = 0
       · have h6 : count C 6 = 1 := by omega
         have hEq : Equivalent C code116 := equiv_11x_of_counts C col6 6
           (fun c hc => (colVal_eq_six_iff_col6 c).mp hc) (by native_decide) (by norm_num) h1 h6 (n3_types_116 C hcols h3z h5z)
-        have hl : lambda C (1 / 4 : ℝ) = lambda code116 (1 / 4 : ℝ) :=
-          (lambda_equiv C code116 hEq (1 / 4 : ℝ)).symm
-        have hstrict : lambda code335 (1 / 4 : ℝ) > lambda code116 (1 / 4 : ℝ) :=
-          n3_strict_116 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        have hge : lambda C (1 / 4 : ℝ) ≥ lambda code335 (1 / 4 : ℝ) :=
-          hopt code335 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-        rw [hl] at hge
-        exfalso
-        linarith
+        exact Or.inr ⟨code335, universalStrictBetter_of_eq_left n3_strict_116
+          (universalEqual_of_equivalent C code116 hEq)⟩
       · by_cases h6z : count C 6 = 0
         · have h5 : count C 5 = 1 := by omega
           have hEq : Equivalent C code115 := equiv_11x_of_counts C col5 5
             (fun c hc => (colVal_eq_five_iff_col5 c).mp hc) (by native_decide) (by norm_num) h1 h5 (n3_types_115 C hcols h3z h6z)
-          have hl : lambda C (1 / 4 : ℝ) = lambda code115 (1 / 4 : ℝ) :=
-            (lambda_equiv C code115 hEq (1 / 4 : ℝ)).symm
-          have hstrict : lambda code335 (1 / 4 : ℝ) > lambda code115 (1 / 4 : ℝ) :=
-            n3_strict_115 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-          have hge : lambda C (1 / 4 : ℝ) ≥ lambda code335 (1 / 4 : ℝ) :=
-            hopt code335 (1 / 4 : ℝ) (by norm_num) (by norm_num)
-          rw [hl] at hge
-          exfalso
-          linarith
+          exact Or.inr ⟨code335, universalStrictBetter_of_eq_left n3_strict_115
+            (universalEqual_of_equivalent C code115 hEq)⟩
         · exfalso
           omega
     · have h3 : count C 3 = 1 := by omega
-      exact False.elim (n3_class2_not_optimal (C := C) (n3_classII_113 C h1 h3 (by omega) (by omega)) hopt)
+      exact Or.inr (n3_classify_class2 C (n3_classII_113 C h1 h3 (by omega) (by omega)))
   · have h3z : count C 3 = 0 := by omega
     have h5z : count C 5 = 0 := by omega
     have h6z : count C 6 = 0 := by omega
-    exact False.elim (n3_class1_not_optimal (C := C) (n3_classI_111 C h1 h3z h5z h6z) hopt)
+    exact Or.inr (n3_classify_class1 C (n3_classI_111 C h1 h3z h5z h6z))
 
 /-! ## n = 3: Case-C (at least two of |1|,|2|,|4|,|7| positive)
 
@@ -1809,15 +1872,11 @@ lemma n3_classIII_157 (C : Code 3)
     omega
   exact ⟨htot5, Or.inl ⟨h1, h7, h6, ⟨0, by rw [h3]⟩, ⟨0, by rw [h5]; rfl⟩⟩⟩
 
-/-- The core Case-C: |1| > 0 and |7| > 0.  `thm:odd` (Theorem 11) (`two_bit_flip`) gives a
-never-worse code; Condition-A at n=3 forces (1,5,7) (Class-III-a) or (1,3,7),
-both equivalent to `code135`, and otherwise the flip is strictly better,
-contradicting optimality. -/
-lemma n3_caseC_17 (C : Code 3)
+/-- Strong core Case-C n = 3 branch. -/
+lemma n3_classify_caseC_17 (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
-    (h1pos : 0 < count C 1) (h7pos : 0 < count C 7)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+    (h1pos : 0 < count C 1) (h7pos : 0 < count C 7) :
+    InSet3 C ∨ StrictBetter3 C := by
   have h1le : 1 ≤ count C 1 := by omega
   have h7le : 1 ≤ count C 7 := by omega
   rcases exists_col_of_colVal C 1 h1le with ⟨t1, ht1⟩
@@ -1848,38 +1907,26 @@ lemma n3_caseC_17 (C : Code 3)
       have h3 : count C 3 = 1 := by omega
       have h5z : count C 5 = 0 := by omega
       have hEq : Equivalent C code135 := n3_137_equiv_135 C h1eq h3 h7eq h5z h2z h4z h6z hcols
-      exact ⟨code135, hEq, by simp [InOptimal3]⟩
+      exact Or.inl ⟨code135, hEq, by simp [InOptimal3]⟩
     · rcases h5o with ⟨a, ha⟩
       have h5 : count C 5 = 1 := by omega
       have h3z : count C 3 = 0 := by omega
       have hclass3 : ClassIII C := n3_classIII_157 C h1eq h7eq h5 h3z h6z h2z h4z hcols
       rcases n3_class3_equiv C hclass3 with hEq | hEq
-      · exact ⟨code135, hEq, by simp [InOptimal3]⟩
-      · exact ⟨code136, hEq, by simp [InOptimal3]⟩
-  · have hne : ¬ UniversalEqual C' C := by
-      intro heq
-      exact hcond (hb.2.1.mp heq)
-    rcases exists_strict_better_of_not_equal (D := C') (C := C) hb.1 hne with ⟨ε, hε0, hε1, hgt⟩
-    have hge : lambda C ε ≥ lambda C' ε := hopt C' ε hε0 hε1
-    exfalso
-    linarith
+      · exact Or.inl ⟨code135, hEq, by simp [InOptimal3]⟩
+      · exact Or.inl ⟨code136, hEq, by simp [InOptimal3]⟩
+  · have hstrict : UniversalStrictBetter C' C := hb.2.2.mpr hcond
+    exact Or.inr ⟨C', hstrict⟩
 
 /-! ## n = 3: Case-C transformations and the covering assembly
 
 The `lm:all` (Lemma 15) Case-2 cover: at least two of |1|,|2|,|4|,|7| positive, columns
 in {1..7}.  All configurations reduce by row swaps (and, for |7| = 0, the
 flip-types-2,3,6 plus row-swap-(0,2) transformation of Fig. fig:iwla) to the
-core `n3_caseC_17` (|1| > 0 ∧ |7| > 0): rho23 swaps types 1↔2 and fixes 7;
+core `n3_classify_caseC_17` (|1| > 0 ∧ |7| > 0): rho23 swaps types 1↔2 and fixes 7;
 rho13 maps 4→1 and fixes 7; rho15 swaps 2↔4 and fixes 1; the flip of types
 2,3,6 followed by rho02 maps types 1,2,3,4,5,6,7 to 1,7,6,4,5,3,3.
 -/
-
-/-- Lift an `InOptimal3` witness for an equivalent code back to the original. -/
-lemma n3_lift_equiv {C Ct : Code 3} (hEq : Equivalent C Ct)
-    (hres : ∃ C'' : Code 3, Equivalent Ct C'' ∧ InOptimal3 C'') :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
-  rcases hres with ⟨C'', hEqCt, hIn⟩
-  exact ⟨C'', equivalent_trans hEq hEqCt, hIn⟩
 
 /-- A column that is neither type 0 nor type 15 has value in 1..14. -/
 lemma colVal_1_to_14_of_ne_0_15 {c : Column} (h0 : c ≠ col0) (h15 : c ≠ col15) :
@@ -2127,74 +2174,64 @@ lemma n3_caseC_24_reduce (C : Code 3)
         change 1 ≤ colVal (rowPermute rho13 (C t)) ∧ colVal (rowPermute rho13 (C t)) ≤ 7
         exact rowPermute_fix0_cols17 C rho13 (by native_decide) hcols t
 
-/-- An optimal `(3,4)` code with columns in {1..7} is equivalent to one of the
-five `thm:n8` (Theorem 5) codes.  This is the n = 3 form of the `lm:all` (Lemma 15) covering: Case A
-(|1|=|2|=|4|=|7|=0 → columns in {3,5,6} → linear or strictly dominated),
-Case-1 (exactly one of |1|,|2|,|4|,|7| positive → reduced to |1| > 0 with
-columns in {1,3,5,6} and analyzed by counts), and Case-C (at least two
-positive → reduced to |1| > 0 ∧ |7| > 0 and handled by `n3_caseC_17`). -/
-lemma n3_opt_columns17 (C : Code 3)
-    (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
-    (hopt : ∀ D : Code 3, UniversalBetter C D) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+/-- Strong n = 3 columns-in-{1..7} classification. -/
+lemma n3_classify_columns17 (C : Code 3)
+    (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7) :
+    InSet3 C ∨ StrictBetter3 C := by
   by_cases hA : count C 1 = 0 ∧ count C 2 = 0 ∧ count C 4 = 0 ∧ count C 7 = 0
-  · exact n3_columns356 C (fun t => n3_caseA_types_356 C hcols hA.1 hA.2.1 hA.2.2.1 hA.2.2.2 t) hopt
+  · exact n3_classify_columns356 C (fun t => n3_caseA_types_356 C hcols hA.1 hA.2.1 hA.2.2.1 hA.2.2.2 t)
   ·
     by_cases h7 : 0 < count C 7
     · by_cases h1 : 0 < count C 1
-      · exact n3_caseC_17 C hcols h1 h7 hopt
+      · exact n3_classify_caseC_17 C hcols h1 h7
       · have h1z : count C 1 = 0 := by omega
         by_cases h2 : 0 < count C 2
         · rcases n3_caseC_2_reduce C hcols h2 h7 with ⟨Ct, hEqCt, h1', h7', hcolsCt⟩
-          exact n3_lift_equiv hEqCt (n3_caseC_17 Ct hcolsCt h1' h7' (opt_of_equiv hopt hEqCt))
+          exact classify3_of_equiv hEqCt (n3_classify_caseC_17 Ct hcolsCt h1' h7')
         · have h2z : count C 2 = 0 := by omega
           by_cases h4 : 0 < count C 4
           · rcases n3_caseC_4_reduce C hcols h4 h7 with ⟨Ct, hEqCt, h1', h7', hcolsCt⟩
-            exact n3_lift_equiv hEqCt (n3_caseC_17 Ct hcolsCt h1' h7' (opt_of_equiv hopt hEqCt))
+            exact classify3_of_equiv hEqCt (n3_classify_caseC_17 Ct hcolsCt h1' h7')
           · have h4z : count C 4 = 0 := by omega
             rcases n3_caseB_col7_reduce C hcols h7 h1z h2z h4z with ⟨Ct, hEqCt, h1', hcolsCt⟩
-            exact n3_lift_equiv hEqCt (n3_caseB_analysis Ct hcolsCt h1' (opt_of_equiv hopt hEqCt))
+            exact classify3_of_equiv hEqCt (n3_classify_caseB_analysis Ct hcolsCt h1')
     · have h7z : count C 7 = 0 := by omega
       by_cases h1 : 0 < count C 1
       · by_cases h2 : 0 < count C 2
         · rcases n3_caseC_no7_reduce C hcols h7z h1 h2 with ⟨Ct, hEqCt, h1', h7', hcolsCt⟩
-          exact n3_lift_equiv hEqCt (n3_caseC_17 Ct hcolsCt h1' h7' (opt_of_equiv hopt hEqCt))
+          exact classify3_of_equiv hEqCt (n3_classify_caseC_17 Ct hcolsCt h1' h7')
         · have h2z : count C 2 = 0 := by omega
           by_cases h4 : 0 < count C 4
           · rcases n3_caseC_14_reduce C hcols h7z h1 h4 with ⟨Ct, hEqCt, h1', h2', h7zCt, hcolsCt⟩
             rcases n3_caseC_no7_reduce Ct hcolsCt h7zCt h1' h2' with ⟨Ct2, hEqCt2, h1'', h7'', hcolsCt2⟩
-            exact n3_lift_equiv (equivalent_trans hEqCt hEqCt2)
-              (n3_caseC_17 Ct2 hcolsCt2 h1'' h7'' (opt_of_equiv hopt (equivalent_trans hEqCt hEqCt2)))
+            exact classify3_of_equiv (equivalent_trans hEqCt hEqCt2)
+              (n3_classify_caseC_17 Ct2 hcolsCt2 h1'' h7'')
           · have h4z : count C 4 = 0 := by omega
-            exact n3_caseB_analysis C (fun t => n3_case1_types_1356 C hcols h2z h4z h7z t) h1 hopt
+            exact n3_classify_caseB_analysis C (fun t => n3_case1_types_1356 C hcols h2z h4z h7z t) h1
       · have h1z : count C 1 = 0 := by omega
         by_cases h2 : 0 < count C 2
         · by_cases h4 : 0 < count C 4
           · rcases n3_caseC_24_reduce C hcols h7z h2 h4 with ⟨Ct, hEqCt, h1', h2', h7zCt, hcolsCt⟩
             rcases n3_caseC_no7_reduce Ct hcolsCt h7zCt h1' h2' with ⟨Ct2, hEqCt2, h1'', h7'', hcolsCt2⟩
-            exact n3_lift_equiv (equivalent_trans hEqCt hEqCt2)
-              (n3_caseC_17 Ct2 hcolsCt2 h1'' h7'' (opt_of_equiv hopt (equivalent_trans hEqCt hEqCt2)))
+            exact classify3_of_equiv (equivalent_trans hEqCt hEqCt2)
+              (n3_classify_caseC_17 Ct2 hcolsCt2 h1'' h7'')
           · have h4z : count C 4 = 0 := by omega
             rcases n3_caseB_col2_reduce C hcols h2 h1z h4z h7z with ⟨Ct, hEqCt, h1', hcolsCt⟩
-            exact n3_lift_equiv hEqCt (n3_caseB_analysis Ct hcolsCt h1' (opt_of_equiv hopt hEqCt))
+            exact classify3_of_equiv hEqCt (n3_classify_caseB_analysis Ct hcolsCt h1')
         · have h2z : count C 2 = 0 := by omega
           by_cases h4 : 0 < count C 4
           · rcases n3_caseB_col4_reduce C hcols h4 h1z h2z h7z with ⟨Ct, hEqCt, h1', hcolsCt⟩
-            exact n3_lift_equiv hEqCt (n3_caseB_analysis Ct hcolsCt h1' (opt_of_equiv hopt hEqCt))
+            exact classify3_of_equiv hEqCt (n3_classify_caseB_analysis Ct hcolsCt h1')
           · have h4z : count C 4 = 0 := by omega
             exact False.elim (hA ⟨h1z, h2z, h4z, h7z⟩)
 
-/-- An optimal `(3,4)` code is equivalent to one of the five codes of `thm:n8` (Theorem 5)
-(eq. (eq:2)).  Type-0/15 columns reduce via `thm:0column` (Theorem 6)
-(`n3_opt_has_0_or_15`); otherwise `flipHighColumns` normalizes the columns to
-{1..7} and `n3_opt_columns17` applies the `lm:all` (Lemma 15) Case-1/Case-2 analysis. -/
-lemma n3_opt_columns_114 (C : Code 3) (hopt : ∀ D : Code 3, UniversalBetter C D) :
-    ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C' := by
+/-- Strong full n = 3 classification: every `(3,4)` code is either equivalent to one of the
+five codes, or has a universally strictly better code. -/
+lemma n3_classify_columns_114 (C : Code 3) : InSet3 C ∨ StrictBetter3 C := by
   by_cases h015 : ∃ t : Fin 3, C t = col0 ∨ C t = col15
-  · exact n3_opt_has_0_or_15 (C := C) hopt h015
+  · exact n3_classify_has_0_or_15 C h015
   · let C1 : Code 3 := flipHighColumns C
     have hEq1 : Equivalent C C1 := flipHighColumns_equiv C
-    have hopt1 : ∀ D : Code 3, UniversalBetter C1 D := opt_of_equiv hopt hEq1
     have hcolsC : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 14 := by
       intro t
       exact colVal_1_to_14_of_ne_0_15
@@ -2207,33 +2244,109 @@ lemma n3_opt_columns_114 (C : Code 3) (hopt : ∀ D : Code 3, UniversalBetter C 
           colVal (C1 t) = 5 ∨ colVal (C1 t) = 6 ∨ colVal (C1 t) = 7 := by
         simpa [Finset.mem_insert, Finset.mem_singleton] using hm
       rcases hm' with hv1 | hv2 | hv3 | hv4 | hv5 | hv6 | hv7 <;> constructor <;> omega
-    rcases n3_opt_columns17 C1 hcols1 hopt1 with ⟨C', hEqC1, hIn⟩
-    exact ⟨C', equivalent_trans hEq1 hEqC1, hIn⟩
+    exact classify3_of_equiv hEq1 (n3_classify_columns17 C1 hcols1)
+
+/-- Strong n = 3 branch of Theorem `thm:n8` (Theorem 5): if a `(3,4)` code is not
+equivalent to one of the five codes, then some code is universally strictly better. -/
+lemma n3_strict_better_of_not_InOptimal3 (C : Code 3)
+    (hnot : ∀ C' : Code 3, Equivalent C C' → ¬ InOptimal3 C') :
+    StrictBetter3 C := by
+  rcases n3_classify_columns_114 C with hIn | hStrict
+  · rcases hIn with ⟨C', hEq, hIn⟩
+    exact False.elim (hnot C' hEq hIn)
+  · exact hStrict
+
+/-- The five n=3 representatives have equal decoding performance. -/
+lemma n3_code135_eq_linear120 : UniversalEqual code135 (linearCode 1 2 0) :=
+  universalEqual_of_alpha_eq (by native_decide)
+
+/-- The five n=3 representatives have equal decoding performance. -/
+lemma n3_code136_eq_linear120 : UniversalEqual code136 (linearCode 1 2 0) :=
+  universalEqual_of_alpha_eq (by native_decide)
+
+/-- The five n=3 representatives have equal decoding performance. -/
+lemma n3_CA_eq_linear120 : UniversalEqual CA (linearCode 1 2 0) :=
+  universalEqual_of_alpha_eq (by native_decide)
+
+/-- The five n=3 representatives have equal decoding performance. -/
+lemma n3_linear111_eq_linear120 : UniversalEqual (linearCode 1 1 1) (linearCode 1 2 0) :=
+  universalEqual_of_alpha_eq (by native_decide)
+
+/-- Every n=3 code equivalent to one of the five representatives has the same performance
+as `linearCode 1 2 0`. -/
+lemma n3_inSet_universalEqual_linear120 {C : Code 3} (h : InSet3 C) :
+    UniversalEqual C (linearCode 1 2 0) := by
+  rcases h with ⟨C', hEq, hIn⟩
+  have hC' : UniversalEqual C' (linearCode 1 2 0) := by
+    simp [InOptimal3] at hIn
+    rcases hIn with h135 | h136 | hCA | h111 | h120
+    · exact universalEqual_trans (universalEqual_of_eq h135) n3_code135_eq_linear120
+    · exact universalEqual_trans (universalEqual_of_eq h136) n3_code136_eq_linear120
+    · exact universalEqual_trans (universalEqual_of_eq hCA) n3_CA_eq_linear120
+    · exact universalEqual_trans (universalEqual_of_eq h111) n3_linear111_eq_linear120
+    · exact universalEqual_of_eq h120
+  exact universalEqual_trans (universalEqual_symm (universalEqual_of_equivalent C C' hEq)) hC'
+
+/-- Every n=3 representative is universally optimal: it is at least as good as every code at
+every crossover probability. -/
+lemma n3_representatives_optimal (R : Code 3) (hR : InOptimal3 R) :
+    ∀ D : Code 3, UniversalBetter R D := by
+  intro D ε hε0 hε1
+  rcases exists_optimal_code 3 ε with ⟨O, hO⟩
+  have hOclass : InSet3 O := by
+    by_contra hnot
+    have hnotAll : ∀ C' : Code 3, Equivalent O C' → ¬ InOptimal3 C' := by
+      intro C' hEq hIn
+      exact hnot ⟨C', hEq, hIn⟩
+    rcases n3_strict_better_of_not_InOptimal3 O hnotAll with ⟨E, hE⟩
+    have hgt : lambda E ε > lambda O ε := hE ε hε0 hε1
+    have hge : lambda O ε ≥ lambda E ε := hO E
+    linarith
+  have hOeq : UniversalEqual O (linearCode 1 2 0) := n3_inSet_universalEqual_linear120 hOclass
+  have hReq : UniversalEqual R (linearCode 1 2 0) := by
+    exact n3_inSet_universalEqual_linear120 ⟨R, equivalent_refl R, hR⟩
+  have hRO : UniversalEqual R O := universalEqual_trans hReq (universalEqual_symm hOeq)
+  have hlambda : lambda R ε = lambda O ε := hRO ε hε0 hε1
+  rw [hlambda]
+  exact hO D
 
 /-- Theorem `thm:n8` (Theorem 5): for 2 ≤ n ≤ 8, n ≠ 3, all optimal codes are equivalent
 to linear codes; for n = 3 the optimal codes are exactly the five listed
 codes and their equivalents (`InOptimal3`, eq. (eq:2)).  The n = 2 case is a
 direct row-distinctness argument, the n = 3 case is the explicit five-code
-classification, and 4 ≤ n ≤ 8 uses `thm:condition_optimalcode` (Theorem 4) with the
+classification, and 4 ≤ n ≤ 8 uses the strengthened
+`thm:condition_optimalcode` (Theorem 4) with the
+hypothesis verified by `class1_cond_n_le8` (`thm:301` (Theorem 17)). -/
+theorem n4to8_strict_better_of_not_linear (n : ℕ) (hn4 : n > 3) (hn8 : n ≤ 8) :
+    ∀ C : Code n,
+      (∀ C' : Code n, Equivalent C C' → ¬ IsLinear C') →
+        ∃ D : Code n, UniversalStrictBetter D C := by
+  intro C hnotLinear
+  exact universal_strict_better_of_not_linear n hn4 (class1_cond_n_le8 hn8) C hnotLinear
+
+/-- Theorem `thm:n8` (Theorem 5): for 2 ≤ n ≤ 8, n ≠ 3, all optimal codes are equivalent
+to linear codes; for n = 3 the optimal codes are exactly the five listed
+codes and their equivalents (`InOptimal3`, eq. (eq:2)).  The n = 2 case is a
+direct row-distinctness argument, the n = 3 case is the explicit five-code
+classification, and 4 ≤ n ≤ 8 uses the strengthened
+`thm:condition_optimalcode` (Theorem 4) with the
 hypothesis verified by `class1_cond_n_le8` (`thm:301` (Theorem 17)). -/
 theorem optimal_codes_small_n (n : ℕ) (hn2 : 2 ≤ n) (hn8 : n ≤ 8) :
-    (n ≠ 3 → ∀ C : Code n, (∀ D : Code n, UniversalBetter C D) →
-      ∃ C' : Code n, Equivalent C C' ∧ IsLinear C') ∧
-      (n = 3 → ∀ C : Code 3, (∀ D : Code 3, UniversalBetter C D) →
-        ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C') := by
+    (n ≠ 3 → ∀ C : Code n,
+      (∀ C' : Code n, Equivalent C C' → ¬ IsLinear C') →
+        ∃ D : Code n, UniversalStrictBetter D C) ∧
+      (n = 3 → ∀ C : Code 3,
+        (∀ C' : Code 3, Equivalent C C' → ¬ InOptimal3 C') →
+          ∃ D : Code 3, UniversalStrictBetter D C) := by
   constructor
-  · intro hn3 C hopt
+  · intro hn3 C hnotLinear
     by_cases hn2' : n = 2
     · subst n
-      exact n2_optimal_linear C hopt
-    · -- 4 ≤ n ≤ 8: `thm:condition_optimalcode` (Theorem 4) with the hypothesis verified
-      -- by `class1_cond_n_le8` (`thm:301` (Theorem 17))
-      have hn4 : n > 3 := by omega
-      have hOptAt : OptimalAt C (1 / 4 : ℝ) := fun D => hopt D (1 / 4) (by norm_num) (by norm_num)
-      exact condition_optimalcode n hn4 (class1_cond_n_le8 hn8)
-        (1 / 4 : ℝ) (by norm_num) (by norm_num) C hOptAt
-  · intro hn3eq
+      exact n2_strict_better_of_not_linear C hnotLinear
+    · have hn4 : n > 3 := by omega
+      exact n4to8_strict_better_of_not_linear n hn4 hn8 C hnotLinear
+  · intro hn3eq C hnotIn
     subst n
-    exact n3_opt_columns_114
+    exact n3_strict_better_of_not_InOptimal3 C hnotIn
 
 end N4Code

@@ -24,6 +24,72 @@ lemma sum_split_at {n : ℕ} (f : Fin n → ℕ) (t : Fin n) :
     (∑ u : Fin n, f u) = (∑ u ∈ (Finset.univ.erase t), f u) + f t := by
   exact (Finset.sum_erase_add (Finset.univ : Finset (Fin n)) f (Finset.mem_univ t)).symm
 
+/-- Replacing a column of type i by a different type lowers |i| by one. -/
+lemma count_replace_dec {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
+    (hc : colVal (C t) = i) (hi' : colVal s' ≠ i) :
+    count (replaceColumn C t s') i = count C i - 1 := by
+  unfold count
+  have hsplit := sum_split_at
+    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
+  rw [hsplit]
+  have hS : (∑ u ∈ (Finset.univ.erase t),
+      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
+      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
+    apply Finset.sum_congr rfl
+    intro u hu
+    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
+    simp [replaceColumn, hu']
+  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
+    simp [replaceColumn]
+  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
+  rw [hsplit2]
+  rw [hS, ht', hc]
+  simp [hi']
+
+/-- Replacing a column by a new type i raises |i| by one. -/
+lemma count_replace_inc {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
+    (hc : colVal (C t) ≠ i) (hi' : colVal s' = i) :
+    count (replaceColumn C t s') i = count C i + 1 := by
+  unfold count
+  have hsplit := sum_split_at
+    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
+  rw [hsplit]
+  have hS : (∑ u ∈ (Finset.univ.erase t),
+      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
+      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
+    apply Finset.sum_congr rfl
+    intro u hu
+    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
+    simp [replaceColumn, hu']
+  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
+    simp [replaceColumn]
+  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
+  rw [hsplit2]
+  rw [hS, ht']
+  simp [hi', hc]
+
+/-- Replacing a column by a different type leaves other counts unchanged. -/
+lemma count_replace_eq {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
+    (hc : colVal (C t) ≠ i) (hi' : colVal s' ≠ i) :
+    count (replaceColumn C t s') i = count C i := by
+  unfold count
+  have hsplit := sum_split_at
+    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
+  rw [hsplit]
+  have hS : (∑ u ∈ (Finset.univ.erase t),
+      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
+      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
+    apply Finset.sum_congr rfl
+    intro u hu
+    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
+    simp [replaceColumn, hu']
+  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
+    simp [replaceColumn]
+  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
+  rw [hsplit2]
+  rw [hS, ht']
+  simp [hi', hc]
+
 /-- Flipping one bit changes each row distance by at most one. -/
 lemma dRow_flip_le_add_one {n : ℕ} (C : Code n) (i : Fin 4) (t : Fin n) (y : Word n) :
     dRow C i (flipBit t y) ≤ dRow C i y + 1 ∧ dRow C i y ≤ dRow C i (flipBit t y) + 1 := by

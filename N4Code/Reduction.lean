@@ -431,35 +431,8 @@ theorem Y3_empty_of_w03_w13_odd {n : ℕ} (C : Code n) (t : Fin n) (hcol : C t =
 /-- A positive |1| count gives a type-1 column. -/
 lemma exists_col1_of_count_pos {n : ℕ} (C : Code n) (h : 1 ≤ count C 1) :
     ∃ t : Fin n, C t = col1 := by
-  have hcard : 1 ≤ (Finset.univ.filter fun t : Fin n => colVal (C t) = 1).card := by
-    simpa [count_eq_card] using h
-  rcases Finset.card_pos.mp (by omega : 0 < (Finset.univ.filter fun t : Fin n => colVal (C t) = 1).card)
-    with ⟨t, ht⟩
-  exact ⟨t, (colVal_eq_one_iff_col1 (C t)).mp (Finset.mem_filter.mp ht).2⟩
-
-/-- Group a per-position indicator sum by the types in S (all columns are in S). -/
-lemma sum_indicator_of_types {n : ℕ} (C : Code n) (S : Finset ℕ) (p : ℕ → Prop)
-    [DecidablePred p] (hS : ∀ t : Fin n, colVal (C t) ∈ S) :
-    (∑ t : Fin n, if p (colVal (C t)) then 1 else 0) =
-      ∑ i ∈ S, count C i * (if p i then 1 else 0) := by
-  rw [show (∑ t : Fin n, if p (colVal (C t)) then 1 else 0) =
-        ∑ t : Fin n, ∑ i ∈ S, if colVal (C t) = i then (if p i then 1 else 0) else 0 by
-        apply Finset.sum_congr rfl
-        intro t _
-        have ht := hS t
-        rw [Finset.sum_ite_eq]
-        simp [ht]]
-  rw [Finset.sum_comm]
-  apply Finset.sum_congr rfl
-  intro i _
-  calc
-    (∑ t : Fin n, if colVal (C t) = i then (if p i then 1 else 0) else 0)
-        = (∑ t : Fin n, if colVal (C t) = i then 1 else 0) * (if p i then 1 else 0) := by
-          rw [Finset.sum_mul]
-          apply Finset.sum_congr rfl
-          intro t _
-          by_cases h : colVal (C t) = i <;> by_cases hp : p i <;> simp [h, hp]
-    _ = count C i * (if p i then 1 else 0) := by rfl
+  rcases (count_pos_iff_exists C 1).mp (by omega : count C 1 > 0) with ⟨t, ht⟩
+  exact ⟨t, (colVal_eq_one_iff_col1 (C t)).mp ht⟩
 
 /-- If the counts over a type set S sum to n, every column has its type in S. -/
 lemma colVal_mem_of_totalCounts {n : ℕ} (C : Code n) (S : Finset ℕ)
@@ -517,23 +490,12 @@ lemma hammingDist_row2_row3_of_types1356 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 6}
-    (fun k => k.testBit 1 ≠ k.testBit 0) hS
-  rw [show hammingDist (row2 C) (row3 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 1 ≠ (colVal (C t)).testBit 0 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row2, row3, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row2 row3
+  rw [hammingDist_rows_of_types C ⟨2, by decide⟩ ⟨3, by decide⟩ ({1, 3, 5, 6} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 1 = false := by native_decide
-  have h1b : (1 : ℕ).testBit 0 = true := by native_decide
   have h3a : (3 : ℕ).testBit 1 = true := by native_decide
-  have h3b : (3 : ℕ).testBit 0 = true := by native_decide
   have h5a : (5 : ℕ).testBit 1 = false := by native_decide
-  have h5b : (5 : ℕ).testBit 0 = true := by native_decide
   have h6a : (6 : ℕ).testBit 1 = true := by native_decide
-  have h6b : (6 : ℕ).testBit 0 = false := by native_decide
   simp [Finset.sum_insert, h1a, h3a, h5a, h6a]
   omega
 
@@ -549,15 +511,8 @@ lemma hammingDist_row0_row2_of_types1356 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 6}
-    (fun k => k.testBit 3 ≠ k.testBit 1) hS
-  rw [show hammingDist (row0 C) (row2 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 3 ≠ (colVal (C t)).testBit 1 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row0, row2, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row0 row2
+  rw [hammingDist_rows_of_types C ⟨0, by decide⟩ ⟨2, by decide⟩ ({1, 3, 5, 6} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 3 = false := by native_decide
   have h1b : (1 : ℕ).testBit 1 = false := by native_decide
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
@@ -580,15 +535,8 @@ lemma hammingDist_row1_row2_of_types1356 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 6}
-    (fun k => k.testBit 2 ≠ k.testBit 1) hS
-  rw [show hammingDist (row1 C) (row2 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 2 ≠ (colVal (C t)).testBit 1 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row1, row2, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row1 row2
+  rw [hammingDist_rows_of_types C ⟨1, by decide⟩ ⟨2, by decide⟩ ({1, 3, 5, 6} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 2 = false := by native_decide
   have h1b : (1 : ℕ).testBit 1 = false := by native_decide
   have h3a : (3 : ℕ).testBit 2 = false := by native_decide
@@ -603,140 +551,22 @@ lemma hammingDist_row1_row2_of_types1356 {n : ℕ} (C : Code n)
 /-- Replacing a type-1 column by type 3 lowers |1| by one. -/
 lemma count_replace_1_3_one {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col1) :
     count (replaceColumn C t col3) 1 = count C 1 - 1 := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t col3 u) = 1 then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t col3 u) = 1 then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = 1 then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht3 : colVal (replaceColumn C t col3 t) = 3 := by
-    simp [replaceColumn]
-    native_decide
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = 1 then 1 else 0) t
-  rw [hsplit2]
-  have ht1 : colVal (C t) = 1 := by rw [ht]; native_decide
-  rw [hS, ht3, ht1]
-  simp
+  exact count_replace_dec C t col3 1 (by rw [ht]; native_decide) (by native_decide)
 
 -- native_decide: Mechanical · n=any · checked 2026-08-28
 /-- Replacing a type-1 column by type 3 raises |3| by one. -/
 lemma count_replace_1_3_three {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col1) :
     count (replaceColumn C t col3) 3 = count C 3 + 1 := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t col3 u) = 3 then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t col3 u) = 3 then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = 3 then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht3 : colVal (replaceColumn C t col3 t) = 3 := by
-    simp [replaceColumn]
-    native_decide
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = 3 then 1 else 0) t
-  rw [hsplit2]
-  have ht1 : colVal (C t) = 1 := by rw [ht]; native_decide
-  rw [hS, ht3, ht1]
-  simp
+  exact count_replace_inc C t col3 3 (by rw [ht]; native_decide) (by native_decide)
 
 -- native_decide: Mechanical · n=any · checked 2026-08-28
 /-- Counts of types other than 1 and 3 are unchanged by the 1→3 replacement. -/
 lemma count_replace_1_3_other {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col1)
     (i : ℕ) (h1 : i ≠ 1) (h3 : i ≠ 3) :
     count (replaceColumn C t col3) i = count C i := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t col3 u) = i then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t col3 u) = i then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht3 : colVal (replaceColumn C t col3 t) = 3 := by
-    simp [replaceColumn]
-    native_decide
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
-  rw [hsplit2]
-  have ht1 : colVal (C t) = 1 := by rw [ht]; native_decide
-  rw [hS, ht3, ht1]
-  simp [h1.symm, h3.symm]
-
-/-- Replacing a column of type i by a different type lowers |i| by one. -/
-lemma count_replace_dec {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
-    (hc : colVal (C t) = i) (hi' : colVal s' ≠ i) :
-    count (replaceColumn C t s') i = count C i - 1 := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
-    simp [replaceColumn]
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
-  rw [hsplit2]
-  rw [hS, ht', hc]
-  simp [hi']
-
-/-- Replacing a column by a new type i raises |i| by one. -/
-lemma count_replace_inc {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
-    (hc : colVal (C t) ≠ i) (hi' : colVal s' = i) :
-    count (replaceColumn C t s') i = count C i + 1 := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
-    simp [replaceColumn]
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
-  rw [hsplit2]
-  rw [hS, ht']
-  simp [hi', hc]
-
-/-- Replacing a column by a different type leaves other counts unchanged. -/
-lemma count_replace_eq {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (i : ℕ)
-    (hc : colVal (C t) ≠ i) (hi' : colVal s' ≠ i) :
-    count (replaceColumn C t s') i = count C i := by
-  unfold count
-  have hsplit := sum_split_at
-    (fun u : Fin n => if colVal (replaceColumn C t s' u) = i then 1 else 0) t
-  rw [hsplit]
-  have hS : (∑ u ∈ (Finset.univ.erase t),
-      if colVal (replaceColumn C t s' u) = i then 1 else 0) =
-      ∑ u ∈ (Finset.univ.erase t), if colVal (C u) = i then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro u hu
-    have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
-    simp [replaceColumn, hu']
-  have ht' : colVal (replaceColumn C t s' t) = colVal s' := by
-    simp [replaceColumn]
-  have hsplit2 := sum_split_at (fun u : Fin n => if colVal (C u) = i then 1 else 0) t
-  rw [hsplit2]
-  rw [hS, ht']
-  simp [hi', hc]
+  exact count_replace_eq C t col3 i
+    (by rw [ht]; intro h; exact h1 (h.symm.trans (by native_decide : colVal col1 = 1)))
+    (by intro h; exact h3 (h.symm.trans (by native_decide : colVal col3 = 3)))
 
 /-- Two distinct positions of the same type give a count of at least two. -/
 lemma count_ge_two_of_two {n : ℕ} (C : Code n) (i : ℕ) (t1 t2 : Fin n)
@@ -766,34 +596,13 @@ lemma count_ge_two_of_two {n : ℕ} (C : Code n) (i : ℕ) (t1 t2 : Fin n)
 -- native_decide: Mechanical · n=any · checked 2026-08-28
 /-- colVal c = 7 iff c is the type-7 column. -/
 lemma colVal_eq_seven_iff_col7 (c : Column) : colVal c = 7 ↔ c = col7 := by
-  constructor
-  · intro h
-    funext j
-    fin_cases j
-    · change colBit ⟨0, by decide⟩ c = false
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨1, by decide⟩ c = true
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨2, by decide⟩ c = true
-      rw [colBit_eq_testBit, h]
-      native_decide
-    · change colBit ⟨3, by decide⟩ c = true
-      rw [colBit_eq_testBit, h]
-      native_decide
-  · intro h
-    rw [h]
-    native_decide
+  simpa [show colOfNat 7 = col7 by native_decide] using (colVal_eq_iff_colOfNat c 7 (by norm_num))
 
 /-- A positive |7| count gives a type-7 column. -/
 lemma exists_col7_of_count_pos {n : ℕ} (C : Code n) (h : 1 ≤ count C 7) :
     ∃ t : Fin n, C t = col7 := by
-  have hcard : 1 ≤ (Finset.univ.filter fun t : Fin n => colVal (C t) = 7).card := by
-    simpa [count_eq_card] using h
-  rcases Finset.card_pos.mp (by omega : 0 < (Finset.univ.filter fun t : Fin n => colVal (C t) = 7).card)
-    with ⟨t, ht⟩
-  exact ⟨t, (colVal_eq_seven_iff_col7 (C t)).mp (Finset.mem_filter.mp ht).2⟩
+  rcases (count_pos_iff_exists C 7).mp (by omega : count C 7 > 0) with ⟨t, ht⟩
+  exact ⟨t, (colVal_eq_seven_iff_col7 (C t)).mp ht⟩
 
 -- native_decide: Mechanical · n=any · checked 2026-08-28
 /-- Columns of a {1,3,5,6,7}-code have row 0 clear. -/
@@ -910,43 +719,12 @@ theorem one_bit_flip_better {n : ℕ} (C C' : Code n) (t : Fin n)
 /-- w(c₁ ⊕ c₃) = |2|+|3|+|6|+|7| for a Columns07 code (paper eq. w2). -/
 lemma hammingDist_row0_row2_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
     hammingDist (row0 C) (row2 C) = count C 2 + count C 3 + count C 6 + count C 7 := by
-  change dRow C 0 (row2 C) = count C 2 + count C 3 + count C 6 + count C 7
-  rw [dRow_eq_indicator_sum]
-  have hsum : (∑ t : Fin n, if colBit 0 (C t) ≠ row2 C t then 1 else 0) =
-      ∑ t : Fin n, if (colVal (C t)).testBit 3 ≠ (colVal (C t)).testBit 1 then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro t _
-    have hb1 : colBit 0 (C t) = (colVal (C t)).testBit 3 := by
-      rw [colBit_eq_testBit]
-      norm_num
-    have hb2 : row2 C t = (colVal (C t)).testBit 1 := by
-      change colBit 2 (C t) = (colVal (C t)).testBit 1
-      rw [colBit_eq_testBit]
-      norm_num
-    rw [hb1, hb2]
-  rw [hsum]
-  have hSle : (Finset.Icc 0 7 : Finset ℕ) ⊆ Finset.Icc 0 15 := by
-    intro i hi
-    simp [Finset.mem_Icc] at hi ⊢
-    omega
-  have hsplit : (∑ t : Fin n, if (colVal (C t)).testBit 3 ≠ (colVal (C t)).testBit 1 then 1 else 0) =
-      ∑ i ∈ Finset.Icc 0 7, count C i * (if i.testBit 3 ≠ i.testBit 1 then 1 else 0) := by
-    have hfull := sum_colVal_indicator C (fun i => i.testBit 3 ≠ i.testBit 1)
-    rw [hfull]
-    symm
-    apply Finset.sum_subset hSle
-    intro i hi hnot
-    have hcount : count C i = 0 := by
-      rw [count_eq_card, Finset.card_eq_zero, Finset.eq_empty_iff_forall_notMem]
-      intro t ht
-      have hcv : colVal (C t) = i := (Finset.mem_filter.mp ht).2
-      have hle := Columns07_le7 C h07 t
-      have hi' : i ≤ 7 := by
-        rw [← hcv]
-        exact hle
-      exact hnot (by simp [Finset.mem_Icc, hi'])
-    simp [hcount]
-  rw [hsplit, sum_Icc0_7]
+  have hS : ∀ t : Fin n, colVal (C t) ∈ Finset.Icc 0 7 := by
+    intro t
+    rw [Finset.mem_Icc]
+    exact ⟨Nat.zero_le _, Columns07_le7 C h07 t⟩
+  unfold row0 row2
+  rw [hammingDist_rows_of_types C ⟨0, by decide⟩ ⟨2, by decide⟩ (Finset.Icc 0 7) hS, sum_Icc0_7]
   have h20 : (2 : ℕ).testBit 3 = false := by native_decide
   have h21 : (2 : ℕ).testBit 1 = true := by native_decide
   have h30 : (3 : ℕ).testBit 3 = false := by native_decide
@@ -969,43 +747,12 @@ lemma hammingDist_row0_row2_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
 /-- w(c₃ ⊕ c₄) = |1|+|2|+|5|+|6| for a Columns07 code. -/
 lemma hammingDist_row2_row3_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
     hammingDist (row2 C) (row3 C) = count C 1 + count C 2 + count C 5 + count C 6 := by
-  change dRow C 2 (row3 C) = count C 1 + count C 2 + count C 5 + count C 6
-  rw [dRow_eq_indicator_sum]
-  have hsum : (∑ t : Fin n, if colBit 2 (C t) ≠ row3 C t then 1 else 0) =
-      ∑ t : Fin n, if (colVal (C t)).testBit 1 ≠ (colVal (C t)).testBit 0 then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro t _
-    have hb1 : colBit 2 (C t) = (colVal (C t)).testBit 1 := by
-      rw [colBit_eq_testBit]
-      norm_num
-    have hb2 : row3 C t = (colVal (C t)).testBit 0 := by
-      change colBit 3 (C t) = (colVal (C t)).testBit 0
-      rw [colBit_eq_testBit]
-      norm_num
-    rw [hb1, hb2]
-  rw [hsum]
-  have hSle : (Finset.Icc 0 7 : Finset ℕ) ⊆ Finset.Icc 0 15 := by
-    intro i hi
-    simp [Finset.mem_Icc] at hi ⊢
-    omega
-  have hsplit : (∑ t : Fin n, if (colVal (C t)).testBit 1 ≠ (colVal (C t)).testBit 0 then 1 else 0) =
-      ∑ i ∈ Finset.Icc 0 7, count C i * (if i.testBit 1 ≠ i.testBit 0 then 1 else 0) := by
-    have hfull := sum_colVal_indicator C (fun i => i.testBit 1 ≠ i.testBit 0)
-    rw [hfull]
-    symm
-    apply Finset.sum_subset hSle
-    intro i hi hnot
-    have hcount : count C i = 0 := by
-      rw [count_eq_card, Finset.card_eq_zero, Finset.eq_empty_iff_forall_notMem]
-      intro t ht
-      have hcv : colVal (C t) = i := (Finset.mem_filter.mp ht).2
-      have hle := Columns07_le7 C h07 t
-      have hi' : i ≤ 7 := by
-        rw [← hcv]
-        exact hle
-      exact hnot (by simp [Finset.mem_Icc, hi'])
-    simp [hcount]
-  rw [hsplit, sum_Icc0_7]
+  have hS : ∀ t : Fin n, colVal (C t) ∈ Finset.Icc 0 7 := by
+    intro t
+    rw [Finset.mem_Icc]
+    exact ⟨Nat.zero_le _, Columns07_le7 C h07 t⟩
+  unfold row2 row3
+  rw [hammingDist_rows_of_types C ⟨2, by decide⟩ ⟨3, by decide⟩ (Finset.Icc 0 7) hS, sum_Icc0_7]
   have h10 : (1 : ℕ).testBit 1 = false := by native_decide
   have h11 : (1 : ℕ).testBit 0 = true := by native_decide
   have h20 : (2 : ℕ).testBit 1 = true := by native_decide
@@ -1989,22 +1736,8 @@ lemma swapRows01Code_col1 {n : ℕ} (C : Code n) (h07 : Columns07 C) (t : Fin n)
 /-- Counts of `swapRows01Code` are the `swapVal01`-relabelled counts of C. -/
 lemma count_swapRows01Code {n : ℕ} (C : Code n) (h07 : Columns07 C) (i : ℕ) :
     count (swapRows01Code C) i = count C (swapVal01 i) := by
-  unfold count
-  apply Finset.sum_congr rfl
-  intro u _
-  rw [colVal_swapRows01Code C h07 u]
-  have hiff : swapVal01 (colVal (C u)) = i ↔ colVal (C u) = swapVal01 i := by
-    constructor
-    · intro h
-      have h1 := congrArg swapVal01 h
-      rwa [swapVal01_idem] at h1
-    · intro h
-      rw [h]
-      exact swapVal01_idem i
-  by_cases h : swapVal01 (colVal (C u)) = i
-  · rw [if_pos h, if_pos (hiff.mp h)]
-  · have hc : ¬ colVal (C u) = swapVal01 i := fun hc => h (hiff.mpr hc)
-    rw [if_neg h, if_neg hc]
+  exact count_involution_map C (swapRows01Code C) swapVal01
+    (colVal_swapRows01Code C h07) swapVal01_idem i
 
 /-- `wordTransform` with the identity permutation agrees with its inverse. -/
 lemma wordTransform_refl_inv_eq {n : ℕ} (f : Fin n → Bool) :
@@ -2406,37 +2139,12 @@ theorem class2_to_class1 {n : ℕ} (C : Code n) (h : ClassII C) :
 /-- w(c₂ ⊕ c₄) = |1|+|3|+|4|+|6| for a Columns07 code. -/
 lemma hammingDist_row1_row3_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
     hammingDist (row1 C) (row3 C) = count C 1 + count C 3 + count C 4 + count C 6 := by
-  change dRow C 1 (row3 C) = count C 1 + count C 3 + count C 4 + count C 6
-  rw [dRow_eq_indicator_sum]
-  have hsum : (∑ t : Fin n, if colBit 1 (C t) ≠ row3 C t then 1 else 0) =
-      ∑ t : Fin n, if (colVal (C t)).testBit 2 ≠ (colVal (C t)).testBit 0 then 1 else 0 := by
-    apply Finset.sum_congr rfl
-    intro t _
-    have hb1 : colBit 1 (C t) = (colVal (C t)).testBit 2 := by
-      rw [colBit_eq_testBit]; norm_num
-    have hb2 : row3 C t = (colVal (C t)).testBit 0 := by
-      change colBit 3 (C t) = (colVal (C t)).testBit 0
-      rw [colBit_eq_testBit]; norm_num
-    rw [hb1, hb2]
-  rw [hsum]
-  have hSle : (Finset.Icc 0 7 : Finset ℕ) ⊆ Finset.Icc 0 15 := by
-    intro i hi; simp [Finset.mem_Icc] at hi ⊢; omega
-  have hsplit : (∑ t : Fin n, if (colVal (C t)).testBit 2 ≠ (colVal (C t)).testBit 0 then 1 else 0) =
-      ∑ i ∈ Finset.Icc 0 7, count C i * (if i.testBit 2 ≠ i.testBit 0 then 1 else 0) := by
-    have hfull := sum_colVal_indicator C (fun i => i.testBit 2 ≠ i.testBit 0)
-    rw [hfull]
-    symm
-    apply Finset.sum_subset hSle
-    intro i hi hnot
-    have hcount : count C i = 0 := by
-      rw [count_eq_card, Finset.card_eq_zero, Finset.eq_empty_iff_forall_notMem]
-      intro t ht
-      have hcv : colVal (C t) = i := (Finset.mem_filter.mp ht).2
-      have hle := Columns07_le7 C h07 t
-      have hi' : i ≤ 7 := by rw [← hcv]; exact hle
-      exact hnot (by simp [Finset.mem_Icc, hi'])
-    simp [hcount]
-  rw [hsplit, sum_Icc0_7]
+  have hS : ∀ t : Fin n, colVal (C t) ∈ Finset.Icc 0 7 := by
+    intro t
+    rw [Finset.mem_Icc]
+    exact ⟨Nat.zero_le _, Columns07_le7 C h07 t⟩
+  unfold row1 row3
+  rw [hammingDist_rows_of_types C ⟨1, by decide⟩ ⟨3, by decide⟩ (Finset.Icc 0 7) hS, sum_Icc0_7]
   have h10 : (1 : ℕ).testBit 2 = false := by native_decide
   have h11 : (1 : ℕ).testBit 0 = true := by native_decide
   have h30 : (3 : ℕ).testBit 2 = false := by native_decide
@@ -3101,15 +2809,8 @@ lemma hammingDist_row0_row3_of_types1356 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 6}
-    (fun k => k.testBit 3 ≠ k.testBit 0) hS
-  rw [show hammingDist (row0 C) (row3 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 3 ≠ (colVal (C t)).testBit 0 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row0, row3, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row0 row3
+  rw [hammingDist_rows_of_types C ⟨0, by decide⟩ ⟨3, by decide⟩ ({1, 3, 5, 6} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 3 = false := by native_decide
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
   have h5a : (5 : ℕ).testBit 3 = false := by native_decide
@@ -3129,15 +2830,8 @@ lemma hammingDist_row1_row3_of_types1356 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h6]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 6}
-    (fun k => k.testBit 2 ≠ k.testBit 0) hS
-  rw [show hammingDist (row1 C) (row3 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 2 ≠ (colVal (C t)).testBit 0 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row1, row3, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row1 row3
+  rw [hammingDist_rows_of_types C ⟨1, by decide⟩ ⟨3, by decide⟩ ({1, 3, 5, 6} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 2 = false := by native_decide
   have h3a : (3 : ℕ).testBit 2 = false := by native_decide
   have h5a : (5 : ℕ).testBit 2 = true := by native_decide
@@ -3260,22 +2954,8 @@ lemma swapRows02Code_equiv {n : ℕ} (C : Code n) : Equivalent C (swapRows02Code
 /-- Counts of `swapRows02Code` are the `swapVal02`-relabelled counts of C. -/
 lemma count_swapRows02Code {n : ℕ} (C : Code n) (h07 : Columns07 C) (i : ℕ) :
     count (swapRows02Code C) i = count C (swapVal02 i) := by
-  unfold count
-  apply Finset.sum_congr rfl
-  intro u _
-  rw [colVal_swapRows02Code C h07 u]
-  have hiff : swapVal02 (colVal (C u)) = i ↔ colVal (C u) = swapVal02 i := by
-    constructor
-    · intro h
-      have h1 := congrArg swapVal02 h
-      rwa [swapVal02_idem] at h1
-    · intro h
-      rw [h]
-      exact swapVal02_idem i
-  by_cases h : swapVal02 (colVal (C u)) = i
-  · rw [if_pos h, if_pos (hiff.mp h)]
-  · have hc : ¬ colVal (C u) = swapVal02 i := fun hc => h (hiff.mpr hc)
-    rw [if_neg h, if_neg hc]
+  exact count_involution_map C (swapRows02Code C) swapVal02
+    (colVal_swapRows02Code C h07) swapVal02_idem i
 
 /-- Rows of the swapped code are the transformed swapped rows of C. -/
 lemma row_swapRows02 {n : ℕ} (C : Code n) (j : Fin 4) :
@@ -4952,15 +4632,8 @@ lemma hammingDist_row0_row2_of_types1357 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h7]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 7}
-    (fun k => k.testBit 3 ≠ k.testBit 1) hS
-  rw [show hammingDist (row0 C) (row2 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 3 ≠ (colVal (C t)).testBit 1 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row0, row2, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row0 row2
+  rw [hammingDist_rows_of_types C ⟨0, by decide⟩ ⟨2, by decide⟩ ({1, 3, 5, 7} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 3 = false := by native_decide
   have h1b : (1 : ℕ).testBit 1 = false := by native_decide
   have h3a : (3 : ℕ).testBit 3 = false := by native_decide
@@ -4983,15 +4656,8 @@ lemma hammingDist_row1_row2_of_types1357 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h7]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 7}
-    (fun k => k.testBit 2 ≠ k.testBit 1) hS
-  rw [show hammingDist (row1 C) (row2 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 2 ≠ (colVal (C t)).testBit 1 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row1, row2, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row1 row2
+  rw [hammingDist_rows_of_types C ⟨1, by decide⟩ ⟨2, by decide⟩ ({1, 3, 5, 7} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 2 = false := by native_decide
   have h1b : (1 : ℕ).testBit 1 = false := by native_decide
   have h3a : (3 : ℕ).testBit 2 = false := by native_decide
@@ -5014,15 +4680,8 @@ lemma hammingDist_row2_row3_of_types1357 {n : ℕ} (C : Code n)
     · simp [h3]
     · simp [h5]
     · simp [h7]
-  have hsum := sum_indicator_of_types C {1, 3, 5, 7}
-    (fun k => k.testBit 1 ≠ k.testBit 0) hS
-  rw [show hammingDist (row2 C) (row3 C) =
-        ∑ t : Fin n, if (colVal (C t)).testBit 1 ≠ (colVal (C t)).testBit 0 then 1 else 0 by
-        unfold hammingDist hammingWeight bitXor
-        apply Finset.sum_congr rfl
-        intro t _
-        simp [row, row2, row3, colBit_eq_testBit]]
-  rw [hsum]
+  unfold row2 row3
+  rw [hammingDist_rows_of_types C ⟨2, by decide⟩ ⟨3, by decide⟩ ({1, 3, 5, 7} : Finset ℕ) hS]
   have h1a : (1 : ℕ).testBit 1 = false := by native_decide
   have h1b : (1 : ℕ).testBit 0 = true := by native_decide
   have h3a : (3 : ℕ).testBit 1 = true := by native_decide

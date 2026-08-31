@@ -27,6 +27,8 @@ namespace N4Code
 /-! ### §2.3 Finite classification -/
 
 #print axioms optimal_codes_small_n
+#print axioms n3_strict_better_of_not_InOptimal3
+#print axioms n3_representatives_optimal
 
 /-! ### §IV-B–D One-column and zero-column results -/
 
@@ -43,8 +45,10 @@ namespace N4Code
 #print axioms class3_to_linear
 #print axioms lm_all
 #print axioms optimal_in_linear_or_class1
-#print axioms optimal_equivalent_linear_class1_class2
-#print axioms condition_optimalcode
+#print axioms universal_strict_better_of_not_class
+#print axioms equivalent_class_of_no_universal_strict_better
+#print axioms equivalent_linear_of_no_universal_strict_better
+#print axioms universal_strict_better_of_not_linear
 
 /-! ### §4 Two-column change -/
 

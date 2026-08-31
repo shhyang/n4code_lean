@@ -166,6 +166,69 @@ lemma card_fin_lt {m n : ℕ} (h : m ≤ n) :
   rw [hbij, Finset.card_map]
   simp
 
+/-- An interval of `Fin n` has the expected cardinality. -/
+lemma card_fin_interval {a m n : ℕ} (h : a + m ≤ n) :
+    (Finset.univ.filter (fun t : Fin n => a ≤ t.val ∧ t.val < a + m)).card = m := by
+  let f : Fin m → Fin n := fun i => ⟨a + i.val, by omega⟩
+  have hbij : (Finset.univ.filter (fun t : Fin n => a ≤ t.val ∧ t.val < a + m)) =
+      (Finset.univ : Finset (Fin m)).map ⟨f, by
+        intro x y hxy
+        apply Fin.ext
+        have hv := congrArg Fin.val hxy
+        simpa [f] using hv⟩ := by
+    ext t
+    constructor
+    · intro ht
+      have ht' : a ≤ t.val ∧ t.val < a + m := by simpa using ht
+      have hmem : ⟨t.val - a, by omega⟩ ∈ (Finset.univ : Finset (Fin m)) := by simp
+      refine Finset.mem_map.mpr ⟨⟨t.val - a, by omega⟩, hmem, ?_⟩
+      apply Fin.ext
+      change (f ⟨t.val - a, by omega⟩).val = t.val
+      simp [f]
+      omega
+    · intro hm
+      rw [Finset.mem_map] at hm
+      rcases hm with ⟨i, hi, hti⟩
+      have hv : a + i.val = t.val := by
+        change (f i).val = t.val
+        exact congrArg Fin.val hti
+      have hge : a ≤ t.val := by omega
+      have hlt : t.val < a + m := by omega
+      simp [hge, hlt]
+  rw [hbij, Finset.card_map]
+  simp
+
+/-- A suffix of `Fin n` has the expected cardinality. -/
+lemma card_fin_suffix {a n : ℕ} (h : a ≤ n) :
+    (Finset.univ.filter (fun t : Fin n => a ≤ t.val)).card = n - a := by
+  let f : Fin (n - a) → Fin n := fun i => ⟨a + i.val, by omega⟩
+  have hbij : (Finset.univ.filter (fun t : Fin n => a ≤ t.val)) =
+      (Finset.univ : Finset (Fin (n - a))).map ⟨f, by
+        intro x y hxy
+        apply Fin.ext
+        have hv := congrArg Fin.val hxy
+        simpa [f] using hv⟩ := by
+    ext t
+    constructor
+    · intro ht
+      have ht' : a ≤ t.val := by simpa using ht
+      have hmem : ⟨t.val - a, by omega⟩ ∈ (Finset.univ : Finset (Fin (n - a))) := by simp
+      refine Finset.mem_map.mpr ⟨⟨t.val - a, by omega⟩, hmem, ?_⟩
+      apply Fin.ext
+      change (f ⟨t.val - a, by omega⟩).val = t.val
+      simp [f]
+      omega
+    · intro hm
+      rw [Finset.mem_map] at hm
+      rcases hm with ⟨i, hi, hti⟩
+      have hv : a + i.val = t.val := by
+        change (f i).val = t.val
+        exact congrArg Fin.val hti
+      have hge : a ≤ t.val := by omega
+      simp [hge]
+  rw [hbij, Finset.card_map]
+  simp
+
 /-- `|3|` of `C(n3,n5,n6)` is `n3`. -/
 lemma linear_count_3 {n3 n5 n6 : ℕ} : count (linearCode n3 n5 n6) 3 = n3 := by
   rw [count_eq_card]
@@ -178,69 +241,15 @@ lemma linear_count_5 {n3 n5 n6 : ℕ} : count (linearCode n3 n5 n6) 5 = n5 := by
   rw [count_eq_card]
   change (fiber (linearCode n3 n5 n6) 5).card = n5
   rw [linear_fiber_5]
-  let f : Fin n5 → Fin (n3 + n5 + n6) := fun i => ⟨n3 + i.val, by omega⟩
-  have hbij : (Finset.univ.filter (fun t : Fin (n3 + n5 + n6) =>
-      n3 ≤ t.val ∧ t.val < n3 + n5)) =
-      (Finset.univ : Finset (Fin n5)).map ⟨f, by
-        intro a b hab
-        apply Fin.ext
-        have hv := congrArg Fin.val hab
-        simpa [f] using hv⟩ := by
-    ext t
-    constructor
-    · intro ht
-      have ht' : n3 ≤ t.val ∧ t.val < n3 + n5 := by simpa using ht
-      have hmem : ⟨t.val - n3, by omega⟩ ∈ (Finset.univ : Finset (Fin n5)) := by simp
-      refine Finset.mem_map.mpr ⟨⟨t.val - n3, by omega⟩, hmem, ?_⟩
-      apply Fin.ext
-      change (f ⟨t.val - n3, by omega⟩).val = t.val
-      simp [f]
-      omega
-    · intro hm
-      rw [Finset.mem_map] at hm
-      rcases hm with ⟨i, hi, hti⟩
-      have hv : n3 + i.val = t.val := by
-        change (f i).val = t.val
-        exact congrArg Fin.val hti
-      have hge : n3 ≤ t.val := by omega
-      have hlt : t.val < n3 + n5 := by omega
-      simp [hge, hlt]
-  rw [hbij, Finset.card_map]
-  simp
+  exact card_fin_interval (a := n3) (m := n5) (n := n3 + n5 + n6) (by omega)
 
 /-- `|6|` of `C(n3,n5,n6)` is `n6`. -/
 lemma linear_count_6 {n3 n5 n6 : ℕ} : count (linearCode n3 n5 n6) 6 = n6 := by
   rw [count_eq_card]
   change (fiber (linearCode n3 n5 n6) 6).card = n6
   rw [linear_fiber_6]
-  let f : Fin n6 → Fin (n3 + n5 + n6) := fun i => ⟨n3 + n5 + i.val, by omega⟩
-  have hbij : (Finset.univ.filter (fun t : Fin (n3 + n5 + n6) =>
-      n3 + n5 ≤ t.val)) =
-      (Finset.univ : Finset (Fin n6)).map ⟨f, by
-        intro a b hab
-        apply Fin.ext
-        have hv := congrArg Fin.val hab
-        simpa [f] using hv⟩ := by
-    ext t
-    constructor
-    · intro ht
-      have ht' : n3 + n5 ≤ t.val := by simpa using ht
-      have hmem : ⟨t.val - (n3 + n5), by omega⟩ ∈ (Finset.univ : Finset (Fin n6)) := by simp
-      refine Finset.mem_map.mpr ⟨⟨t.val - (n3 + n5), by omega⟩, hmem, ?_⟩
-      apply Fin.ext
-      change (f ⟨t.val - (n3 + n5), by omega⟩).val = t.val
-      simp [f]
-      omega
-    · intro hm
-      rw [Finset.mem_map] at hm
-      rcases hm with ⟨i, hi, hti⟩
-      have hv : n3 + n5 + i.val = t.val := by
-        change (f i).val = t.val
-        exact congrArg Fin.val hti
-      have hlt : n3 + n5 ≤ t.val := by omega
-      simp [hlt]
-  rw [hbij, Finset.card_map]
-  simp
+  rw [card_fin_suffix (a := n3 + n5) (n := n3 + n5 + n6) (by omega)]
+  omega
 
 /-- Types other than 3, 5, 6 have weight zero in a linear code. -/
 lemma linear_w_i_eq_zero {n3 n5 n6 : ℕ} {i : ℕ} (y : Word (n3 + n5 + n6))
@@ -8236,55 +8245,18 @@ lemma count_linCode_6 {n a b c : ℕ} (hsum : a + b + c = n) :
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 lemma count_replace_0_eq {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (h0 : C t = col0)
     {i : ℕ} (hi0 : i ≠ 0) (his : i ≠ colVal s') : count (replaceColumn C t s') i = count C i := by
-  rw [count_eq_card (replaceColumn C t s') i, count_eq_card C i]
-  have hset : (Finset.univ.filter fun u : Fin n => colVal ((replaceColumn C t s') u) = i) =
-      (Finset.univ.filter fun u : Fin n => colVal (C u) = i) := by
-    ext u
-    by_cases hu : u = t
-    · subst u
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      have hl : ¬ colVal s' = i := fun h => his h.symm
-      have hr : ¬ colVal col0 = i := by
-        intro h
-        have hcv : colVal col0 = 0 := by native_decide
-        exact hi0 (by omega)
-      rw [show replaceColumn C t s' t = if t = t then s' else C t by rfl, if_pos rfl, h0]
-      constructor
-      · intro h
-        exfalso
-        exact hl h
-      · intro h
-        exfalso
-        exact hr h
-    · simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      rw [show replaceColumn C t s' u = if u = t then s' else C u by rfl, if_neg hu]
-  rw [hset]
+  exact count_replace_eq C t s' i
+    (by rw [h0]; intro h; exact hi0 (h.symm.trans (by native_decide : colVal col0 = 0)))
+    (by intro h; exact his h.symm)
 
 /-- Replacing a zero column by `s'` increases the count of type `colVal s'`
 by one. -/
 -- native_decide: Mechanical · n=any · checked 2026-08-24
 lemma count_replace_0_self {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (h0 : C t = col0)
     (hs : colVal s' ≠ 0) : count (replaceColumn C t s') (colVal s') = count C (colVal s') + 1 := by
-  rw [count_eq_card (replaceColumn C t s') (colVal s'), count_eq_card C (colVal s')]
-  have hset : (Finset.univ.filter fun u : Fin n => colVal ((replaceColumn C t s') u) = colVal s') =
-      insert t (Finset.univ.filter fun u : Fin n => colVal (C u) = colVal s') := by
-    ext u
-    by_cases hu : u = t
-    · subst u
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      rw [show replaceColumn C t s' t = if t = t then s' else C t by rfl, if_pos rfl]
-      simp [Finset.mem_insert]
-    · simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      rw [show replaceColumn C t s' u = if u = t then s' else C u by rfl, if_neg hu]
-      simp [Finset.mem_insert, hu]
-  rw [hset]
-  rw [Finset.card_insert_of_notMem (by
-    intro ht
-    have hc : colVal (C t) = colVal s' := (Finset.mem_filter.mp ht).2
-    have hcv : colVal (C t) = 0 := by
-      rw [h0]
-      native_decide
-    omega)]
+  exact count_replace_inc C t s' (colVal s')
+    (by rw [h0]; intro h; exact hs (h.symm.trans (by native_decide : colVal col0 = 0)))
+    rfl
 
 /-- Replacing a zero column does not decrease the count of any nonzero type. -/
 lemma count_replace_0_ge {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col0) (s' : Column)

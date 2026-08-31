@@ -933,77 +933,60 @@ lemma Equivalent_swap12Code {n : ℕ} (C : Code n) : Equivalent C (swap12Code C)
 /-- `colVal col1 = 1`. -/
 lemma colVal_col1 : colVal col1 = 1 := by native_decide
 
+/-- The type relabelling induced by `swap12` on type numbers. -/
+def swapVal12 (i : ℕ) : ℕ :=
+  if i = 3 then 5 else if i = 5 then 3 else i
+
+/-- `swapVal12` is an involution. -/
+lemma swapVal12_idem (i : ℕ) : swapVal12 (swapVal12 i) = i := by
+  by_cases h3 : i = 3 <;> by_cases h5 : i = 5 <;> simp [swapVal12, h3, h5]
+
+/-- `colVal` of the 3↔5-swapped column. -/
+lemma colVal_swap12Code {n : ℕ} (C : Code n)
+    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
+      colVal (C u) = 5 ∨ colVal (C u) = 6) (u : Fin n) :
+    colVal (swap12Code C u) = swapVal12 (colVal (C u)) := by
+  rcases htypes u with h1 | h3 | h5 | h6
+  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
+    simp [swap12Code, hc, swapVal12, colVal_col1, rowPermute_swap12_col1]
+  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
+    simp [swap12Code, hc, swapVal12, colVal_col3, colVal_col5, rowPermute_swap12_col3]
+  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
+    simp [swap12Code, hc, swapVal12, colVal_col3, colVal_col5, rowPermute_swap12_col5]
+  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
+    simp [swap12Code, hc, swapVal12, colVal_col6, rowPermute_swap12_col6]
+
 /-- `swap12` turns type-5 columns into type-3 columns, so the counts match. -/
 lemma count_swap12Code {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap12Code C) 3 = count C 5 := by
-  unfold count swap12Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [hc, rowPermute_swap12_col1, colVal_col1]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [hc, rowPermute_swap12_col3, colVal_col3, colVal_col5]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [hc, rowPermute_swap12_col5, colVal_col3, colVal_col5]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [hc, rowPermute_swap12_col6, colVal_col6]
+  simpa [swapVal12] using
+    (count_involution_map C (swap12Code C) swapVal12 (colVal_swap12Code C htypes) swapVal12_idem 3)
 
 /-- `swap12` fixes type-1 columns. -/
 lemma count_swap12Code_one {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap12Code C) 1 = count C 1 := by
-  unfold count swap12Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [hc, rowPermute_swap12_col1, colVal_col1]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [hc, rowPermute_swap12_col3, colVal_col3, colVal_col5]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [hc, rowPermute_swap12_col5, colVal_col3, colVal_col5]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [hc, rowPermute_swap12_col6, colVal_col6]
+  simpa [swapVal12] using
+    (count_involution_map C (swap12Code C) swapVal12 (colVal_swap12Code C htypes) swapVal12_idem 1)
 
 /-- `swap12` sends type-3 columns to type-5 columns. -/
 lemma count_swap12Code_five {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap12Code C) 5 = count C 3 := by
-  unfold count swap12Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [hc, rowPermute_swap12_col1, colVal_col1]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [hc, rowPermute_swap12_col3, colVal_col3, colVal_col5]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [hc, rowPermute_swap12_col5, colVal_col3, colVal_col5]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [hc, rowPermute_swap12_col6, colVal_col6]
+  simpa [swapVal12] using
+    (count_involution_map C (swap12Code C) swapVal12 (colVal_swap12Code C htypes) swapVal12_idem 5)
 
 /-- `swap12` fixes type-6 columns. -/
 lemma count_swap12Code_six {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap12Code C) 6 = count C 6 := by
-  unfold count swap12Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [hc, rowPermute_swap12_col1, colVal_col1]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [hc, rowPermute_swap12_col3, colVal_col3, colVal_col5]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [hc, rowPermute_swap12_col5, colVal_col3, colVal_col5]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [hc, rowPermute_swap12_col6, colVal_col6]
+  simpa [swapVal12] using
+    (count_involution_map C (swap12Code C) swapVal12 (colVal_swap12Code C htypes) swapVal12_idem 6)
 
 /-- `swap12Code C` is Class-I whenever `C` is. -/
 lemma ClassI_swap12Code {n : ℕ} (C : Code n) (h : ClassI C) : ClassI (swap12Code C) := by
@@ -3254,323 +3237,162 @@ lemma no_classI_count1_distinct_n3 :
     native_decide
   simpa [DistinctRows, ClassI] using (hmain C hdist h h1)
 
-/-! ## λ-role-symmetry under the 3↔6 column swap (col6 case of `thm:11` (Theorem 16))
-
-For a Class-I code whose minimizer is type 6 there is no code equivalence
-(row permutation, column flip, or word-bit permutation) that swaps the roles
-of types 3 and 6 while fixing type 1 (`CompanionNote.tex` item 9).  We
-therefore prove a weaker but sufficient symmetry at the level of λ: the
-column-wise swap `swap36Code` (types 3↔6, fixing 1 and 5) preserves λ via the
-word bijection `flipOn (S36 C)` (flip the bits on the 3/6 positions), which
-preserves `dCode`. -/
-
-/-- Flip the bits of a word at every position in `S`. -/
-def flipOn {n : ℕ} (S : Finset (Fin n)) (y : Word n) : Word n :=
-  fun u => if u ∈ S then !(y u) else y u
-
-/-- `flipOn` is an involution. -/
-lemma flipOn_involutive {n : ℕ} (S : Finset (Fin n)) (y : Word n) :
-    flipOn S (flipOn S y) = y := by
-  funext u
-  by_cases hu : u ∈ S <;> simp [flipOn, hu]
-
-/-- Flipping the same positions of both words preserves their Hamming distance. -/
-lemma hammingDist_flipOn_flipOn {n : ℕ} (S : Finset (Fin n)) (x y : Word n) :
-    hammingDist (flipOn S x) (flipOn S y) = hammingDist x y := by
-  unfold hammingDist
-  congr 1
-  funext u
-  by_cases hu : u ∈ S <;> simp [bitXor, flipOn, hu]
-
-/-- `flipOn S` as a word bijection (its own inverse). -/
-def flipOnEquiv {n : ℕ} (S : Finset (Fin n)) : Word n ≃ Word n where
-  toFun := flipOn S
-  invFun := flipOn S
-  left_inv := flipOn_involutive S
-  right_inv := flipOn_involutive S
-
-/-- The positions where `C` has a type-3 or type-6 column. -/
-def S36 {n : ℕ} (C : Code n) : Finset (Fin n) :=
-  Finset.univ.filter fun u => colVal (C u) = 3 ∨ colVal (C u) = 6
-
 /-- Swap the roles of types 3 and 6 (fixing types 1 and 5) at every column. -/
 def swap36Code {n : ℕ} (C : Code n) : Code n := fun u =>
   if colVal (C u) = 3 then col6 else if colVal (C u) = 6 then col3 else C u
+
+-- native_decide: Mechanical · n=any · checked 2026-08-31
+/-- `swap02` fixes the type-1 column. -/
+lemma rowPermute_swap02_col1 : rowPermute swap02 col1 = col1 := by native_decide
+
+-- native_decide: Mechanical · n=any · checked 2026-08-31
+/-- `swap02` fixes the type-5 column. -/
+lemma rowPermute_swap02_col5 : rowPermute swap02 col5 = col5 := by native_decide
+
+-- native_decide: Mechanical · n=any · checked 2026-08-31
+/-- `swap02` sends the flipped type-3 column to type 6. -/
+lemma rowPermute_swap02_flip_col3 : rowPermute swap02 (flipCol col3) = col6 := by native_decide
+
+-- native_decide: Mechanical · n=any · checked 2026-08-31
+/-- `swap02` sends the flipped type-6 column to type 3. -/
+lemma rowPermute_swap02_flip_col6 : rowPermute swap02 (flipCol col6) = col3 := by native_decide
+
+/-- For a Class-I (types {1,3,5,6}) code, the 3↔6 column swap is an equivalence
+(swap rows 1↔3 and flip the type-3/6 columns). -/
+lemma Equivalent_swap36Code {n : ℕ} (C : Code n)
+    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
+      colVal (C u) = 5 ∨ colVal (C u) = 6) :
+    Equivalent C (swap36Code C) := by
+  refine ⟨swap02, Equiv.refl (Fin n), (fun u => colVal (C u) = 3 ∨ colVal (C u) = 6), ?_⟩
+  intro t
+  rcases htypes t with h1 | h3 | h5 | h6
+  · have hc : C t = col1 := (colVal_eq_one_iff_col1 (C t)).1 h1
+    simp [swap36Code, hc, colVal_col1, rowPermute_swap02_col1]
+  · have hc : C t = col3 := (colVal_eq_three_iff_col3 (C t)).1 h3
+    simp [swap36Code, hc, colVal_col3, rowPermute_swap02_flip_col3]
+  · have hc : C t = col5 := (colVal_eq_five_iff_col5 (C t)).1 h5
+    simp [swap36Code, hc, colVal_col5, rowPermute_swap02_col5]
+  · have hc : C t = col6 := (colVal_eq_six_iff_col6 (C t)).1 h6
+    simp [swap36Code, hc, colVal_col6, rowPermute_swap02_flip_col6]
+
+/-- The type relabelling induced by the 3↔6 column swap on type numbers. -/
+def swapVal36 (i : ℕ) : ℕ :=
+  if i = 3 then 6 else if i = 6 then 3 else i
+
+/-- `swapVal36` is an involution. -/
+lemma swapVal36_idem (i : ℕ) : swapVal36 (swapVal36 i) = i := by
+  by_cases h3 : i = 3 <;> by_cases h6 : i = 6 <;> simp [swapVal36, h3, h6]
 
 /-- `colVal` of the 3↔6-swapped column. -/
 lemma colVal_swap36Code {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) (u : Fin n) :
-    colVal (swap36Code C u) = if colVal (C u) = 3 then 6 else if colVal (C u) = 6 then 3 else colVal (C u) := by
+    colVal (swap36Code C u) = swapVal36 (colVal (C u)) := by
   rcases htypes u with h1 | h3 | h5 | h6
-  · simp [swap36Code, h1]
-  · simp [swap36Code, h3, colVal_col6]
-  · simp [swap36Code, h5]
-  · simp [swap36Code, h6, colVal_col3]
-
-/-- The 3↔6 swap preserves the type set {1,3,5,6}. -/
-lemma types_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) (u : Fin n) :
-    colVal (swap36Code C u) = 1 ∨ colVal (swap36Code C u) = 3 ∨
-      colVal (swap36Code C u) = 5 ∨ colVal (swap36Code C u) = 6 := by
-  rcases htypes u with h1 | h3 | h5 | h6
-  · simp [swap36Code, h1]
-  · simp [swap36Code, h3, colVal_col6]
-  · simp [swap36Code, h5]
-  · simp [swap36Code, h6, colVal_col3]
+  · simp [swap36Code, h1, swapVal36]
+  · simp [swap36Code, h3, swapVal36, colVal_col6]
+  · simp [swap36Code, h5, swapVal36]
+  · simp [swap36Code, h6, swapVal36, colVal_col3]
 
 /-- The 3↔6 swap fixes type-1 columns. -/
 lemma count_swap36Code_one {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap36Code C) 1 = count C 1 := by
-  unfold count swap36Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · simp [h1]
-  · simp [h3, colVal_col6]
-  · simp [h5]
-  · simp [h6, colVal_col3]
+  simpa [swapVal36] using
+    (count_involution_map C (swap36Code C) swapVal36 (colVal_swap36Code C htypes) swapVal36_idem 1)
 
 /-- The 3↔6 swap sends type-3 columns to type-6 ones, so |3|̃ = |6|. -/
 lemma count_swap36Code_three {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap36Code C) 3 = count C 6 := by
-  unfold count swap36Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · simp [h1]
-  · simp [h3, colVal_col6]
-  · simp [h5]
-  · simp [h6, colVal_col3]
+  simpa [swapVal36] using
+    (count_involution_map C (swap36Code C) swapVal36 (colVal_swap36Code C htypes) swapVal36_idem 3)
 
 /-- The 3↔6 swap fixes type-5 columns. -/
 lemma count_swap36Code_five {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap36Code C) 5 = count C 5 := by
-  unfold count swap36Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · simp [h1]
-  · simp [h3, colVal_col6]
-  · simp [h5]
-  · simp [h6, colVal_col3]
+  simpa [swapVal36] using
+    (count_involution_map C (swap36Code C) swapVal36 (colVal_swap36Code C htypes) swapVal36_idem 5)
 
 /-- The 3↔6 swap sends type-6 columns to type-3 ones, so |6|̃ = |3|. -/
 lemma count_swap36Code_six {n : ℕ} (C : Code n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6) :
     count (swap36Code C) 6 = count C 3 := by
-  unfold count swap36Code
-  apply Finset.sum_congr rfl
-  intro u _
-  rcases htypes u with h1 | h3 | h5 | h6
-  · simp [h1]
-  · simp [h3, colVal_col6]
-  · simp [h5]
-  · simp [h6, colVal_col3]
+  simpa [swapVal36] using
+    (count_involution_map C (swap36Code C) swapVal36 (colVal_swap36Code C htypes) swapVal36_idem 6)
 
-/-- Row 0 is all-zero and unchanged by the 3↔6 swap. -/
-lemma row0_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    row0 (swap36Code C) = row0 C := by
-  funext u
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [swap36Code, hc, colVal_col1, row0, row, colBit]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [swap36Code, hc, colVal_col3, col6, col3, row0, row, colBit]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [swap36Code, hc, colVal_col5, row0, row, colBit]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [swap36Code, hc, colVal_col6, col3, col6, row0, row, colBit]
-
-/-- Row 2 is the indicator of the 3/6 positions and is unchanged by the swap. -/
-lemma row2_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    row2 (swap36Code C) = row2 C := by
-  funext u
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [swap36Code, hc, colVal_col1, row2, row, colBit]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [swap36Code, hc, colVal_col3, col6, col3, row2, row, colBit]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [swap36Code, hc, colVal_col5, row2, row, colBit]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [swap36Code, hc, colVal_col6, col3, col6, row2, row, colBit]
-
-/-- Row 1 of the swapped code is row 1 of `C` with the bits on the 3/6
-positions flipped. -/
-lemma row1_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    row1 (swap36Code C) = flipOn (S36 C) (row1 C) := by
-  funext u
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [swap36Code, hc, colVal_col1, col1, row1, row, colBit, S36, flipOn]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [swap36Code, hc, colVal_col3, col6, col3, row1, row, colBit, S36, flipOn]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [swap36Code, hc, colVal_col5, col5, row1, row, colBit, S36, flipOn]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [swap36Code, hc, colVal_col6, col3, col6, row1, row, colBit, S36, flipOn]
-
-/-- Row 3 of the swapped code is row 3 of `C` with the bits on the 3/6
-positions flipped. -/
-lemma row3_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    row3 (swap36Code C) = flipOn (S36 C) (row3 C) := by
-  funext u
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [swap36Code, hc, colVal_col1, col1, row3, row, colBit, S36, flipOn]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [swap36Code, hc, colVal_col3, col6, col3, row3, row, colBit, S36, flipOn]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [swap36Code, hc, colVal_col5, col5, row3, row, colBit, S36, flipOn]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [swap36Code, hc, colVal_col6, col3, col6, row3, row, colBit, S36, flipOn]
-
-/-- Row 2 of `C` is the flip of the (all-zero) row 0 on the 3/6 positions. -/
-lemma row2_eq_flipOn_row0 {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    row2 C = flipOn (S36 C) (row0 C) := by
-  funext u
-  rcases htypes u with h1 | h3 | h5 | h6
-  · have hc : C u = col1 := (colVal_eq_one_iff_col1 (C u)).1 h1
-    simp [hc, colVal_col1, col1, row2, row0, row, colBit, S36, flipOn]
-  · have hc : C u = col3 := (colVal_eq_three_iff_col3 (C u)).1 h3
-    simp [hc, colVal_col3, col3, row2, row0, row, colBit, S36, flipOn]
-  · have hc : C u = col5 := (colVal_eq_five_iff_col5 (C u)).1 h5
-    simp [hc, colVal_col5, col5, row2, row0, row, colBit, S36, flipOn]
-  · have hc : C u = col6 := (colVal_eq_six_iff_col6 (C u)).1 h6
-    simp [hc, colVal_col6, col6, row2, row0, row, colBit, S36, flipOn]
-
-/-- The 3↔6 column swap preserves the code distance under the word bijection
-`flipOn (S36 C)`. -/
-lemma dCode_swap36Code {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) (y : Word n) :
-    dCode (swap36Code C) (flipOn (S36 C) y) = dCode C y := by
-  have hrow0 : row0 (swap36Code C) = row0 C := row0_swap36Code C htypes
-  have hrow2 : row2 (swap36Code C) = row2 C := row2_swap36Code C htypes
-  have hrow1 : row1 (swap36Code C) = flipOn (S36 C) (row1 C) := row1_swap36Code C htypes
-  have hrow3 : row3 (swap36Code C) = flipOn (S36 C) (row3 C) := row3_swap36Code C htypes
-  have hrow0φ : row0 C = flipOn (S36 C) (row2 C) := by
-    rw [row2_eq_flipOn_row0 C htypes, flipOn_involutive]
-  have hd0 : hammingDist (row0 (swap36Code C)) (flipOn (S36 C) y) =
-      hammingDist (row2 C) y := by
-    rw [hrow0, hrow0φ, hammingDist_flipOn_flipOn]
-  have hd1 : hammingDist (row1 (swap36Code C)) (flipOn (S36 C) y) =
-      hammingDist (row1 C) y := by
-    rw [hrow1, hammingDist_flipOn_flipOn]
-  have hd2 : hammingDist (row2 (swap36Code C)) (flipOn (S36 C) y) =
-      hammingDist (row0 C) y := by
-    rw [hrow2, row2_eq_flipOn_row0 C htypes, hammingDist_flipOn_flipOn]
-  have hd3 : hammingDist (row3 (swap36Code C)) (flipOn (S36 C) y) =
-      hammingDist (row3 C) y := by
-    rw [hrow3, hammingDist_flipOn_flipOn]
-  unfold dCode
-  rw [hd0, hd1, hd2, hd3]
-  simp [Nat.min_left_comm]
-
-/-- The 3↔6 column swap preserves λ for every ε. -/
-lemma lambda_swap36 {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) (ε : ℝ) :
-    lambda (swap36Code C) ε = lambda C ε := by
-  unfold lambda
-  congr 1
-  let g : Word n ≃ Word n := flipOnEquiv (S36 C)
-  have hdcode : ∀ y : Word n, dCode (swap36Code C) (g y) = dCode C y := by
-    intro y
-    exact dCode_swap36Code C htypes y
-  calc
-    (∑ y : Word n, weight n ε (dCode (swap36Code C) y))
-        = ∑ y : Word n, weight n ε (dCode (swap36Code C) (g y)) := by
-          apply Finset.sum_bij (fun y _ => g.symm y)
-          · intro y _; simp
-          · intro a _ b _ hab
-            exact g.symm.injective hab
-          · intro b _
-            refine ⟨g b, by simp, by simp⟩
-          · intro y _; simp
-    _ = ∑ y : Word n, weight n ε (dCode C y) := by
-          simp [hdcode]
-
-/-- `thm:11` (Theorem 16) col6: swapping the roles of types 3 and 6 preserves λ for
-type-{1,3,5,6} codes (not a code equivalence; see `CompanionNote.tex` item 9). -/
-lemma class1_lambda_swap36 {n : ℕ} (C : Code n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6) :
-    UniversalEqual (swap36Code C) C := by
-  intro ε _ _
-  exact lambda_swap36 C htypes ε
+/-- `swap36Code C` is Class-I whenever `C` is. -/
+lemma ClassI_swap36Code {n : ℕ} (C : Code n) (h : ClassI C) : ClassI (swap36Code C) := by
+  unfold ClassI
+  rcases h with ⟨hodd1, hpar, htotal⟩
+  have htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
+      colVal (C u) = 5 ∨ colVal (C u) = 6 := by
+    intro u
+    exact types_1356_of_totalCounts C htotal u
+  have hc1 : count (swap36Code C) 1 = count C 1 := count_swap36Code_one C htypes
+  have hc3 : count (swap36Code C) 3 = count C 6 := count_swap36Code_three C htypes
+  have hc5 : count (swap36Code C) 5 = count C 5 := count_swap36Code_five C htypes
+  have hc6 : count (swap36Code C) 6 = count C 3 := count_swap36Code_six C htypes
+  refine ⟨?_, ?_, ?_⟩
+  · simpa [hc1] using hodd1
+  · rcases hpar with hEven | hOdd
+    · left
+      exact ⟨by simpa [hc3] using hEven.2.2, by simpa [hc5] using hEven.2.1, by simpa [hc6] using hEven.1⟩
+    · right
+      exact ⟨by simpa [hc3] using hOdd.2.2, by simpa [hc5] using hOdd.2.1, by simpa [hc6] using hOdd.1⟩
+  · unfold totalCounts
+    simp [hc1, hc3, hc5, hc6]
+    have htot : count C 1 + count C 3 + count C 5 + count C 6 = n := by
+      simp [totalCounts] at htotal
+      omega
+    omega
 
 /-- Lift a strict comparison of the 3↔6-swapped code to one of the original
-code, using the λ-role-symmetry on both sides. -/
+code, using the 3↔6 code equivalence on both sides. -/
 lemma class1_col6_from_dom {n : ℕ} (C : Code n) (t : Fin n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
     (hdom : UniversalStrictBetter (replaceColumn (swap36Code C) t col3) (swap36Code C)) :
     UniversalStrictBetter (replaceColumn C t col6) C := by
-  let C' : Code n := replaceColumn C t col6
-  let C36 : Code n := swap36Code C
-  let C36' : Code n := replaceColumn C36 t col3
-  have htypes' : ∀ u : Fin n, colVal (C' u) = 1 ∨ colVal (C' u) = 3 ∨
-      colVal (C' u) = 5 ∨ colVal (C' u) = 6 := by
+  let A : Code n := replaceColumn C t col6
+  let B : Code n := replaceColumn (swap36Code C) t col3
+  have htypesA : ∀ u : Fin n, colVal (A u) = 1 ∨ colVal (A u) = 3 ∨
+      colVal (A u) = 5 ∨ colVal (A u) = 6 := by
     intro u
     by_cases hu : u = t
     · subst u
-      simp [C', replaceColumn, colVal_col6]
-    · simp [C', replaceColumn, hu, htypes u]
-  have hswap : swap36Code C' = C36' := by
+      simp [A, replaceColumn, colVal_col6]
+    · simp [A, replaceColumn, hu, htypes u]
+  have hAB : swap36Code A = B := by
     funext u
     by_cases hu : u = t
     · subst u
-      simp [C', C36', replaceColumn, swap36Code, colVal_col6]
-    · simp [C', C36', C36, replaceColumn, swap36Code, hu]
-  have hsymC : UniversalEqual C36 C := class1_lambda_swap36 C htypes
-  have hsymC' : UniversalEqual C36' C' := by
-    rw [← hswap]
-    exact class1_lambda_swap36 C' htypes'
-  intro ε hε0 hε1
-  have heq1 : lambda C' ε = lambda C36' ε := (hsymC' ε hε0 hε1).symm
-  have hgt : lambda C36' ε > lambda C36 ε := hdom ε hε0 hε1
-  have heq2 : lambda C36 ε = lambda C ε := hsymC ε hε0 hε1
-  linarith
+      simp [A, B, replaceColumn, swap36Code, colVal_col6]
+    · simp [A, B, replaceColumn, swap36Code, hu]
+  have hEqA : Equivalent A B := by
+    rw [← hAB]
+    exact Equivalent_swap36Code A htypesA
+  have hEqC : Equivalent C (swap36Code C) := Equivalent_swap36Code C htypes
+  exact universalStrictBetter_of_equivalent A B C (swap36Code C) hEqA hEqC hdom
 
 /-- `thm:11` (Theorem 16) argmin = col6 reduction: when |6| is the minimizer, the 3↔6
-λ-role-symmetry (`class1_lambda_swap36`) reduces the comparison to the
+code equivalence (`Equivalent_swap36Code`) reduces the comparison to the
 |3| = min case on the swapped code. -/
 lemma class1_one_col6_strict {n : ℕ} (C : Code n) (t : Fin n)
-    (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6)
+    (h : ClassI C)
     (h1 : count C 1 = 1) (hcol : C t = col1)
-    (hpar35 : Even (count C 5) ↔ Even (count C 6))
-    (hpar36 : Even (count C 3) ↔ Even (count C 6))
-    (hpar53 : Even (count C 5) ↔ Even (count C 3))
     (h36 : count C 6 ≤ count C 3) (h56 : count C 6 ≤ count C 5)
-    (htotal : totalCounts C {1, 3, 5, 6} = n)
     (hpos35 : 2 ≤ count C 3 + count C 5) :
     UniversalStrictBetter (replaceColumn C t col6) C := by
+  rcases classI_hyps C h with ⟨htypes, _hpar35, _hpar36, _hpar53, _htotal⟩
   let C36 : Code n := swap36Code C
-  have htypes36 : ∀ u : Fin n, colVal (C36 u) = 1 ∨ colVal (C36 u) = 3 ∨
-      colVal (C36 u) = 5 ∨ colVal (C36 u) = 6 := by
-    intro u
-    exact types_swap36Code C htypes u
+  have h36Class : ClassI C36 := ClassI_swap36Code C h
+  rcases classI_hyps C36 h36Class with ⟨htypes36, hpar3536, hpar3636, hpar5336, htotal36⟩
   have h136 : count C36 1 = 1 := by
     rw [count_swap36Code_one C htypes, h1]
   have hcol36 : C36 t = col1 := by
@@ -3579,37 +3401,12 @@ lemma class1_one_col6_strict {n : ℕ} (C : Code n) (t : Fin n)
   have hc336 : count C36 3 = count C 6 := count_swap36Code_three C htypes
   have hc536 : count C36 5 = count C 5 := count_swap36Code_five C htypes
   have hc636 : count C36 6 = count C 3 := count_swap36Code_six C htypes
-  have hpar3536 : Even (count C36 5) ↔ Even (count C36 6) := by
-    rw [hc536, hc636]
-    exact hpar53
-  have hpar3636 : Even (count C36 3) ↔ Even (count C36 6) := by
-    rw [hc336, hc636]
-    exact hpar36.symm
-  have hpar5336 : Even (count C36 5) ↔ Even (count C36 3) := by
-    rw [hc536, hc336]
-    exact hpar35
   have h3536 : count C36 3 ≤ count C36 5 := by
     rw [hc336, hc536]
     exact h56
   have h3636 : count C36 3 ≤ count C36 6 := by
     rw [hc336, hc636]
     exact h36
-  have htotal36 : totalCounts C36 {1, 3, 5, 6} = n := by
-    unfold totalCounts
-    calc
-      (∑ i ∈ ({1, 3, 5, 6} : Finset ℕ), count C36 i)
-          = count C 1 + count C 6 + count C 5 + count C 3 := by
-            simp [hc336, hc536, hc636, Finset.sum_insert]
-            omega
-      _ = n := by
-        have hsum : count C 1 + count C 3 + count C 5 + count C 6 = n := by
-          calc
-            count C 1 + count C 3 + count C 5 + count C 6
-                = ∑ i ∈ ({1, 3, 5, 6} : Finset ℕ), count C i := by
-                  simp [Finset.sum_insert]
-                  omega
-            _ = n := htotal
-        omega
   by_cases hz : count C 6 = 0
   · -- |3|' = 0
     have hz36 : count C36 3 = 0 := by rw [hc336, hz]
@@ -6889,37 +6686,32 @@ lemma class1_min_col3 {n : ℕ} (C : Code n) (t : Fin n)
     exact cumulative_nonneg C C' t hcol hcol' hsame hge
 
 /-- Lift a non-strict comparison of the 3↔6-swapped code to one of the
-original code, using the λ-role-symmetry on both sides. -/
+original code, using the 3↔6 code equivalence on both sides. -/
 lemma class1_min_col6_from_dom {n : ℕ} (C : Code n) (t : Fin n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
     (hdom : UniversalBetter (replaceColumn (swap36Code C) t col3) (swap36Code C)) :
     UniversalBetter (replaceColumn C t col6) C := by
-  let C' : Code n := replaceColumn C t col6
-  let C36 : Code n := swap36Code C
-  let C36' : Code n := replaceColumn C36 t col3
-  have htypes' : ∀ u : Fin n, colVal (C' u) = 1 ∨ colVal (C' u) = 3 ∨
-      colVal (C' u) = 5 ∨ colVal (C' u) = 6 := by
+  let A : Code n := replaceColumn C t col6
+  let B : Code n := replaceColumn (swap36Code C) t col3
+  have htypesA : ∀ u : Fin n, colVal (A u) = 1 ∨ colVal (A u) = 3 ∨
+      colVal (A u) = 5 ∨ colVal (A u) = 6 := by
     intro u
     by_cases hu : u = t
     · subst u
-      simp [C', replaceColumn, colVal_col6]
-    · simp [C', replaceColumn, hu, htypes u]
-  have hswap : swap36Code C' = C36' := by
+      simp [A, replaceColumn, colVal_col6]
+    · simp [A, replaceColumn, hu, htypes u]
+  have hAB : swap36Code A = B := by
     funext u
     by_cases hu : u = t
     · subst u
-      simp [C', C36', replaceColumn, swap36Code, colVal_col6]
-    · simp [C', C36', C36, replaceColumn, swap36Code, hu]
-  have hsymC : UniversalEqual C36 C := class1_lambda_swap36 C htypes
-  have hsymC' : UniversalEqual C36' C' := by
-    rw [← hswap]
-    exact class1_lambda_swap36 C' htypes'
-  intro ε hε0 hε1
-  have heq1 : lambda C' ε = lambda C36' ε := (hsymC' ε hε0 hε1).symm
-  have hge : lambda C36' ε ≥ lambda C36 ε := hdom ε hε0 hε1
-  have heq2 : lambda C36 ε = lambda C ε := hsymC ε hε0 hε1
-  linarith
+      simp [A, B, replaceColumn, swap36Code, colVal_col6]
+    · simp [A, B, replaceColumn, swap36Code, hu]
+  have hEqA : Equivalent A B := by
+    rw [← hAB]
+    exact Equivalent_swap36Code A htypesA
+  have hEqC : Equivalent C (swap36Code C) := Equivalent_swap36Code C htypes
+  exact universalBetter_of_equivalent A B C (swap36Code C) hEqA hEqC hdom
 
 /-! ## Theorem statements (`thm:11` (Theorem 16), `thm:301` (Theorem 17)) -/
 
@@ -6927,7 +6719,7 @@ lemma class1_min_col6_from_dom {n : ℕ} (C : Code n) (t : Fin n)
 the argmin type is strictly better unless n = 3, where it is equal.  The
 α³/α⁵ binomial closed forms, the cumulative-sum domination (`class1_psi_*`),
 and the argmin case split (col3 via `class1_one_col3_strict*`, col5 via the
-`swap12` equivalence `class1_one_col5_strict`, col6 via the λ-role-symmetry
+`swap12` equivalence `class1_one_col5_strict`, col6 via the 3↔6 equivalence
 `class1_one_col6_strict`) are all proved.  The `DistinctRows` hypothesis rules
 out duplicate-codeword codes, for which the paper's n = 3 equality is not
 literally true; see `CompanionNote.tex` §Discrepancies. -/
@@ -6980,7 +6772,7 @@ theorem class1_one {n : ℕ} (C : Code n) (t : Fin n) (hdist : DistinctRows C) (
         have hpos35 : 2 ≤ count C 3 + count C 5 :=
           class1_hpos35_of_count1 C hpar53 h65
         have hdom : UniversalStrictBetter (replaceColumn C t col6) C :=
-          class1_one_col6_strict C t htypes h1 h0 hpar35 hpar36 hpar53 h36c h56c htotal hpos35
+          class1_one_col6_strict C t h h1 h0 h36c h56c hpos35
         simpa [harg] using hdom
   · intro hn3
     subst n
@@ -6988,35 +6780,14 @@ theorem class1_one {n : ℕ} (C : Code n) (t : Fin n) (hdist : DistinctRows C) (
 
 /-- Theorem `thm:301` (Theorem 17): Class-I code with min{|3|,|5|,|6|} ∈ {0,1}; replacing a
 type-1 column by the argmin type is never worse.  The min = 5 and min = 6
-cases reduce to |3| = min via the `swap12` equivalence and the λ-role-symmetry
+cases reduce to |3| = min via the `swap12` and 3↔6 equivalences
 (`class1_min_col6_from_dom`); the canonical |3| = min ∈ {0,1} case is
 `class1_min_col3` (Class-I-a done, Class-I-b pending). -/
 theorem class1_min {n : ℕ} (C : Code n) (t : Fin n) (h : ClassI C) (h0 : C t = col1)
     (hm : min (count C 3) (min (count C 5) (count C 6)) ≤ 1) :
     UniversalBetter (replaceColumn C t (argminType C)) C := by
-  rcases h with ⟨hodd1, hpar, htotal⟩
-  have htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
-      colVal (C u) = 5 ∨ colVal (C u) = 6 := by
-    intro u
-    exact types_1356_of_totalCounts C htotal u
-  have hpar35 : Even (count C 5) ↔ Even (count C 6) := by
-    rcases hpar with hEven | hOdd
-    · exact ⟨fun _ => hEven.2.2, fun _ => hEven.2.1⟩
-    · constructor
-      · intro h5; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.2.1) h5)
-      · intro h6; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.2.2) h6)
-  have hpar36 : Even (count C 3) ↔ Even (count C 6) := by
-    rcases hpar with hEven | hOdd
-    · exact ⟨fun _ => hEven.2.2, fun _ => hEven.1⟩
-    · constructor
-      · intro h3; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.1) h3)
-      · intro h6; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.2.2) h6)
-  have hpar53 : Even (count C 5) ↔ Even (count C 3) := by
-    rcases hpar with hEven | hOdd
-    · exact ⟨fun _ => hEven.1, fun _ => hEven.2.1⟩
-    · constructor
-      · intro h5; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.2.1) h5)
-      · intro h3; exact False.elim ((Nat.not_even_iff_odd.mpr hOdd.1) h3)
+  rcases classI_hyps C h with ⟨htypes, hpar35, hpar36, hpar53, htotal⟩
+  have hodd1 : Odd (count C 1) := h.1
   by_cases h3min : count C 3 ≤ count C 5 ∧ count C 3 ≤ count C 6
   · -- argmin = col3
     have harg : argminType C = col3 := argminType_eq_col3 C h3min
@@ -7117,30 +6888,18 @@ theorem class1_min {n : ℕ} (C : Code n) (t : Fin n) (h : ClassI C) (h0 : C t =
         universalBetter_of_equivalent (replaceColumn C t col5) (replaceColumn Cs t col3) C Cs
           hEq5 hEq hdom'
       simpa [harg] using hdom
-    · -- argmin = col6 (λ-role-symmetry reduction to |3| = min)
+    · -- argmin = col6 (3↔6 equivalence reduction to |3| = min)
       have harg : argminType C = col6 := argminType_eq_col6 C h3min h56
       let C36 : Code n := swap36Code C
-      have htypes36 : ∀ u : Fin n, colVal (C36 u) = 1 ∨ colVal (C36 u) = 3 ∨
-          colVal (C36 u) = 5 ∨ colVal (C36 u) = 6 := by
-        intro u
-        exact types_swap36Code C htypes u
+      have h36Class : ClassI C36 := ClassI_swap36Code C h
+      rcases classI_hyps C36 h36Class with ⟨htypes36, hpar3536, hpar3636, hpar5336, htotal36⟩
+      have hodd136 : Odd (count C36 1) := h36Class.1
       have hcol36 : C36 t = col1 := by
         dsimp [C36]
         simp [swap36Code, h0, colVal_col1]
-      have hc136 : count C36 1 = count C 1 := count_swap36Code_one C htypes
       have hc336 : count C36 3 = count C 6 := count_swap36Code_three C htypes
       have hc536 : count C36 5 = count C 5 := count_swap36Code_five C htypes
       have hc636 : count C36 6 = count C 3 := count_swap36Code_six C htypes
-      have hodd136 : Odd (count C36 1) := by rw [hc136]; exact hodd1
-      have hpar3536 : Even (count C36 5) ↔ Even (count C36 6) := by
-        rw [hc536, hc636]
-        exact hpar53
-      have hpar3636 : Even (count C36 3) ↔ Even (count C36 6) := by
-        rw [hc336, hc636]
-        exact hpar36.symm
-      have hpar5336 : Even (count C36 5) ↔ Even (count C36 3) := by
-        rw [hc536, hc336]
-        exact hpar35
       have h65 : count C 6 < count C 5 := Nat.lt_of_not_ge h56
       have h56c : count C 6 ≤ count C 5 := le_of_lt h65
       have h36c : count C 6 ≤ count C 3 := by
@@ -7162,22 +6921,6 @@ theorem class1_min {n : ℕ} (C : Code n) (t : Fin n) (h : ClassI C) (h0 : C t =
       have h3le136 : count C36 3 ≤ 1 := by
         rw [hc336]
         exact h6le1
-      have htotal36 : totalCounts C36 {1, 3, 5, 6} = n := by
-        unfold totalCounts
-        calc
-          (∑ i ∈ ({1, 3, 5, 6} : Finset ℕ), count C36 i)
-              = count C 1 + count C 6 + count C 5 + count C 3 := by
-                simp [hc136, hc336, hc536, hc636, Finset.sum_insert]
-                omega
-          _ = n := by
-            have hsum : count C 1 + count C 3 + count C 5 + count C 6 = n := by
-              calc
-                count C 1 + count C 3 + count C 5 + count C 6
-                    = ∑ i ∈ ({1, 3, 5, 6} : Finset ℕ), count C i := by
-                      simp [Finset.sum_insert]
-                      omega
-                _ = n := htotal
-            omega
       have hdom36 : UniversalBetter (replaceColumn C36 t col3) C36 :=
         class1_min_col3 C36 t htypes36 hcol36 hpar3536 hpar3636 hpar5336 h3536 h3636 htotal36 hodd136 h3le136
       have hdom : UniversalBetter (replaceColumn C t col6) C :=

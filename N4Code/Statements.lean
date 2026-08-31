@@ -69,8 +69,8 @@ namespace N4Code
 -- `cor:onepo` (Corollary 10) (`descent_to_linear_or_class1`), `thm:class2` (Lemma 14)
 -- (`class2_to_class1`, `class3_to_linear`), `lm:all` (Lemma 15) (`lm_all`),
 -- `thm:two` (Theorem 1) (`optimal_in_linear_or_class1`), `thm:nbig3` (Theorem 3)
--- (`optimal_equivalent_linear_class1_class2`), and
--- `thm:condition_optimalcode` (Theorem 4) (`condition_optimalcode`).
+-- (`universal_strict_better_of_not_class`), and
+-- `thm:condition_optimalcode` (Theorem 4) (`universal_strict_better_of_not_linear`).
 -- The paper labels live in the docstrings there.
 
 /-! ## §5 Linear codes -/
