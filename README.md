@@ -1,6 +1,6 @@
 # N4Code
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22154942.svg)](https://doi.org/10.5281/zenodo.22154942)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22253544.svg)](https://doi.org/10.5281/zenodo.22253544)
 
 A machine-checked proof, in Lean 4 and mathlib, of the classification of
 optimal finite-length block codes of size four for binary symmetric channels.
@@ -50,6 +50,7 @@ lake-manifest.json   # pinned mathlib dependency
 LICENSE              # Apache-2.0
 README.md
 CITATION.cff         # machine-readable citation metadata
+CompanionNote.pdf    # companion note describing the formalization
 ```
 
 ## Authors
@@ -63,6 +64,12 @@ The proof scripts in this repository were developed with substantial
 assistance from AI coding agents. All theorem statements, definitions, and the
 overall design were authored by the project authors. The AI-assisted proof
 text was reviewed by the authors and is machine-checked by the Lean 4 kernel.
+
+## Companion note
+
+A companion note describing the formalization, its verification, and the
+discrepancies found in the paper is available at
+[`CompanionNote.pdf`](CompanionNote.pdf).
 
 ## Paper
 
@@ -87,7 +94,7 @@ machine-readable citation metadata is in
 
 Software artifact DOI:
 
-> [10.5281/zenodo.22154942](https://doi.org/10.5281/zenodo.22154942)
+> [10.5281/zenodo.22253544](https://doi.org/10.5281/zenodo.22253544)
 
 ## License
 

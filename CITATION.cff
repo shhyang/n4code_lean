@@ -14,7 +14,7 @@ authors:
     given-names: Yanyan
 identifiers:
   - type: doi
-    value: 10.5281/zenodo.22154942
+    value: 10.5281/zenodo.22253544
     description: Zenodo DOI for this release
 repository-code: "https://github.com/shhyang/n4code_lean"
 keywords:
