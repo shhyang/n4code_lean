@@ -76,13 +76,13 @@ def dCode {n : ℕ} (C : Code n) (y : Word n) : ℕ :=
 def lambda {n : ℕ} (C : Code n) (ε : ℝ) : ℝ :=
   (1 / 4 : ℝ) * ∑ y : Word n, (1 - ε) ^ (n - dCode C y) * ε ^ (dCode C y)
 
-/-- `λ_{C₁} > λ_{C₂}` for all `0 < ε < 1/2`. -/
-def UniversalStrictBetter {n : ℕ} (C₁ C₂ : Code n) : Prop :=
-  ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → lambda C₁ ε > lambda C₂ ε
-
 /-- `λ_{C₁} ≥ λ_{C₂}` for all `0 < ε < 1/2`. -/
 def UniversalBetter {n : ℕ} (C₁ C₂ : Code n) : Prop :=
   ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → lambda C₁ ε ≥ lambda C₂ ε
+
+/-- `λ_{C₁} > λ_{C₂}` for all `0 < ε < 1/2`. -/
+def UniversalStrictBetter {n : ℕ} (C₁ C₂ : Code n) : Prop :=
+  ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → lambda C₁ ε > lambda C₂ ε
 
 /-- Optimality at a fixed crossover probability `ε`. -/
 def OptimalAt {n : ℕ} (C : Code n) (ε : ℝ) : Prop :=
