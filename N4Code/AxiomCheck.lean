@@ -15,11 +15,12 @@ import N4Code.Statements
 # Axiom audit for the headline theorems
 
 `#print axioms` for every paper headline theorem.  The expected axiom set is
-the mathlib-standard trusted base: `propext`, `quot.sound`,
-`Classical.choice`, plus `Lean.ofReduceBool` (introduced by `native_decide`,
-which this project uses for finite witness checks).  `sorryAx` must never
-appear in the final release; `scripts/axioms_check.sh` enforces the
-allowlist and fails on `sorryAx`.
+the mathlib-standard trusted base: `propext`, `Quot.sound`, and
+`Classical.choice`.  Finite closed goals are checked with `decide` rather than
+`native_decide`, so the headline theorems do not depend on
+`Lean.ofReduceBool` or per-lemma `native_decide` trust axioms.  `sorryAx`
+must never appear in the final release; `scripts/axioms_check.sh` enforces
+the allowlist and fails on `sorryAx`.
 -/
 
 namespace N4Code

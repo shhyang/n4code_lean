@@ -1,6 +1,6 @@
 name = "N4Code"
 version = "0.1.0"
-defaultTargets = ["N4Code"]
+defaultTargets = ["N4Code", "Challenge", "Solution"]
 
 [[require]]
 name = "mathlib"
@@ -9,3 +9,11 @@ rev = "6f1ef4e5dd604a435bddba4747b13970cd65d2a1"
 
 [[lean_lib]]
 name = "N4Code"
+
+[[lean_lib]]
+name = "Challenge"
+roots = ["Challenge"]
+
+[[lean_lib]]
+name = "Solution"
+roots = ["Solution"]

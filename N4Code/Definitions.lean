@@ -31,6 +31,8 @@ noncomputable section
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-! ## Binary words and Hamming distance -/
 
 abbrev Word (n : ℕ) := Fin n → Bool
@@ -145,14 +147,14 @@ def col5 : Column := fun j => j.val = 1 ∨ j.val = 3
 def col6 : Column := fun j => j.val = 1 ∨ j.val = 2
 def col7 : Column := fun j => j.val = 1 ∨ j.val = 2 ∨ j.val = 3
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Sanity checks: the `colVal` numbering matches the paper's `bspan{i}`. -/
-example : colVal col0 = 0 := by native_decide
-example : colVal col1 = 1 := by native_decide
-example : colVal col3 = 3 := by native_decide
-example : colVal col5 = 5 := by native_decide
-example : colVal col6 = 6 := by native_decide
-example : colVal col7 = 7 := by native_decide
+example : colVal col0 = 0 := by decide
+example : colVal col1 = 1 := by decide
+example : colVal col3 = 3 := by decide
+example : colVal col5 = 5 := by decide
+example : colVal col6 = 6 := by decide
+example : colVal col7 = 7 := by decide
 
 /-- Columns restricted to the paper's types 0..7 (row-1 bit is 0). -/
 def Columns07 {n : ℕ} (C : Code n) : Prop := ∀ t : Fin n, C t 0 = false
@@ -385,13 +387,13 @@ def InOptimal3 (C : Code 3) : Prop :=
 /-- The column with type number i (bits read MSB-first, matching `colVal`). -/
 def colOfNat (i : ℕ) : Column := fun j => i.testBit (3 - j.val)
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Bit j of a column equals bit `3 - j.val` of its type number (row 1 = MSB). -/
 lemma colBit_eq_testBit (c : Column) (j : Fin 4) :
     colBit j c = (colVal c).testBit (3 - j.val) := by
   have h : ∀ (c : Column) (j : Fin 4),
       colBit j c = (colVal c).testBit (3 - j.val) := by
-    native_decide
+    decide
   exact h c j
 
 /-- Rebuilding a column from its type number recovers the column. -/
@@ -401,7 +403,7 @@ lemma colOfNat_colVal (c : Column) : colOfNat (colVal c) = c := by
 
 /-- The type number of `colOfNat k` is `k`, for `k ≤ 15`. -/
 lemma colVal_colOfNat (k : ℕ) (hk : k ≤ 15) : colVal (colOfNat k) = k := by
-  interval_cases k <;> native_decide
+  interval_cases k <;> decide
 
 /-- The type-number function is injective on the 4-bit range. -/
 lemma colVal_eq_iff_colOfNat (c : Column) (k : ℕ) (hk : k ≤ 15) :
@@ -412,38 +414,38 @@ lemma colVal_eq_iff_colOfNat (c : Column) (k : ℕ) (hk : k ≤ 15) :
   · intro h
     rw [h, colVal_colOfNat k hk]
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 1 exactly when it is `col1`. -/
 lemma colVal_eq_one_iff_col1 (c : Column) : colVal c = 1 ↔ c = col1 := by
-  simpa [show colOfNat 1 = col1 by native_decide] using (colVal_eq_iff_colOfNat c 1 (by norm_num))
+  simpa [show colOfNat 1 = col1 by decide] using (colVal_eq_iff_colOfNat c 1 (by norm_num))
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 3 exactly when it is `col3`. -/
 lemma colVal_eq_three_iff_col3 (c : Column) : colVal c = 3 ↔ c = col3 := by
-  simpa [show colOfNat 3 = col3 by native_decide] using (colVal_eq_iff_colOfNat c 3 (by norm_num))
+  simpa [show colOfNat 3 = col3 by decide] using (colVal_eq_iff_colOfNat c 3 (by norm_num))
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 5 exactly when it is `col5`. -/
 lemma colVal_eq_five_iff_col5 (c : Column) : colVal c = 5 ↔ c = col5 := by
-  simpa [show colOfNat 5 = col5 by native_decide] using (colVal_eq_iff_colOfNat c 5 (by norm_num))
+  simpa [show colOfNat 5 = col5 by decide] using (colVal_eq_iff_colOfNat c 5 (by norm_num))
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- A column has value 6 exactly when it is `col6`. -/
 lemma colVal_eq_six_iff_col6 (c : Column) : colVal c = 6 ↔ c = col6 := by
-  simpa [show colOfNat 6 = col6 by native_decide] using (colVal_eq_iff_colOfNat c 6 (by norm_num))
+  simpa [show colOfNat 6 = col6 by decide] using (colVal_eq_iff_colOfNat c 6 (by norm_num))
 
 /-- The paper's (7,4) example code: column t has type t.val + 1. -/
 def example74 : Code 7 := fun t => colOfNat (t.val + 1)
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Consistency: |i| = 1 for every type i = 1..7 in the worked example. -/
-example : count example74 1 = 1 := by native_decide
-example : count example74 2 = 1 := by native_decide
-example : count example74 3 = 1 := by native_decide
-example : count example74 4 = 1 := by native_decide
-example : count example74 5 = 1 := by native_decide
-example : count example74 6 = 1 := by native_decide
-example : count example74 7 = 1 := by native_decide
-example : (∑ i ∈ Finset.Icc 1 7, count example74 i) = 7 := by native_decide
+example : count example74 1 = 1 := by decide
+example : count example74 2 = 1 := by decide
+example : count example74 3 = 1 := by decide
+example : count example74 4 = 1 := by decide
+example : count example74 5 = 1 := by decide
+example : count example74 6 = 1 := by decide
+example : count example74 7 = 1 := by decide
+example : (∑ i ∈ Finset.Icc 1 7, count example74 i) = 7 := by decide
 
 end N4Code

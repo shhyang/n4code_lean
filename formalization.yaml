@@ -1,0 +1,123 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "N4Code: optimal finite-length block codes of size four for binary symmetric channels"
+  description: >-
+    A Lean 4 and mathlib formalization of the Dong-Yang classification of
+    optimal (n,4) binary block codes for binary symmetric channels.  The
+    registered results are Theorems 1-5 of the paper: existence of an optimal
+    linear or Class-I code, the explicit linear optimal codes by residue class
+    modulo 3, the universal strict-improvement reductions outside the linear,
+    Class-I, and Class-II classes, the Class-I condition reduction to linear
+    codes, and the finite classification for blocklengths 2 <= n <= 8.
+    The Lean statements use the strict-improvement contrapositive forms.
+  authors:
+    - "Shenghao Yang"
+    - "Yanyan Dong"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "Shenghao Yang"
+
+classification:
+  arxiv: ["cs.IT", "math.IT"]
+  msc2020: ["94B05"]
+
+sources:
+  - title: "On Optimal Finite-Length Block Codes of Size Four for Binary Symmetric Channels"
+    authors:
+      - "Yanyan Dong"
+      - "Shenghao Yang"
+    id: "10.1109/TIT.2024.3504823"
+    type: "article"
+    location: "IEEE Transactions on Information Theory, vol. 71, no. 1, pp. 138-166, 2025"
+    relationship: "formalizes"
+    license: "unknown"
+    author_endorsement: "endorsed"
+
+related_formalizations: []
+
+status:
+  scope: >-
+    The Comparator targets are the self-contained statements of Theorems 1-5
+    in Challenge.lean.  Theorem 1 states that for every n >= 2 and every
+    crossover probability there is an optimal code that is linear or Class-I.
+    Theorem 2 gives the explicit linear optimal codes in the residue classes
+    n = 3k-1, 3k, and 3k+1, plus n = 3.  Theorem 3 states that any code not
+    equivalent to a linear, Class-I, or Class-II code is universally strictly
+    dominated.  Theorem 4 states the corresponding reduction to linear codes
+    under the paper's Class-I condition.  Theorem 5 gives the finite
+    classification for 2 <= n <= 8, including the explicit five-code
+    classification at n = 3.  The repository additionally proves the
+    supporting lemmas behind these results.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["Codex"]
+      framework: "OpenAI Codex"
+      tool_setup: "Lean 4 + mathlib; AI coding agents worked in parallel under human supervision to discharge proof obligations"
+      cost:
+        wall_time: "several weeks total; the final sorry-elimination phase took approximately 48 hours"
+        spend_usd: "not tracked"
+        hardware: "local machine and API"
+      prompting_notes: "Paper labels and Notation.md were supplied to the agents; theorem statements and design decisions were author-controlled."
+  spend_usd: "not tracked"
+  notes: "The proof scripts were developed with substantial AI assistance. Authors wrote the theorem statements, definitions, and overall architecture, and reviewed the machine-checked proofs."
+
+fidelity:
+  divergences: "No known divergence for the registered Theorem 1-5 statements. The companion note documents proof simplifications and notation/label clarifications in supporting material."
+
+review:
+  status: "self-assessed"
+  reviewers: []
+  notes: "The Lean kernel checks every proof. A separate axiom audit reports only propext, Classical.choice, and Quot.sound for the headline theorems."
+
+alignment:
+  namespace: "N4Code"
+  statements:
+    - source: "Theorem 1 (thm:two), existence of an optimal linear or Class-I code"
+      lean: "N4Code.palomar_thm1"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.optimal_in_linear_or_class1."
+    - source: "Theorem 2 (thm:linearopt), residue n = 3k-1"
+      lean: "N4Code.palomar_thm2_residue2"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.linear_opt_residue2."
+    - source: "Theorem 2 (thm:linearopt), n = 3"
+      lean: "N4Code.palomar_thm2_n3"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.linear_opt_n3."
+    - source: "Theorem 2 (thm:linearopt), residue n = 3k"
+      lean: "N4Code.palomar_thm2_residue0"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.linear_opt_residue0."
+    - source: "Theorem 2 (thm:linearopt), residue n = 3k+1"
+      lean: "N4Code.palomar_thm2_residue1"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.linear_opt_residue1."
+    - source: "Theorem 3 (thm:nbig3), strict improvement outside linear/Class-I/Class-II"
+      lean: "N4Code.palomar_thm3"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.universal_strict_better_of_not_class."
+    - source: "Theorem 4 (thm:condition_optimalcode), Class-I condition reduction to linear"
+      lean: "N4Code.palomar_thm4"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.universal_strict_better_of_not_linear."
+    - source: "Theorem 5 (thm:n8), finite classification for 2 <= n <= 8"
+      lean: "N4Code.palomar_thm5"
+      module: "Challenge"
+      status: "proved"
+      note: "Solution.lean proves it using N4Code.optimal_codes_small_n."
+
+acknowledgements: "This work builds on mathlib and the Lean theorem prover. The authors thank the Lean and mathlib communities."

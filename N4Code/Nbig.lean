@@ -17,6 +17,8 @@ Linear `thm:linearopt` (Theorem 2) residues.
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-- `hammingDist` between two rows is invariant under the cast bijection on
 positions (used to move from `linearCode` to the cast form `linCode`). -/
 lemma hammingDist_row_cast {m n : ℕ} (h : m = n) (C : Code m) (i j : Fin 4) :
@@ -37,7 +39,7 @@ lemma hammingDist_row_cast {m n : ℕ} (h : m = n) (C : Code m) (i j : Fin 4) :
     simp [row, colBit, hc]
     by_cases hb : C (Fin.cast h.symm t) i = C (Fin.cast h.symm t) j <;> simp [hb]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 1,2 (d01 = b+c). -/
 lemma linearCode_hDist_01 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨0, by decide⟩) (row (linearCode a b c) ⟨1, by decide⟩) = b + c := by
@@ -48,16 +50,16 @@ lemma linearCode_hDist_01 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨1, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 3 = false := by native_decide
-  have h3b : (3 : ℕ).testBit 2 = false := by native_decide
-  have h5a : (5 : ℕ).testBit 3 = false := by native_decide
-  have h5b : (5 : ℕ).testBit 2 = true := by native_decide
-  have h6a : (6 : ℕ).testBit 3 = false := by native_decide
-  have h6b : (6 : ℕ).testBit 2 = true := by native_decide
+  have h3a : (3 : ℕ).testBit 3 = false := by decide
+  have h3b : (3 : ℕ).testBit 2 = false := by decide
+  have h5a : (5 : ℕ).testBit 3 = false := by decide
+  have h5b : (5 : ℕ).testBit 2 = true := by decide
+  have h6a : (6 : ℕ).testBit 3 = false := by decide
+  have h6b : (6 : ℕ).testBit 2 = true := by decide
   simp [Finset.sum_insert, h3a, h3b, h5a, h5b, h6a, h6b,
     linear_count_5, linear_count_6]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 1,3 (d02 = a+c). -/
 lemma linearCode_hDist_02 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨0, by decide⟩) (row (linearCode a b c) ⟨2, by decide⟩) = a + c := by
@@ -68,16 +70,16 @@ lemma linearCode_hDist_02 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨2, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 3 = false := by native_decide
-  have h3b : (3 : ℕ).testBit 1 = true := by native_decide
-  have h5a : (5 : ℕ).testBit 3 = false := by native_decide
-  have h5b : (5 : ℕ).testBit 1 = false := by native_decide
-  have h6a : (6 : ℕ).testBit 3 = false := by native_decide
-  have h6b : (6 : ℕ).testBit 1 = true := by native_decide
+  have h3a : (3 : ℕ).testBit 3 = false := by decide
+  have h3b : (3 : ℕ).testBit 1 = true := by decide
+  have h5a : (5 : ℕ).testBit 3 = false := by decide
+  have h5b : (5 : ℕ).testBit 1 = false := by decide
+  have h6a : (6 : ℕ).testBit 3 = false := by decide
+  have h6b : (6 : ℕ).testBit 1 = true := by decide
   simp [Finset.sum_insert, h3a, h3b, h5a, h5b, h6a, h6b,
     linear_count_3, linear_count_6]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 1,4 (d03 = a+b). -/
 lemma linearCode_hDist_03 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨0, by decide⟩) (row (linearCode a b c) ⟨3, by decide⟩) = a + b := by
@@ -88,16 +90,16 @@ lemma linearCode_hDist_03 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨0, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 3 = false := by native_decide
-  have h3b : (3 : ℕ).testBit 0 = true := by native_decide
-  have h5a : (5 : ℕ).testBit 3 = false := by native_decide
-  have h5b : (5 : ℕ).testBit 0 = true := by native_decide
-  have h6a : (6 : ℕ).testBit 3 = false := by native_decide
-  have h6b : (6 : ℕ).testBit 0 = false := by native_decide
+  have h3a : (3 : ℕ).testBit 3 = false := by decide
+  have h3b : (3 : ℕ).testBit 0 = true := by decide
+  have h5a : (5 : ℕ).testBit 3 = false := by decide
+  have h5b : (5 : ℕ).testBit 0 = true := by decide
+  have h6a : (6 : ℕ).testBit 3 = false := by decide
+  have h6b : (6 : ℕ).testBit 0 = false := by decide
   simp [Finset.sum_insert, h3a, h5a, h6a,
     linear_count_3, linear_count_5]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 2,3 (d12 = a+b). -/
 lemma linearCode_hDist_12 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨1, by decide⟩) (row (linearCode a b c) ⟨2, by decide⟩) = a + b := by
@@ -108,16 +110,16 @@ lemma linearCode_hDist_12 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨1, by decide⟩ ⟨2, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 2 = false := by native_decide
-  have h3b : (3 : ℕ).testBit 1 = true := by native_decide
-  have h5a : (5 : ℕ).testBit 2 = true := by native_decide
-  have h5b : (5 : ℕ).testBit 1 = false := by native_decide
-  have h6a : (6 : ℕ).testBit 2 = true := by native_decide
-  have h6b : (6 : ℕ).testBit 1 = true := by native_decide
+  have h3a : (3 : ℕ).testBit 2 = false := by decide
+  have h3b : (3 : ℕ).testBit 1 = true := by decide
+  have h5a : (5 : ℕ).testBit 2 = true := by decide
+  have h5b : (5 : ℕ).testBit 1 = false := by decide
+  have h6a : (6 : ℕ).testBit 2 = true := by decide
+  have h6b : (6 : ℕ).testBit 1 = true := by decide
   simp [Finset.sum_insert, h3a, h3b, h5a, h5b, h6a, h6b,
     linear_count_3, linear_count_5]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 2,4 (d13 = a+c). -/
 lemma linearCode_hDist_13 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨1, by decide⟩) (row (linearCode a b c) ⟨3, by decide⟩) = a + c := by
@@ -128,16 +130,16 @@ lemma linearCode_hDist_13 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨1, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 2 = false := by native_decide
-  have h3b : (3 : ℕ).testBit 0 = true := by native_decide
-  have h5a : (5 : ℕ).testBit 2 = true := by native_decide
-  have h5b : (5 : ℕ).testBit 0 = true := by native_decide
-  have h6a : (6 : ℕ).testBit 2 = true := by native_decide
-  have h6b : (6 : ℕ).testBit 0 = false := by native_decide
+  have h3a : (3 : ℕ).testBit 2 = false := by decide
+  have h3b : (3 : ℕ).testBit 0 = true := by decide
+  have h5a : (5 : ℕ).testBit 2 = true := by decide
+  have h5b : (5 : ℕ).testBit 0 = true := by decide
+  have h6a : (6 : ℕ).testBit 2 = true := by decide
+  have h6b : (6 : ℕ).testBit 0 = false := by decide
   simp [Finset.sum_insert, h3a, h5a, h6a,
     linear_count_3, linear_count_6]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Pairwise row distances of `linearCode a b c`: rows 3,4 (d23 = b+c). -/
 lemma linearCode_hDist_23 (a b c : ℕ) :
     hammingDist (row (linearCode a b c) ⟨2, by decide⟩) (row (linearCode a b c) ⟨3, by decide⟩) = b + c := by
@@ -148,12 +150,12 @@ lemma linearCode_hDist_23 (a b c : ℕ) :
     · simp [h5]
     · simp [h6]
   rw [hammingDist_rows_of_types (linearCode a b c) ⟨2, by decide⟩ ⟨3, by decide⟩ ({3, 5, 6} : Finset ℕ) hS]
-  have h3a : (3 : ℕ).testBit 1 = true := by native_decide
-  have h3b : (3 : ℕ).testBit 0 = true := by native_decide
-  have h5a : (5 : ℕ).testBit 1 = false := by native_decide
-  have h5b : (5 : ℕ).testBit 0 = true := by native_decide
-  have h6a : (6 : ℕ).testBit 1 = true := by native_decide
-  have h6b : (6 : ℕ).testBit 0 = false := by native_decide
+  have h3a : (3 : ℕ).testBit 1 = true := by decide
+  have h3b : (3 : ℕ).testBit 0 = true := by decide
+  have h5a : (5 : ℕ).testBit 1 = false := by decide
+  have h5b : (5 : ℕ).testBit 0 = true := by decide
+  have h6a : (6 : ℕ).testBit 1 = true := by decide
+  have h6b : (6 : ℕ).testBit 0 = false := by decide
   simp [Finset.sum_insert, h3a, h5a, h6a,
     linear_count_5, linear_count_6]
 
@@ -607,7 +609,7 @@ lemma weight04Count_equiv {n : ℕ} {C C' : Code n} (h : Equivalent C C') :
       simpa using (Finset.mem_filter.mp hb).2
     exact Finset.mem_filter.mpr ⟨by simp, (hiff (p.symm b)).mp hb'⟩
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- A C0-form code's weight-0/4 columns are exactly its type-0 columns. -/
 lemma weight04Count_c0form {n : ℕ} (C : Code n) (h : C0form C) :
     weight04Count C = count C 0 := by
@@ -622,23 +624,23 @@ lemma weight04Count_c0form {n : ℕ} (C : Code n) (h : C0form C) :
     · exact Finset.mem_filter.mpr ⟨by simp, h0⟩
     · exfalso
       have hc5 : C t = colOfNat 5 := by rw [← colOfNat_colVal (C t), h5]
-      have hw5 : colWeight (C t) = 2 := by rw [hc5]; native_decide
+      have hw5 : colWeight (C t) = 2 := by rw [hc5]; decide
       rcases hw' with h0' | h4' <;> omega
     · exfalso
       have hc6 : C t = colOfNat 6 := by rw [← colOfNat_colVal (C t), h6]
-      have hw6 : colWeight (C t) = 2 := by rw [hc6]; native_decide
+      have hw6 : colWeight (C t) = 2 := by rw [hc6]; decide
       rcases hw' with h0' | h4' <;> omega
   · intro hv
     have hv' := (Finset.mem_filter.mp hv).2
     have hc : C t = col0 := (colVal_eq_zero_iff_col0 (C t)).mp hv'
-    exact Finset.mem_filter.mpr ⟨by simp, by rw [hc]; native_decide⟩
+    exact Finset.mem_filter.mpr ⟨by simp, by rw [hc]; decide⟩
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Replacing a type-0 column by type 3 lowers the weight-0/4 count by one. -/
 lemma weight04Count_replaced {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col0) :
     weight04Count (replaceColumn C t col3) = weight04Count C - 1 := by
   unfold weight04Count
-  have hw0 : colWeight col0 = 0 := by native_decide
+  have hw0 : colWeight col0 = 0 := by decide
   have hmem : t ∈ (Finset.univ.filter fun u : Fin n => colWeight (C u) = 0 ∨ colWeight (C u) = 4) := by
     exact Finset.mem_filter.mpr ⟨by simp, Or.inl (by rw [ht]; exact hw0)⟩
   have hfilter : (Finset.univ.filter fun u : Fin n =>
@@ -652,7 +654,7 @@ lemma weight04Count_replaced {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col0
         have hc : replaceColumn C t col3 t = col3 := by simp [replaceColumn]
         have hu' := (Finset.mem_filter.mp hu).2
         rw [hc] at hu'
-        have hw3 : colWeight col3 = 2 := by native_decide
+        have hw3 : colWeight col3 = 2 := by decide
         rcases hu' with h0' | h4' <;> omega
       · have hsame : replaceColumn C t col3 u = C u := by simp [replaceColumn, hut]
         exact Finset.mem_erase.mpr ⟨hut, Finset.mem_filter.mpr ⟨by simp, by simpa [hsame] using hu⟩⟩
@@ -993,11 +995,11 @@ lemma noStrict_of_equal {n : ℕ} {D C : Code n} (hEq : UniversalEqual D C)
 `thm:nbig3` (Theorem 3), using `thm:0column` (Theorem 6) and `cor:0col`
 (Corollary 7); the C0-form case reduces to a strictly dominated linear
 code). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
     (hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False)
     (t : Fin n) (ht : C t = col0) : False := by
-  have h0pos : 1 ≤ count C 0 := count_pos_of_colVal C t (by rw [ht]; native_decide)
+  have h0pos : 1 ≤ count C 0 := count_pos_of_colVal C t (by rw [ht]; decide)
   by_cases hC0 : ∃ C0, Equivalent C C0 ∧ C0form C0
   · rcases hC0 with ⟨C0, hEq, hC0f⟩
     have hnoStrictC0 : ∀ D : Code n, UniversalStrictBetter D C0 → False :=
@@ -1006,7 +1008,7 @@ lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
       have hwC : 1 ≤ weight04Count C := by
         unfold weight04Count
         have hmem : t ∈ (Finset.univ.filter fun u : Fin n => colWeight (C u) = 0 ∨ colWeight (C u) = 4) := by
-          exact Finset.mem_filter.mpr ⟨by simp, Or.inl (by rw [ht]; native_decide)⟩
+          exact Finset.mem_filter.mpr ⟨by simp, Or.inl (by rw [ht]; decide)⟩
         exact Nat.succ_le_of_lt (Finset.card_pos.mpr ⟨t, hmem⟩)
       have hw0 : count C0 0 = weight04Count C :=
         ((weight04Count_equiv hEq).trans (weight04Count_c0form C0 hC0f)).symm
@@ -1021,10 +1023,10 @@ lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
       noStrict_of_equal hEqL1 hnoStrictC0
     by_cases h1 : count C0 0 = 1
     · have hc0L1 : count L1 0 = 0 := by
-        have hc := count_replace_dec C0 t0 col3 0 (by rw [ht0']; native_decide) (by native_decide)
+        have hc := count_replace_dec C0 t0 col3 0 (by rw [ht0']; decide) (by decide)
         rw [hc, h1]
       have hc3 : count L1 3 = 1 := by
-        have hc := count_replace_inc C0 t0 col3 3 (by rw [ht0']; native_decide) (by native_decide)
+        have hc := count_replace_inc C0 t0 col3 3 (by rw [ht0']; decide) (by decide)
         rw [hc]
         have h3z : count C0 3 = 0 := by
           rw [count_eq_card, Finset.card_eq_zero, Finset.eq_empty_iff_forall_notMem]
@@ -1036,9 +1038,9 @@ lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
           · rw [h6] at hcv; norm_num at hcv
         omega
       have hc5 : count L1 5 = count C0 5 :=
-        count_replace_eq C0 t0 col3 5 (by rw [ht0']; native_decide) (by native_decide)
+        count_replace_eq C0 t0 col3 5 (by rw [ht0']; decide) (by decide)
       have hc6 : count L1 6 = count C0 6 :=
-        count_replace_eq C0 t0 col3 6 (by rw [ht0']; native_decide) (by native_decide)
+        count_replace_eq C0 t0 col3 6 (by rw [ht0']; decide) (by decide)
       have hlinL1 : IsLinear L1 := by
         constructor
         · intro u
@@ -1046,7 +1048,7 @@ lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
           · subst u
             have hcu : L1 t0 = col3 := by simp [L1, replaceColumn]
             rw [hcu]
-            right; left; native_decide
+            right; left; decide
           · have hcu : L1 u = C0 u := by simp [L1, replaceColumn, hu]
             rcases C0form_types C0 hC0f u with h0 | h5 | h6
             · left; rw [hcu, h0]
@@ -1089,7 +1091,7 @@ lemma zero_column_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n}
       have hnotC0L1 : ¬ ∃ C0', Equivalent L1 C0' ∧ C0form C0' :=
         c0form_replaced_not_equiv_c0form C0 hC0f t0 ht0' h2
       have h0posL1 : 1 ≤ count L1 0 := by
-        have hc := count_replace_dec C0 t0 col3 0 (by rw [ht0']; native_decide) (by native_decide)
+        have hc := count_replace_dec C0 t0 col3 0 (by rw [ht0']; decide) (by decide)
         rw [hc]
         omega
       rcases zero_column_strict L1 h0posL1 hnotC0L1 with ⟨t', ht', s', hs', hstrict⟩
@@ -1115,7 +1117,7 @@ lemma count_zero_of_13567 {n : ℕ} (C : Code n) (h : totalCounts C {1, 3, 5, 6,
 /-- A Class-III code with n > 3 is not optimal: its equivalent-λ linear image
 has one of |5|,|6| zero and the other two counts positive, and is strictly
 dominated by the canonical optimal linear code. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
     (hnoStrict : ∀ D : Code n, UniversalStrictBetter D C → False) : False := by
   rcases h with ⟨htot, hpar⟩
@@ -1150,8 +1152,8 @@ lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
     rcases exists_col7_of_count_pos C h7ge with ⟨t2, ht7⟩
     have htne : t1 ≠ t2 := by
       intro h
-      have hv1 : colVal (C t1) = 1 := by rw [ht1]; native_decide
-      have hv7 : colVal (C t2) = 7 := by rw [ht7]; native_decide
+      have hv1 : colVal (C t1) = 1 := by rw [ht1]; decide
+      have hv7 : colVal (C t2) = 7 := by rw [ht7]; decide
       rw [h] at hv1
       omega
     let C1 : Code n := replaceColumn C t1 col3
@@ -1169,51 +1171,51 @@ lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
     have hz0 : count L 0 = 0 := by
       have hc0C : count C 0 = 0 := count_zero_of_13567 C htot
       have hc1 : count C1 0 = count C 0 :=
-        count_replace_eq C t1 col3 0 (by rw [ht1]; native_decide) (by native_decide)
+        count_replace_eq C t1 col3 0 (by rw [ht1]; decide) (by decide)
       have hc2 : count L 0 = count C1 0 :=
         count_replace_eq C1 t2 col5 0 (by
           have hcv : colVal (C1 t2) = 7 := by
             change colVal (if t2 = t1 then col3 else C t2) = 7
             rw [if_neg (Ne.symm htne)]
             rw [ht7]
-            native_decide
-          omega) (by native_decide)
+            decide
+          omega) (by decide)
       rw [hc2, hc1, hc0C]
     have hc3L : count L 3 = count C 3 + 1 := by
       have hc1' : count C1 3 = count C 3 + 1 :=
-        count_replace_inc C t1 col3 3 (by rw [ht1]; native_decide) (by native_decide)
+        count_replace_inc C t1 col3 3 (by rw [ht1]; decide) (by decide)
       have hc2' : count L 3 = count C1 3 :=
         count_replace_eq C1 t2 col5 3 (by
           have hcv : colVal (C1 t2) = 7 := by
             change colVal (if t2 = t1 then col3 else C t2) = 7
             rw [if_neg (Ne.symm htne)]
             rw [ht7]
-            native_decide
-          omega) (by native_decide)
+            decide
+          omega) (by decide)
       rw [hc2', hc1']
     have hc5L : count L 5 = count C 5 + 1 := by
       have hc1' : count C1 5 = count C 5 :=
-        count_replace_eq C t1 col3 5 (by rw [ht1]; native_decide) (by native_decide)
+        count_replace_eq C t1 col3 5 (by rw [ht1]; decide) (by decide)
       have hc2' : count L 5 = count C1 5 + 1 :=
         count_replace_inc C1 t2 col5 5 (by
           have hcv : colVal (C1 t2) = 7 := by
             change colVal (if t2 = t1 then col3 else C t2) = 7
             rw [if_neg (Ne.symm htne)]
             rw [ht7]
-            native_decide
-          omega) (by native_decide)
+            decide
+          omega) (by decide)
       rw [hc2', hc1']
     have hc6L : count L 6 = 0 := by
       have hc1' : count C1 6 = count C 6 :=
-        count_replace_eq C t1 col3 6 (by rw [ht1]; native_decide) (by native_decide)
+        count_replace_eq C t1 col3 6 (by rw [ht1]; decide) (by decide)
       have hc2' : count L 6 = count C1 6 :=
         count_replace_eq C1 t2 col5 6 (by
           have hcv : colVal (C1 t2) = 7 := by
             change colVal (if t2 = t1 then col3 else C t2) = 7
             rw [if_neg (Ne.symm htne)]
             rw [ht7]
-            native_decide
-          omega) (by native_decide)
+            decide
+          omega) (by decide)
       rw [hc2', hc1', h6eq]
     have hlinL : IsLinear L := by
       constructor
@@ -1222,24 +1224,24 @@ lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
         · subst t
           have hcu : L t1 = col3 := by simp [L, C1, replaceColumn, htne]
           rw [hcu]
-          right; left; native_decide
+          right; left; decide
         · by_cases ht2' : t = t2
           · subst t
             have hcu : L t2 = col5 := by simp [L, C1, replaceColumn]
             rw [hcu]
-            right; right; left; native_decide
+            right; right; left; decide
           · have hcu : L t = C t := by simp [L, C1, replaceColumn, ht1', ht2']
             have hm := colVal_mem_of_totalCounts C ({1, 3, 5, 6, 7} : Finset ℕ) htot t
             simp [Finset.mem_insert, Finset.mem_singleton] at hm
             rcases hm with h1 | h3 | h5 | h6 | h7
             · exfalso
-              have hge2 : 2 ≤ count C 1 := count_ge_two_of_two C 1 t1 t (Ne.symm ht1') (by rw [ht1]; native_decide) h1
+              have hge2 : 2 ≤ count C 1 := count_ge_two_of_two C 1 t1 t (Ne.symm ht1') (by rw [ht1]; decide) h1
               omega
             · right; left; rw [hcu, h3]
             · right; right; left; rw [hcu, h5]
             · right; right; right; rw [hcu, h6]
             · exfalso
-              have hge2 : 2 ≤ count C 7 := count_ge_two_of_two C 7 t2 t (Ne.symm ht2') (by rw [ht7]; native_decide) h7
+              have hge2 : 2 ≤ count C 7 := count_ge_two_of_two C 7 t2 t (Ne.symm ht2') (by rw [ht7]; decide) h7
               omega
       · left; constructor
         · rw [hc3L]; omega
@@ -1282,15 +1284,15 @@ lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
     have hz0 : count L 0 = 0 := by
       have hc0C : count C 0 = 0 := count_zero_of_13567 C htot
       have hc1 : count L 0 = count C 0 :=
-        count_replace_eq C t1 col3 0 (by rw [ht1]; native_decide) (by native_decide)
+        count_replace_eq C t1 col3 0 (by rw [ht1]; decide) (by decide)
       rw [hc1, hc0C]
     have hc3L : count L 3 = count C 3 + 1 :=
-      count_replace_inc C t1 col3 3 (by rw [ht1]; native_decide) (by native_decide)
+      count_replace_inc C t1 col3 3 (by rw [ht1]; decide) (by decide)
     have hc5L : count L 5 = 0 := by
-      have hc := count_replace_eq C t1 col3 5 (by rw [ht1]; native_decide) (by native_decide)
+      have hc := count_replace_eq C t1 col3 5 (by rw [ht1]; decide) (by decide)
       rw [hc, h5eq]
     have hc6L : count L 6 = count C 6 :=
-      count_replace_eq C t1 col3 6 (by rw [ht1]; native_decide) (by native_decide)
+      count_replace_eq C t1 col3 6 (by rw [ht1]; decide) (by decide)
     have hlinL : IsLinear L := by
       constructor
       · intro t
@@ -1298,13 +1300,13 @@ lemma classIII_not_optimal {n : ℕ} (hn : 3 < n) {C : Code n} (h : ClassIII C)
         · subst t
           have hcu : L t1 = col3 := by simp [L, replaceColumn]
           rw [hcu]
-          right; left; native_decide
+          right; left; decide
         · have hcu : L t = C t := by simp [L, replaceColumn, ht1']
           have hm := colVal_mem_of_totalCounts C ({1, 3, 5, 6, 7} : Finset ℕ) htot t
           simp [Finset.mem_insert, Finset.mem_singleton] at hm
           rcases hm with h1 | h3 | h5 | h6 | h7
           · exfalso
-            have hge2 : 2 ≤ count C 1 := count_ge_two_of_two C 1 t1 t (Ne.symm ht1') (by rw [ht1]; native_decide) h1
+            have hge2 : 2 ≤ count C 1 := count_ge_two_of_two C 1 t1 t (Ne.symm ht1') (by rw [ht1]; decide) h1
             omega
           · right; left; rw [hcu, h3]
           · exfalso
@@ -1359,7 +1361,7 @@ lemma row_of_two_columns {n : ℕ} {C : Code n} {t : Fin n} (colA colB : Column)
 
 /-- Class-I rows 0 and 1 coincide only if |5| = |6| = 0 (types 5 and 6 are
 the only types whose bits 3 and 2 differ). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma count56_zero_of_row01_eq {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -1372,11 +1374,11 @@ lemma count56_zero_of_row01_eq {n : ℕ} (C : Code n)
     have hb0 : row0 C u = false := by
       change colBit ⟨0, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb1 : row1 C u = true := by
       change colBit ⟨1, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb0, hb1] at htu
     exact Bool.noConfusion htu
   · by_contra h6
@@ -1386,17 +1388,17 @@ lemma count56_zero_of_row01_eq {n : ℕ} (C : Code n)
     have hb0 : row0 C u = false := by
       change colBit ⟨0, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb1 : row1 C u = true := by
       change colBit ⟨1, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb0, hb1] at htu
     exact Bool.noConfusion htu
 
 /-- Class-I rows 0 and 2 coincide only if |3| = |6| = 0 (types 3 and 6 are
 the only types whose bits 3 and 1 differ). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma count36_zero_of_row02_eq {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -1409,11 +1411,11 @@ lemma count36_zero_of_row02_eq {n : ℕ} (C : Code n)
     have hb0 : row0 C u = false := by
       change colBit ⟨0, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb2 : row2 C u = true := by
       change colBit ⟨2, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb0, hb2] at htu
     exact Bool.noConfusion htu
   · by_contra h6
@@ -1423,17 +1425,17 @@ lemma count36_zero_of_row02_eq {n : ℕ} (C : Code n)
     have hb0 : row0 C u = false := by
       change colBit ⟨0, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb2 : row2 C u = true := by
       change colBit ⟨2, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb0, hb2] at htu
     exact Bool.noConfusion htu
 
 /-- Class-I rows 1 and 2 coincide only if |3| = |5| = 0 (types 3 and 5 are
 the only types whose bits 2 and 1 differ). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma count35_zero_of_row12_eq {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -1446,11 +1448,11 @@ lemma count35_zero_of_row12_eq {n : ℕ} (C : Code n)
     have hb1 : row1 C u = false := by
       change colBit ⟨1, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb2 : row2 C u = true := by
       change colBit ⟨2, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb1, hb2] at htu
     exact Bool.noConfusion htu
   · by_contra h5
@@ -1460,15 +1462,15 @@ lemma count35_zero_of_row12_eq {n : ℕ} (C : Code n)
     have hb1 : row1 C u = true := by
       change colBit ⟨1, by decide⟩ (C u) = true
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     have hb2 : row2 C u = false := by
       change colBit ⟨2, by decide⟩ (C u) = false
       rw [colBit_eq_testBit, hu]
-      native_decide
+      decide
     rw [hb1, hb2] at htu
     exact Bool.noConfusion htu
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Rows 0 and 3 of a {1,3,5,6}-code with a type-1 column are distinct. -/
 lemma row03_ne_of_types1356 {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
@@ -1480,15 +1482,15 @@ lemma row03_ne_of_types1356 {n : ℕ} (C : Code n)
   have hb0 : row0 C t = false := by
     change colBit ⟨0, by decide⟩ (C t) = false
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   have hb3 : row3 C t = true := by
     change colBit ⟨3, by decide⟩ (C t) = true
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   rw [hb0, hb3] at htu
   exact Bool.noConfusion htu
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Rows 1 and 3 of a {1,3,5,6}-code with a type-1 column are distinct. -/
 lemma row13_ne_of_types1356 {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
@@ -1500,15 +1502,15 @@ lemma row13_ne_of_types1356 {n : ℕ} (C : Code n)
   have hb1 : row1 C t = false := by
     change colBit ⟨1, by decide⟩ (C t) = false
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   have hb3 : row3 C t = true := by
     change colBit ⟨3, by decide⟩ (C t) = true
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   rw [hb1, hb3] at htu
   exact Bool.noConfusion htu
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Rows 2 and 3 of a {1,3,5,6}-code with a type-1 column are distinct. -/
 lemma row23_ne_of_types1356 {n : ℕ} (C : Code n)
     (_htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
@@ -1520,11 +1522,11 @@ lemma row23_ne_of_types1356 {n : ℕ} (C : Code n)
   have hb2 : row2 C t = false := by
     change colBit ⟨2, by decide⟩ (C t) = false
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   have hb3 : row3 C t = true := by
     change colBit ⟨3, by decide⟩ (C t) = true
     rw [colBit_eq_testBit, ht]
-    native_decide
+    decide
   rw [hb2, hb3] at htu
   exact Bool.noConfusion htu
 
@@ -1602,7 +1604,7 @@ the missing word with a single 1 at the replaced position.
 Instantiates `thm:11` (Theorem 16) on the |5| = |6| = 0 duplicate-row
 profile (s = argmin is 5); used in `classI_count1_not_optimal`, proof of
 `thm:nbig3` (Theorem 3). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma strict_better_col1_col3_to_col5 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t : Fin n)
     (ht : C t = col1) (hall : ∀ u : Fin n, u ≠ t → C u = col3) :
     ∃ D : Code n, UniversalStrictBetter D C := by
@@ -1617,22 +1619,22 @@ lemma strict_better_col1_col3_to_col5 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t 
     · refine ⟨0, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨0, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
-      · simp [row, hall u hu, hDall u hu]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
+      · simp [row, hall u hu, hDall u hu]; decide
     · refine ⟨2, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨3, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
   have hnew : ∃ j' : Fin 4, ∀ j : Fin 4, row C j ≠ row D j' := by
     refine ⟨1, ?_⟩
@@ -1662,7 +1664,7 @@ the missing word with a single 1 at the replaced position.
 Instantiates `thm:11` (Theorem 16) on the |3| = |6| = 0 duplicate-row
 profile (s = argmin is 3); used in `classI_count1_not_optimal`, proof of
 `thm:nbig3` (Theorem 3). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma strict_better_col1_col5_to_col3 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t : Fin n)
     (ht : C t = col1) (hall : ∀ u : Fin n, u ≠ t → C u = col5) :
     ∃ D : Code n, UniversalStrictBetter D C := by
@@ -1677,22 +1679,22 @@ lemma strict_better_col1_col5_to_col3 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t 
     · refine ⟨0, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨1, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨0, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
-      · simp [row, hall u hu, hDall u hu]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
+      · simp [row, hall u hu, hDall u hu]; decide
     · refine ⟨3, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
   have hnew : ∃ j' : Fin 4, ∀ j : Fin 4, row C j ≠ row D j' := by
     refine ⟨2, ?_⟩
@@ -1722,7 +1724,7 @@ the all-ones word.
 Instantiates `thm:11` (Theorem 16) on the |3| = |5| = 0 duplicate-row
 profile (s = argmin is 3); used in `classI_count1_not_optimal`, proof of
 `thm:nbig3` (Theorem 3). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma strict_better_col1_col6_to_col3 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t : Fin n)
     (ht : C t = col1) (hall : ∀ u : Fin n, u ≠ t → C u = col6) :
     ∃ D : Code n, UniversalStrictBetter D C := by
@@ -1737,22 +1739,22 @@ lemma strict_better_col1_col6_to_col3 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t 
     · refine ⟨0, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨1, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
     · refine ⟨1, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
-      · simp [row, hall u hu, hDall u hu]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
+      · simp [row, hall u hu, hDall u hu]; decide
     · refine ⟨3, ?_⟩
       funext u
       by_cases hu : u = t
-      · subst u; simp [row, ht, hDt]; native_decide
+      · subst u; simp [row, ht, hDt]; decide
       · simp [row, hall u hu, hDall u hu]
   have hnew : ∃ j' : Fin 4, ∀ j : Fin 4, row C j ≠ row D j' := by
     refine ⟨2, ?_⟩
@@ -1780,7 +1782,7 @@ lemma strict_better_col1_col6_to_col3 {n : ℕ} (hn2 : 2 ≤ n) (C : Code n) (t 
 /-- A Class-I code with |1| = 1 and n > 3 is strictly dominated: either
 `thm:11` (Theorem 16) applies (distinct rows) or one of the three duplicate-row profiles
 above has a strictly better replacement. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma classI_count1_not_optimal {n : ℕ} (hn : n > 3) {C : Code n}
     (h : ClassI C) (h1 : count C 1 = 1) :
     ∃ D : Code n, UniversalStrictBetter D C := by
@@ -1795,7 +1797,7 @@ lemma classI_count1_not_optimal {n : ℕ} (hn : n > 3) {C : Code n}
         intro u hu
         rcases htypes u with h1' | h3' | h5' | h6'
         · have hge2 : 2 ≤ count C 1 :=
-            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; native_decide) h1'
+            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; decide) h1'
           omega
         · exact (colVal_eq_three_iff_col3 (C u)).1 h3'
         · have hp : 1 ≤ count C 5 := count_pos_of_colVal C u h5'
@@ -1808,7 +1810,7 @@ lemma classI_count1_not_optimal {n : ℕ} (hn : n > 3) {C : Code n}
         intro u hu
         rcases htypes u with h1' | h3' | h5' | h6'
         · have hge2 : 2 ≤ count C 1 :=
-            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; native_decide) h1'
+            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; decide) h1'
           omega
         · have hp : 1 ≤ count C 3 := count_pos_of_colVal C u h3'
           omega
@@ -1821,7 +1823,7 @@ lemma classI_count1_not_optimal {n : ℕ} (hn : n > 3) {C : Code n}
         intro u hu
         rcases htypes u with h1' | h3' | h5' | h6'
         · have hge2 : 2 ≤ count C 1 :=
-            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; native_decide) h1'
+            count_ge_two_of_two C 1 t u (Ne.symm hu) (by rw [ht]; decide) h1'
           omega
         · have hp : 1 ≤ count C 3 := count_pos_of_colVal C u h3'
           omega
@@ -1830,35 +1832,35 @@ lemma classI_count1_not_optimal {n : ℕ} (hn : n > 3) {C : Code n}
         · exact (colVal_eq_six_iff_col6 (C u)).1 h6'
       exact strict_better_col1_col6_to_col3 (by omega : 2 ≤ n) C t ht hall
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Replacing a type-1 column by the argmin type lowers |1| by one. -/
 lemma count_replace_argmin_1 {n : ℕ} (C : Code n) (t : Fin n) (ht : C t = col1) :
     count (replaceColumn C t (argminType C)) 1 = count C 1 - 1 :=
   count_replace_dec C t (argminType C) 1
-    (by rw [ht]; native_decide)
+    (by rw [ht]; decide)
     (by
       rcases argminType_is_type C with h3 | h5 | h6
-      · rw [h3]; native_decide
-      · rw [h5]; native_decide
-      · rw [h6]; native_decide)
+      · rw [h3]; decide
+      · rw [h5]; decide
+      · rw [h6]; decide)
 
 /-- Replacing a type-1 column by `col3` in a Class-I code with |1| ≥ 3 gives
 a Class-II code: |1| becomes even and |3| flips parity, which is exactly
 Class-II-b when |3|,|5|,|6| were even and Class-II-a when they were odd. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma classI_replace_col3_is_classII {n : ℕ} (C : Code n) (t : Fin n) (h : ClassI C)
     (hge3 : 3 ≤ count C 1) (ht : C t = col1) :
     ClassII (replaceColumn C t col3) := by
   rcases h with ⟨hodd1, hpar, htotal⟩
   let C1 : Code n := replaceColumn C t col3
   have hc1_1 : count C1 1 = count C 1 - 1 := by
-    simpa [C1] using count_replace_dec C t col3 1 (by rw [ht]; native_decide) (by native_decide)
+    simpa [C1] using count_replace_dec C t col3 1 (by rw [ht]; decide) (by decide)
   have hc1_3 : count C1 3 = count C 3 + 1 := by
-    simpa [C1] using count_replace_inc C t col3 3 (by rw [ht]; native_decide) (by native_decide)
+    simpa [C1] using count_replace_inc C t col3 3 (by rw [ht]; decide) (by decide)
   have hc1_5 : count C1 5 = count C 5 := by
-    simpa [C1] using count_replace_eq C t col3 5 (by rw [ht]; native_decide) (by native_decide)
+    simpa [C1] using count_replace_eq C t col3 5 (by rw [ht]; decide) (by decide)
   have hc1_6 : count C1 6 = count C 6 := by
-    simpa [C1] using count_replace_eq C t col3 6 (by rw [ht]; native_decide) (by native_decide)
+    simpa [C1] using count_replace_eq C t col3 6 (by rw [ht]; decide) (by decide)
   have hpos1 : 0 < count C1 1 := by
     rcases hodd1 with ⟨k, hk⟩
     have hk1 : 1 ≤ k := by
@@ -1906,7 +1908,7 @@ lemma classI_replace_col3_is_classII {n : ℕ} (C : Code n) (t : Fin n) (h : Cla
 /-- One descent step: a Class-I code with |1| ≥ 3 is dominated (via the
 `thm:condition_optimalcode` (Theorem 4) hypothesis) by a Class-I code with |1| reduced
 by 2, obtained by the argmin replacement followed by `thm:class2` (Lemma 14). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma classI_descend_one {n : ℕ} (_hn : n > 3)
     (hcond : ∀ C : Code n, ClassI C → count C 1 ≥ 3 → ∀ t : Fin n, C t = col1 →
       UniversalBetter (replaceColumn C t (argminType C)) C)
@@ -1944,11 +1946,11 @@ lemma classI_descend_one {n : ℕ} (_hn : n > 3)
     have hc1_1 : count C1 1 = count C 1 - 1 := by
       simpa [C1, harg] using count_replace_argmin_1 C t ht
     have hc1_3 : count C1 3 = count C 3 := by
-      simpa [C1, harg] using count_replace_eq C t col5 3 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_eq C t col5 3 (by rw [ht]; decide) (by decide)
     have hc1_5 : count C1 5 = count C 5 + 1 := by
-      simpa [C1, harg] using count_replace_inc C t col5 5 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_inc C t col5 5 (by rw [ht]; decide) (by decide)
     have hc1_6 : count C1 6 = count C 6 := by
-      simpa [C1, harg] using count_replace_eq C t col5 6 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_eq C t col5 6 (by rw [ht]; decide) (by decide)
     have hD_1 : count D 1 = count C 1 - 1 := by
       simpa [D] using (count_swap12Code_one C1 htypesC1).trans hc1_1
     have hD_3 : count D 3 = count C 5 + 1 := by
@@ -2010,11 +2012,11 @@ lemma classI_descend_one {n : ℕ} (_hn : n > 3)
     have hc1_1 : count C1 1 = count C 1 - 1 := by
       simpa [C1, harg] using count_replace_argmin_1 C t ht
     have hc1_3 : count C1 3 = count C 3 := by
-      simpa [C1, harg] using count_replace_eq C t col6 3 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_eq C t col6 3 (by rw [ht]; decide) (by decide)
     have hc1_5 : count C1 5 = count C 5 := by
-      simpa [C1, harg] using count_replace_eq C t col6 5 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_eq C t col6 5 (by rw [ht]; decide) (by decide)
     have hc1_6 : count C1 6 = count C 6 + 1 := by
-      simpa [C1, harg] using count_replace_inc C t col6 6 (by rw [ht]; native_decide) (by native_decide)
+      simpa [C1, harg] using count_replace_inc C t col6 6 (by rw [ht]; decide) (by decide)
     have hD_1 : count D 1 = count C 1 - 1 := by
       simpa [D] using (count_swap36Code_one C1 htypesC1).trans hc1_1
     have hD_3 : count D 3 = count C 6 + 1 := by
@@ -2142,7 +2144,7 @@ theorem equivalent_class_of_no_universal_strict_better (n : ℕ) (hn : n > 3) (C
       have hfc0 : flipCol (C t) = col0 := (colVal_eq_zero_iff_col0 (flipCol (C t))).mp hflip0
       have hc0 : flipHighColumns C t = col0 := by
         unfold flipHighColumns
-        have hgt7 : 7 < colVal (C t) := by rw [hv15]; native_decide
+        have hgt7 : 7 < colVal (C t) := by rw [hv15]; decide
         rw [if_pos (decide_eq_true hgt7)]
         exact hfc0
       have hEq1 : Equivalent C (flipHighColumns C) := flipHighColumns_equiv C
@@ -2173,7 +2175,7 @@ theorem universal_strict_better_of_not_class (n : ℕ) (hn : n > 3) (C : Code n)
 
 /-- Per-ε corollary of Theorem `thm:nbig3` (Theorem 3): for n > 3, every code optimal at a
 fixed crossover probability ε is equivalent to a linear, Class-I, or Class-II code. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem optimal_equivalent_linear_class1_class2 (n : ℕ) (hn : n > 3) :
     ∀ ε : ℝ, 0 < ε → ε < 1 / 2 → ∀ C : Code n,
       OptimalAt C ε →

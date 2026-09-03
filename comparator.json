@@ -1,0 +1,17 @@
+{
+  "challenge_module": "Challenge",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "N4Code.palomar_thm1",
+    "N4Code.palomar_thm2_residue2",
+    "N4Code.palomar_thm2_n3",
+    "N4Code.palomar_thm2_residue0",
+    "N4Code.palomar_thm2_residue1",
+    "N4Code.palomar_thm3",
+    "N4Code.palomar_thm4",
+    "N4Code.palomar_thm5"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

@@ -17,6 +17,8 @@ open scoped BigOperators
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-! ## The decoding-probability weight is strictly decreasing in distance -/
 
 /-- The contribution of a word at distance x to λ_C(ε). -/
@@ -286,15 +288,15 @@ lemma colWeight_rowPermute (ρ : Equiv (Fin 4) (Fin 4)) (c : Column) :
     · simpa using hb
     · simp
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Column flips change weight w to 4 − w. -/
 lemma colWeight_flip : ∀ c : Column, colWeight (flipCol c) = 4 - colWeight c := by
-  native_decide
+  decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Column weights are at most 4. -/
 lemma colWeight_le_4 : ∀ c : Column, colWeight c ≤ 4 := by
-  native_decide
+  decide
 
 /-- `UniversalBetter` is reflexive. -/
 lemma universalBetter_refl {n : ℕ} (C : Code n) : UniversalBetter C C := by
@@ -345,29 +347,29 @@ lemma allEvenWeights_equiv {n : ℕ} (C C' : Code n) (h : Equivalent C C') :
   · intro hc t
     exact (even_weight_iff (hrel t) (colWeight_le_4 _) (colWeight_le_4 _)).mp (hc (p t))
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Linear codes have only even-weight columns. -/
 lemma IsLinear_all_even {n : ℕ} (C : Code n) (h : IsLinear C) : allEvenWeights C := by
   intro t
   rcases h.1 t with h0 | h3 | h5 | h6
   · have : colWeight (C t) = 0 := by
       rw [← colOfNat_colVal (C t), h0]
-      native_decide
+      decide
     rw [this]
     exact ⟨0, by omega⟩
   · have : colWeight (C t) = 2 := by
       rw [← colOfNat_colVal (C t), h3]
-      native_decide
+      decide
     rw [this]
     exact ⟨1, by omega⟩
   · have : colWeight (C t) = 2 := by
       rw [← colOfNat_colVal (C t), h5]
-      native_decide
+      decide
     rw [this]
     exact ⟨1, by omega⟩
   · have : colWeight (C t) = 2 := by
       rw [← colOfNat_colVal (C t), h6]
-      native_decide
+      decide
     rw [this]
     exact ⟨1, by omega⟩
 
@@ -393,14 +395,14 @@ lemma count_pos_iff_exists {n : ℕ} (C : Code n) (i : ℕ) :
       simpa [count] using hz
     exact hz' t ht
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- A code with a positive |1| has a weight-1 column. -/
 lemma exists_weight1_of_count1_pos {n : ℕ} (C : Code n) (hpos : count C 1 > 0) :
     ∃ t : Fin n, colWeight (C t) = 1 := by
   rcases (count_pos_iff_exists C 1).1 hpos with ⟨t, ht⟩
   refine ⟨t, ?_⟩
   rw [← colOfNat_colVal (C t), ht]
-  native_decide
+  decide
 
 /-- A weight-1 column is odd, so the code is not all-even. -/
 lemma not_all_even_of_weight1 {n : ℕ} (C : Code n) (h : ∃ t : Fin n, colWeight (C t) = 1) :

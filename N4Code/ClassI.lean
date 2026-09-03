@@ -20,6 +20,7 @@ namespace N4Code
 open scoped BigOperators
 
 set_option maxHeartbeats 4000000
+set_option maxRecDepth 1000000
 
 /-! ## Characterizations of Y3 and Y5 for a type-1 → type-3 change (eq. c13, c15) -/
 
@@ -255,7 +256,7 @@ lemma count_eq_zero_of_not_type1356 {n : ℕ} (C : Code n)
 
 /-- The four row distances of a `{1,3,5,6}` code, in terms of the per-type
 weights (paper eqs. (d1)–(d4) restricted to Class-I columns). -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma dRow0_of_type1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6) (y : Word n) :
@@ -264,7 +265,7 @@ lemma dRow0_of_type1356 {n : ℕ} (C : Code n)
   change (∑ i ∈ Finset.Icc 0 15,
       if i.testBit 3 then count C i - w_i C i y else w_i C i y) =
     w_i C 1 y + w_i C 3 y + w_i C 5 y + w_i C 6 y
-  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by native_decide
+  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by decide
   have hzero : ∀ i ∈ Finset.Icc 0 15, i ∉ ({1, 3, 5, 6} : Finset ℕ) →
       (if i.testBit 3 then count C i - w_i C i y else w_i C i y) = 0 := by
     intro i hi hnot
@@ -285,7 +286,7 @@ lemma dRow0_of_type1356 {n : ℕ} (C : Code n)
 
 /-- The four row distances of a `{1,3,5,6}` code, in terms of the per-type
 weights (paper eqs. (d1)–(d4) restricted to Class-I columns). -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma dRow1_of_type1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6) (y : Word n) :
@@ -296,7 +297,7 @@ lemma dRow1_of_type1356 {n : ℕ} (C : Code n)
       if i.testBit 2 then count C i - w_i C i y else w_i C i y) =
     w_i C 1 y + w_i C 3 y + (count C 5 - w_i C 5 y) +
       (count C 6 - w_i C 6 y)
-  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by native_decide
+  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by decide
   have hzero : ∀ i ∈ Finset.Icc 0 15, i ∉ ({1, 3, 5, 6} : Finset ℕ) →
       (if i.testBit 2 then count C i - w_i C i y else w_i C i y) = 0 := by
     intro i hi hnot
@@ -313,7 +314,7 @@ lemma dRow1_of_type1356 {n : ℕ} (C : Code n)
 
 /-- The four row distances of a `{1,3,5,6}` code, in terms of the per-type
 weights (paper eqs. (d1)–(d4) restricted to Class-I columns). -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma dRow2_of_type1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6) (y : Word n) :
@@ -324,7 +325,7 @@ lemma dRow2_of_type1356 {n : ℕ} (C : Code n)
       if i.testBit 1 then count C i - w_i C i y else w_i C i y) =
     w_i C 1 y + (count C 3 - w_i C 3 y) + w_i C 5 y +
       (count C 6 - w_i C 6 y)
-  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by native_decide
+  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by decide
   have hzero : ∀ i ∈ Finset.Icc 0 15, i ∉ ({1, 3, 5, 6} : Finset ℕ) →
       (if i.testBit 1 then count C i - w_i C i y else w_i C i y) = 0 := by
     intro i hi hnot
@@ -341,7 +342,7 @@ lemma dRow2_of_type1356 {n : ℕ} (C : Code n)
 
 /-- The four row distances of a `{1,3,5,6}` code, in terms of the per-type
 weights (paper eqs. (d1)–(d4) restricted to Class-I columns). -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma dRow3_of_type1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6) (y : Word n) :
@@ -352,7 +353,7 @@ lemma dRow3_of_type1356 {n : ℕ} (C : Code n)
       if i.testBit 0 then count C i - w_i C i y else w_i C i y) =
     (count C 1 - w_i C 1 y) + (count C 3 - w_i C 3 y) +
       (count C 5 - w_i C 5 y) + w_i C 6 y
-  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by native_decide
+  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by decide
   have hzero : ∀ i ∈ Finset.Icc 0 15, i ∉ ({1, 3, 5, 6} : Finset ℕ) →
       (if i.testBit 0 then count C i - w_i C i y else w_i C i y) = 0 := by
     intro i hi hnot
@@ -371,7 +372,7 @@ lemma dRow3_of_type1356 {n : ℕ} (C : Code n)
 
 /-- Words with prescribed weights `(1, k3, k5, k6)` on types `(1,3,5,6)` are
 counted by the product of the three linear-type binomials. -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma goodWords_card_1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6)
@@ -382,7 +383,7 @@ lemma goodWords_card_1356 {n : ℕ} (C : Code n)
   let k : ℕ → ℕ := fun i => if i = 1 then 1 else if i = 3 then k3 else
     if i = 5 then k5 else if i = 6 then k6 else 0
   rw [goodWords_card C k, goodTuples_card C k]
-  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by native_decide
+  have hsub : ({1, 3, 5, 6} : Finset ℕ) ⊆ Finset.Icc 0 15 := by decide
   have hzero : ∀ i ∈ Finset.Icc 0 15, i ∉ ({1, 3, 5, 6} : Finset ℕ) →
       Nat.choose (count C i) (k i) = 1 := by
     intro i hi hnot
@@ -402,7 +403,7 @@ lemma goodWords_card_1356 {n : ℕ} (C : Code n)
 /-- Membership in the type-`(1,3,5,6)` weight fiber is the conjunction of the
 four weight equalities; the remaining types vanish because their counts are
 zero. -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma goodWord_iff_1356 {n : ℕ} (C : Code n)
     (htypes : ∀ t : Fin n, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨
       colVal (C t) = 5 ∨ colVal (C t) = 6)
@@ -415,8 +416,8 @@ lemma goodWord_iff_1356 {n : ℕ} (C : Code n)
   rw [goodWord_iff]
   constructor
   · intro h
-    refine ⟨h 1 (by native_decide), h 3 (by native_decide), h 5 (by native_decide),
-      h 6 (by native_decide)⟩
+    refine ⟨h 1 (by decide), h 3 (by decide), h 5 (by decide),
+      h 6 (by decide)⟩
   · intro h
     rcases h with ⟨h1, h3, h5, h6⟩
     intro i hi
@@ -451,7 +452,7 @@ with the `+1` forms here exactly under the Class-I parity `|3| ≡ |5| ≡ |6|
 (mod 2)`.  That parity is not a hypothesis of this lemma, so the `+1` forms,
 which are the ones valid for every `{1,3,5,6}` code with |1|=1, are the ones
 stated. -/
--- native_decide: Mechanical · n=any · checked 2026-08-25
+-- decide: Mechanical · n=any · checked 2026-08-25
 lemma Y5_iff_weights_count1 {n : ℕ} (C : Code n) (t : Fin n) (y : Word n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -461,7 +462,7 @@ lemma Y5_iff_weights_count1 {n : ℕ} (C : Code n) (t : Fin n) (y : Word n)
       count C 3 + count C 5 + 1 ≤ 2 * (w_i C 3 y + w_i C 5 y) ∧
       count C 3 + 2 * w_i C 6 y + 1 ≤ 2 * w_i C 3 y + count C 6 := by
   have hw1 (hyt : y t = true) : w_i C 1 y = 1 := by
-    exact w_i_eq_of_single C 1 t y h1 (by rw [hcol]; native_decide) hyt
+    exact w_i_eq_of_single C 1 t y h1 (by rw [hcol]; decide) hyt
   have hw3le : w_i C 3 y ≤ count C 3 := w_i_le_count C 3 y
   have hw5le : w_i C 5 y ≤ count C 5 := w_i_le_count C 5 y
   have hw6le : w_i C 6 y ≤ count C 6 := w_i_le_count C 6 y
@@ -517,7 +518,7 @@ is covered by the first.  The two readings agree under the Class-I parity
 case are the cleared forms of (281)/(286) with |1|=1; under the same parity
 they coincide with `+2` forms, and the `+1` forms are the ones valid for
 every `{1,3,5,6}` code with |1|=1. -/
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 lemma Y3_iff_weights_count1 {n : ℕ} (C : Code n) (t : Fin n) (y : Word n)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -530,7 +531,7 @@ lemma Y3_iff_weights_count1 {n : ℕ} (C : Code n) (t : Fin n) (y : Word n)
           count C 3 + 2 * w_i C 5 y = count C 5 + 2 * w_i C 3 y ∧
           count C 3 + 2 * w_i C 6 y ≥ count C 6 + 2 * w_i C 3 y + 1)) := by
   have hw1 (hyt : y t = true) : w_i C 1 y = 1 := by
-    exact w_i_eq_of_single C 1 t y h1 (by rw [hcol]; native_decide) hyt
+    exact w_i_eq_of_single C 1 t y h1 (by rw [hcol]; decide) hyt
   have hw3le : w_i C 3 y ≤ count C 3 := w_i_le_count C 3 y
   have hw5le : w_i C 5 y ≤ count C 5 := w_i_le_count C 5 y
   have hw6le : w_i C 6 y ≤ count C 6 := w_i_le_count C 6 y
@@ -615,7 +616,7 @@ abbrev dRow3WeightEq {n : ℕ} (C : Code n) (w3 w5 w6 d : ℕ) : Prop :=
 (paper `eq:alpha5i` with all divisions cleared).  The three weight variables
 range over the type counts, and each admissible triple contributes the
 binomial product `C(|3|,w3) C(|5|,w5) C(|6|,w6)`. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma alpha5_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -645,7 +646,7 @@ lemma alpha5_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
       let w5 := w_i C 5 y
       let w6 := w_i C 6 y
       have hyt : y t = true := (Y5_iff_col1 C t y hcol).1 hy5 |>.1
-      have hw1 : w_i C 1 y = 1 := w_i_eq_of_single C 1 t y h1 (by rw [hcol]; native_decide) hyt
+      have hw1 : w_i C 1 y = 1 := w_i_eq_of_single C 1 t y h1 (by rw [hcol]; decide) hyt
       have hw3le : w3 ≤ count C 3 := w_i_le_count C 3 y
       have hw5le : w5 ≤ count C 5 := w_i_le_count C 5 y
       have hw6le : w6 ≤ count C 6 := w_i_le_count C 6 y
@@ -683,7 +684,7 @@ lemma alpha5_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
           by_cases hb : y t = true
           · exact False.elim (hf hb)
           · exact Bool.eq_false_of_not_eq_true hb
-        have hw0 := w_i_eq_zero_of_single_false C 1 t y h1 (by rw [hcol]; native_decide) hf'
+        have hw0 := w_i_eq_zero_of_single_false C 1 t y h1 (by rw [hcol]; decide) hf'
         omega
       have hcond' : Y5WeightCond C (w_i C 3 y) (w_i C 5 y) (w_i C 6 y) := by
         simpa [← hw3, ← hw5, ← hw6] using hcond
@@ -747,7 +748,7 @@ abbrev dRow2WeightEq {n : ℕ} (C : Code n) (w3 w5 w6 d : ℕ) : Prop :=
 
 /-- Closed form of α³(d) for a `{1,3,5,6}` code with a single type-1 column
 (paper `eq:c1b` and `eq:y3b`, with all divisions cleared). -/
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 lemma alpha3_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
     (htypes : ∀ u : Fin n, colVal (C u) = 1 ∨ colVal (C u) = 3 ∨
       colVal (C u) = 5 ∨ colVal (C u) = 6)
@@ -779,7 +780,7 @@ lemma alpha3_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
       let w5 := w_i C 5 y
       let w6 := w_i C 6 y
       have hyt : y t = true := (Y3_iff_col1 C t y hcol).1 hy3 |>.1
-      have hw1 : w_i C 1 y = 1 := w_i_eq_of_single C 1 t y h1 (by rw [hcol]; native_decide) hyt
+      have hw1 : w_i C 1 y = 1 := w_i_eq_of_single C 1 t y h1 (by rw [hcol]; decide) hyt
       have hw3le : w3 ≤ count C 3 := w_i_le_count C 3 y
       have hw5le : w5 ≤ count C 5 := w_i_le_count C 5 y
       have hw6le : w6 ≤ count C 6 := w_i_le_count C 6 y
@@ -818,7 +819,7 @@ lemma alpha3_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
           by_cases hb : y t = true
           · exact False.elim (hf hb)
           · exact Bool.eq_false_of_not_eq_true hb
-        have hw0 := w_i_eq_zero_of_single_false C 1 t y h1 (by rw [hcol]; native_decide) hf'
+        have hw0 := w_i_eq_zero_of_single_false C 1 t y h1 (by rw [hcol]; decide) hf'
         omega
       have hcond' : Y3WeightCondA C (w_i C 3 y) (w_i C 5 y) (w_i C 6 y) ∨
           Y3WeightCondB C (w_i C 3 y) (w_i C 5 y) (w_i C 6 y) := by
@@ -868,7 +869,7 @@ lemma alpha3_closed_count1 {n : ℕ} (C : Code n) (t : Fin n) (d : ℕ)
 
 /-! ## `argminType` case-splitting helpers -/
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- The argmin column is always one of the three linear types. -/
 lemma argminType_is_type {n : ℕ} (C : Code n) :
     colVal (argminType C) = 3 ∨ colVal (argminType C) = 5 ∨ colVal (argminType C) = 6 := by
@@ -876,12 +877,12 @@ lemma argminType_is_type {n : ℕ} (C : Code n) :
   by_cases h1 : count C 3 ≤ count C 5 ∧ count C 3 ≤ count C 6
   · simp [h1]
     left
-    native_decide
+    decide
   · by_cases h2 : count C 5 ≤ count C 6
     · simp [h1, h2]
-      right; left; native_decide
+      right; left; decide
     · simp [h1, h2]
-      right; right; native_decide
+      right; right; decide
 
 /-- When type 3 is a minimizer, `argminType` picks `col3`. -/
 lemma argminType_eq_col3 {n : ℕ} (C : Code n)
@@ -904,21 +905,21 @@ lemma argminType_eq_col6 {n : ℕ} (C : Code n)
 linear types 6 and the nonlinear type 1. -/
 def swap12 : Equiv (Fin 4) (Fin 4) := Equiv.swap (1 : Fin 4) (2 : Fin 4)
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- `swap12` sends a type-5 column to a type-3 column. -/
-lemma rowPermute_swap12_col5 : rowPermute swap12 col5 = col3 := by native_decide
+lemma rowPermute_swap12_col5 : rowPermute swap12 col5 = col3 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- `swap12` sends a type-3 column to a type-5 column. -/
-lemma rowPermute_swap12_col3 : rowPermute swap12 col3 = col5 := by native_decide
+lemma rowPermute_swap12_col3 : rowPermute swap12 col3 = col5 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- `swap12` fixes a type-6 column. -/
-lemma rowPermute_swap12_col6 : rowPermute swap12 col6 = col6 := by native_decide
+lemma rowPermute_swap12_col6 : rowPermute swap12 col6 = col6 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- `swap12` fixes a type-1 column. -/
-lemma rowPermute_swap12_col1 : rowPermute swap12 col1 = col1 := by native_decide
+lemma rowPermute_swap12_col1 : rowPermute swap12 col1 = col1 := by decide
 
 /-- Apply `swap12` to every column. -/
 def swap12Code {n : ℕ} (C : Code n) : Code n := fun u => rowPermute swap12 (C u)
@@ -929,9 +930,9 @@ lemma Equivalent_swap12Code {n : ℕ} (C : Code n) : Equivalent C (swap12Code C)
   intro t
   simp [swap12Code]
 
--- native_decide: Mechanical · n=any · checked 2026-08-26
+-- decide: Mechanical · n=any · checked 2026-08-26
 /-- `colVal col1 = 1`. -/
-lemma colVal_col1 : colVal col1 = 1 := by native_decide
+lemma colVal_col1 : colVal col1 = 1 := by decide
 
 /-- The type relabelling induced by `swap12` on type numbers. -/
 def swapVal12 (i : ℕ) : ℕ :=
@@ -3224,7 +3225,7 @@ lemma class1_one_col5_strict {n : ℕ} (C : Code n) (t : Fin n)
 /-- For n = 3 there is no genuine Class-I code with |1| = 1: the parity
 constraint forces the two linear-type columns to be equal, so two codewords
 coincide. -/
--- native_decide: Contentful · n=3 · checked 2026-08-26
+-- decide: Contentful · n=3 · checked 2026-08-26
 lemma no_classI_count1_distinct_n3 :
     ∀ C : Code 3, DistinctRows C → ClassI C → count C 1 = 1 → False := by
   intro C hdist h h1
@@ -3234,28 +3235,28 @@ lemma no_classI_count1_distinct_n3 :
         (Odd (count C 3) ∧ Odd (count C 5) ∧ Odd (count C 6))) ∧
         totalCounts C {1, 3, 5, 6} = 3) →
       count C 1 = 1 → False := by
-    native_decide
+    decide
   simpa [DistinctRows, ClassI] using (hmain C hdist h h1)
 
 /-- Swap the roles of types 3 and 6 (fixing types 1 and 5) at every column. -/
 def swap36Code {n : ℕ} (C : Code n) : Code n := fun u =>
   if colVal (C u) = 3 then col6 else if colVal (C u) = 6 then col3 else C u
 
--- native_decide: Mechanical · n=any · checked 2026-08-31
+-- decide: Mechanical · n=any · checked 2026-08-31
 /-- `swap02` fixes the type-1 column. -/
-lemma rowPermute_swap02_col1 : rowPermute swap02 col1 = col1 := by native_decide
+lemma rowPermute_swap02_col1 : rowPermute swap02 col1 = col1 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-31
+-- decide: Mechanical · n=any · checked 2026-08-31
 /-- `swap02` fixes the type-5 column. -/
-lemma rowPermute_swap02_col5 : rowPermute swap02 col5 = col5 := by native_decide
+lemma rowPermute_swap02_col5 : rowPermute swap02 col5 = col5 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-31
+-- decide: Mechanical · n=any · checked 2026-08-31
 /-- `swap02` sends the flipped type-3 column to type 6. -/
-lemma rowPermute_swap02_flip_col3 : rowPermute swap02 (flipCol col3) = col6 := by native_decide
+lemma rowPermute_swap02_flip_col3 : rowPermute swap02 (flipCol col3) = col6 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-31
+-- decide: Mechanical · n=any · checked 2026-08-31
 /-- `swap02` sends the flipped type-6 column to type 3. -/
-lemma rowPermute_swap02_flip_col6 : rowPermute swap02 (flipCol col6) = col3 := by native_decide
+lemma rowPermute_swap02_flip_col6 : rowPermute swap02 (flipCol col6) = col3 := by decide
 
 /-- For a Class-I (types {1,3,5,6}) code, the 3↔6 column swap is an equivalence
 (swap rows 1↔3 and flip the type-3/6 columns). -/

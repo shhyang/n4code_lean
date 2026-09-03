@@ -20,6 +20,7 @@ counting lemma that underpins every α-formula in the paper.
 open scoped BigOperators
 
 set_option maxHeartbeats 4000000
+set_option maxRecDepth 1000000
 
 namespace N4Code
 
@@ -107,7 +108,7 @@ lemma hammingDist_le {n : ℕ} (x y : Word n) : hammingDist x y ≤ n := by
 
 /-! ## Column-type counts -/
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- The type number of a column is at most 15. -/
 lemma colVal_le_15 (c : Column) : colVal c ≤ 15 := by
   unfold colVal
@@ -116,7 +117,7 @@ lemma colVal_le_15 (c : Column) : colVal c ≤ 15 := by
     apply Finset.sum_le_sum
     intro j _
     by_cases h : c j = true <;> simp [h]
-  have hval : (∑ j : Fin 4, 2 ^ (3 - j.val)) = 15 := by native_decide
+  have hval : (∑ j : Fin 4, 2 ^ (3 - j.val)) = 15 := by decide
   rw [← hval]
   exact hstep
 
@@ -583,28 +584,28 @@ lemma count_words_with_prescribed_weights {n : ℕ} (C : Code n) (k : ℕ → �
 
 /-! ## Worked-example regression checks (paper §2.1) -/
 
--- native_decide: Contentful · n=any · checked 2026-08-24
+-- decide: Contentful · n=any · checked 2026-08-24
 -- Values computed by `#eval` (not stated in the paper); they lock the
 -- definitions against each other: the 128 = 2^7 words split as
 -- 4 + 28 + 52 + 36 + 8 across distances 0..4.
-example : alpha example74 0 = 4 := by native_decide
-example : alpha example74 1 = 28 := by native_decide
-example : alpha example74 2 = 52 := by native_decide
-example : alpha example74 3 = 36 := by native_decide
-example : alpha example74 4 = 8 := by native_decide
-example : alpha example74 5 = 0 := by native_decide
-example : alpha example74 6 = 0 := by native_decide
-example : alpha example74 7 = 0 := by native_decide
-example : (∑ d ∈ Finset.Icc 0 7, alpha example74 d) = 128 := by native_decide
+example : alpha example74 0 = 4 := by decide
+example : alpha example74 1 = 28 := by decide
+example : alpha example74 2 = 52 := by decide
+example : alpha example74 3 = 36 := by decide
+example : alpha example74 4 = 8 := by decide
+example : alpha example74 5 = 0 := by decide
+example : alpha example74 6 = 0 := by decide
+example : alpha example74 7 = 0 := by decide
+example : (∑ d ∈ Finset.Icc 0 7, alpha example74 d) = 128 := by decide
 
 -- Codeword rows read off the paper's matrix: c1 = 0000000, c2 = 0001111,
 -- c3 = 0110011, c4 = 1010101; all pairwise distances are 4.
-example : hammingWeight (row example74 ⟨0, by decide⟩) = 0 := by native_decide
+example : hammingWeight (row example74 ⟨0, by decide⟩) = 0 := by decide
 example : hammingDist (row example74 ⟨0, by decide⟩) (row example74 ⟨1, by decide⟩) = 4 := by
-  native_decide
+  decide
 example : hammingDist (row example74 ⟨2, by decide⟩) (row example74 ⟨3, by decide⟩) = 4 := by
-  native_decide
+  decide
 example : hammingDist (row example74 ⟨0, by decide⟩) (row example74 ⟨3, by decide⟩) = 4 := by
-  native_decide
+  decide
 
 end N4Code

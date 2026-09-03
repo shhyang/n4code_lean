@@ -18,6 +18,8 @@ noncomputable section
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-! ## Minimum distance over a set of rows -/
 
 /-- `Finset.min'` does not depend on the nonemptiness proof. -/
@@ -630,7 +632,7 @@ lemma dRow_eq_sum_types {n : ℕ} (C : Code n) (j : Fin 4) (y : Word n) (S : Fin
 
 /-- Row distances of the C0 code (columns only of types 0, 5, 6) — paper
 eqs. (0columnc) and (0columnd), published (140)-(143). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma dRow_C0_formula {n : ℕ} (C : Code n)
     (hC : ∀ u : Fin n, colVal (C u) = 0 ∨ colVal (C u) = 5 ∨ colVal (C u) = 6) :
     ∀ y : Word n,
@@ -650,18 +652,18 @@ lemma dRow_C0_formula {n : ℕ} (C : Code n)
       if i.testBit (3 - j.val) then count C i - w_i C i y else w_i C i y := by
     intro j
     exact dRow_eq_sum_types C j y {0, 5, 6} hSle hS
-  have hb03 : (0 : ℕ).testBit 3 = false := by native_decide
-  have hb02 : (0 : ℕ).testBit 2 = false := by native_decide
-  have hb01 : (0 : ℕ).testBit 1 = false := by native_decide
-  have hb00 : (0 : ℕ).testBit 0 = false := by native_decide
-  have hb53 : (5 : ℕ).testBit 3 = false := by native_decide
-  have hb52 : (5 : ℕ).testBit 2 = true := by native_decide
-  have hb51 : (5 : ℕ).testBit 1 = false := by native_decide
-  have hb50 : (5 : ℕ).testBit 0 = true := by native_decide
-  have hb63 : (6 : ℕ).testBit 3 = false := by native_decide
-  have hb62 : (6 : ℕ).testBit 2 = true := by native_decide
-  have hb61 : (6 : ℕ).testBit 1 = true := by native_decide
-  have hb60 : (6 : ℕ).testBit 0 = false := by native_decide
+  have hb03 : (0 : ℕ).testBit 3 = false := by decide
+  have hb02 : (0 : ℕ).testBit 2 = false := by decide
+  have hb01 : (0 : ℕ).testBit 1 = false := by decide
+  have hb00 : (0 : ℕ).testBit 0 = false := by decide
+  have hb53 : (5 : ℕ).testBit 3 = false := by decide
+  have hb52 : (5 : ℕ).testBit 2 = true := by decide
+  have hb51 : (5 : ℕ).testBit 1 = false := by decide
+  have hb50 : (5 : ℕ).testBit 0 = true := by decide
+  have hb63 : (6 : ℕ).testBit 3 = false := by decide
+  have hb62 : (6 : ℕ).testBit 2 = true := by decide
+  have hb61 : (6 : ℕ).testBit 1 = true := by decide
+  have hb60 : (6 : ℕ).testBit 0 = false := by decide
   have h0 : dRow C 0 y = w_i C 0 y + w_i C 5 y + w_i C 6 y := by
     rw [hsum (0 : Fin 4)]
     simp [Finset.sum_insert, hb03, hb53, hb63]
@@ -955,7 +957,7 @@ lemma equiv_replaceColumn {n : ℕ} {C C0 : Code n} (h : Equivalent C C0) (t : F
 
 /-- Theorem `thm:0column` (Theorem 6) (1): if C is equivalent to the C0 code, then
 replacing a 0-column by any s' leaves λ unchanged. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem zero_column {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col0)
     (hC0 : ∃ C0 : Code n, Equivalent C C0 ∧
       count C0 0 + count C0 5 + count C0 6 = n ∧
@@ -1031,7 +1033,7 @@ theorem zero_column {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col0)
         have hall : rowPermute ρ (flipCol col0) = col15 := by
           funext k
           simp [rowPermute, flipCol, col0, col15]
-        have hcv : colVal col15 = 15 := by native_decide
+        have hcv : colVal col15 = 15 := by decide
         rw [hsub, hall]
         exact hcv
       rcases hC0struct (p t) with h0'' | h5'' | h6''
@@ -1080,10 +1082,10 @@ lemma exists_goodWord {n : ℕ} (C : Code n) (k : ℕ → ℕ)
   rcases Finset.card_pos.mp hcard with ⟨y, hy⟩
   exact ⟨y, (goodWord_iff C k y).1 hy⟩
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- A column with type number 0 is the zero column. -/
 lemma colVal_eq_zero_iff_col0 (c : Column) : colVal c = 0 ↔ c = col0 := by
-  simpa [show colOfNat 0 = col0 by native_decide] using (colVal_eq_iff_colOfNat c 0 (by norm_num))
+  simpa [show colOfNat 0 = col0 by decide] using (colVal_eq_iff_colOfNat c 0 (by norm_num))
 
 /-- Columns07 means all type numbers are at most 7. -/
 lemma Columns07_le7 {n : ℕ} (C : Code n) (h : Columns07 C) (t : Fin n) : colVal (C t) ≤ 7 := by
@@ -1132,7 +1134,7 @@ lemma sum_Icc0_7 (f : ℕ → ℕ) : (∑ i ∈ Finset.Icc 0 7, f i) =
 /-- Row distances of a word whose only type-1..3 weights vanish, in a
 Columns07 code (the paper's eq. (0columna)/(0columnb) shape, published
 (149)-(152)). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma dRow_witness_formula {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 C)
     (hw123 : w_i C 1 y = 0 ∧ w_i C 2 y = 0 ∧ w_i C 3 y = 0)
     (_hw815 : ∀ i ∈ Finset.Icc 8 15, w_i C i y = 0) :
@@ -1155,34 +1157,34 @@ lemma dRow_witness_formula {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 
       if i.testBit (3 - j.val) then count C i - w_i C i y else w_i C i y := by
     intro j
     exact dRow_eq_sum_types C j y (Finset.Icc 0 7) hSle hS
-  have h13 : (1 : ℕ).testBit 3 = false := by native_decide
-  have h23 : (2 : ℕ).testBit 3 = false := by native_decide
-  have h33 : (3 : ℕ).testBit 3 = false := by native_decide
-  have h43 : (4 : ℕ).testBit 3 = false := by native_decide
-  have h53 : (5 : ℕ).testBit 3 = false := by native_decide
-  have h63 : (6 : ℕ).testBit 3 = false := by native_decide
-  have h73 : (7 : ℕ).testBit 3 = false := by native_decide
-  have h12 : (1 : ℕ).testBit 2 = false := by native_decide
-  have h22 : (2 : ℕ).testBit 2 = false := by native_decide
-  have h32 : (3 : ℕ).testBit 2 = false := by native_decide
-  have h42 : (4 : ℕ).testBit 2 = true := by native_decide
-  have h52 : (5 : ℕ).testBit 2 = true := by native_decide
-  have h62 : (6 : ℕ).testBit 2 = true := by native_decide
-  have h72 : (7 : ℕ).testBit 2 = true := by native_decide
-  have h11 : (1 : ℕ).testBit 1 = false := by native_decide
-  have h21 : (2 : ℕ).testBit 1 = true := by native_decide
-  have h31 : (3 : ℕ).testBit 1 = true := by native_decide
-  have h41 : (4 : ℕ).testBit 1 = false := by native_decide
-  have h51 : (5 : ℕ).testBit 1 = false := by native_decide
-  have h61 : (6 : ℕ).testBit 1 = true := by native_decide
-  have h71 : (7 : ℕ).testBit 1 = true := by native_decide
-  have h10 : (1 : ℕ).testBit 0 = true := by native_decide
-  have h20 : (2 : ℕ).testBit 0 = false := by native_decide
-  have h30 : (3 : ℕ).testBit 0 = true := by native_decide
-  have h40 : (4 : ℕ).testBit 0 = false := by native_decide
-  have h50 : (5 : ℕ).testBit 0 = true := by native_decide
-  have h60 : (6 : ℕ).testBit 0 = false := by native_decide
-  have h70 : (7 : ℕ).testBit 0 = true := by native_decide
+  have h13 : (1 : ℕ).testBit 3 = false := by decide
+  have h23 : (2 : ℕ).testBit 3 = false := by decide
+  have h33 : (3 : ℕ).testBit 3 = false := by decide
+  have h43 : (4 : ℕ).testBit 3 = false := by decide
+  have h53 : (5 : ℕ).testBit 3 = false := by decide
+  have h63 : (6 : ℕ).testBit 3 = false := by decide
+  have h73 : (7 : ℕ).testBit 3 = false := by decide
+  have h12 : (1 : ℕ).testBit 2 = false := by decide
+  have h22 : (2 : ℕ).testBit 2 = false := by decide
+  have h32 : (3 : ℕ).testBit 2 = false := by decide
+  have h42 : (4 : ℕ).testBit 2 = true := by decide
+  have h52 : (5 : ℕ).testBit 2 = true := by decide
+  have h62 : (6 : ℕ).testBit 2 = true := by decide
+  have h72 : (7 : ℕ).testBit 2 = true := by decide
+  have h11 : (1 : ℕ).testBit 1 = false := by decide
+  have h21 : (2 : ℕ).testBit 1 = true := by decide
+  have h31 : (3 : ℕ).testBit 1 = true := by decide
+  have h41 : (4 : ℕ).testBit 1 = false := by decide
+  have h51 : (5 : ℕ).testBit 1 = false := by decide
+  have h61 : (6 : ℕ).testBit 1 = true := by decide
+  have h71 : (7 : ℕ).testBit 1 = true := by decide
+  have h10 : (1 : ℕ).testBit 0 = true := by decide
+  have h20 : (2 : ℕ).testBit 0 = false := by decide
+  have h30 : (3 : ℕ).testBit 0 = true := by decide
+  have h40 : (4 : ℕ).testBit 0 = false := by decide
+  have h50 : (5 : ℕ).testBit 0 = true := by decide
+  have h60 : (6 : ℕ).testBit 0 = false := by decide
+  have h70 : (7 : ℕ).testBit 0 = true := by decide
   have h0 : dRow C 0 y = w_i C 0 y + w_i C 4 y + w_i C 5 y + w_i C 6 y + w_i C 7 y := by
     rw [hsum (0 : Fin 4), sum_Icc0_7]
     simp [hw123, h13, h23, h33, h43, h53, h63, h73]
@@ -2004,14 +2006,14 @@ lemma permEven_j (i j : Fin 4) (_hij : i ≠ j) : permEven i j j = (1 : Fin 4) :
         (Equiv.swap i (0 : Fin 4) j) := rfl
     _ = (1 : Fin 4) := Equiv.swap_apply_left (Equiv.swap i (0 : Fin 4) j) (1 : Fin 4)
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- For n ≤ 7, bit 2 of n is 1 exactly for types 4..7. -/
 lemma testBit2_of_le7 (n : ℕ) (hn : n ≤ 7) :
     (n = 4 ∨ n = 5 ∨ n = 6 ∨ n = 7) ↔ n.testBit 2 = true := by
   have hk : ∃ k : Fin 8, (k : ℕ) = n := ⟨⟨n, by omega⟩, rfl⟩
   rcases hk with ⟨k, hk⟩
   subst n
-  fin_cases k <;> native_decide
+  fin_cases k <;> decide
 
 /-- The normalized code: rows permuted so the even pair becomes rows 0,1, and
 column flips make row 0 all zeros. -/
@@ -2452,7 +2454,7 @@ lemma zero_column_strict_witness {n : ℕ} (C : Code n) (t : Fin n) (hcol : C t 
   rintro hy
   exact zero_column_strict_better C t col5 hcol colZeros_col5_nonempty colOnes_col5_nonempty hy
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Flipping all bits of a column complements the type number. -/
 lemma colVal_flipCol (c : Column) : colVal (flipCol c) = 15 - colVal c := by
   have hsum : colVal (flipCol c) + colVal c = 15 := by
@@ -2464,7 +2466,7 @@ lemma colVal_flipCol (c : Column) : colVal (flipCol c) = 15 - colVal c := by
       intro j
       cases c j <;> simp
     rw [Finset.sum_congr rfl (fun j _ => hterm j)]
-    have hsum15 : (∑ j : Fin 4, 2 ^ (3 - j.val)) = 15 := by native_decide
+    have hsum15 : (∑ j : Fin 4, 2 ^ (3 - j.val)) = 15 := by decide
     rw [hsum15]
   have hle : colVal c ≤ 15 := colVal_le_15 c
   omega
@@ -2721,14 +2723,14 @@ lemma C0form_types {n : ℕ} (C : Code n) (h : C0form C) (t : Fin n) :
   have hzero : count C i = 0 := by omega
   omega
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- In a C0-form code, weight 2 exactly means type 5 or 6. -/
 lemma colWeight_eq_two_iff_C0form {n : ℕ} (C : Code n) (h : C0form C) (t : Fin n) :
     colWeight (C t) = 2 ↔ colVal (C t) = 5 ∨ colVal (C t) = 6 := by
   rcases C0form_types C h t with h0 | h5 | h6
   · have hw : colWeight (C t) = 0 := by
       rw [← colOfNat_colVal (C t), h0]
-      native_decide
+      decide
     constructor
     · intro h2
       omega
@@ -2736,7 +2738,7 @@ lemma colWeight_eq_two_iff_C0form {n : ℕ} (C : Code n) (h : C0form C) (t : Fin
       omega
   · have hw : colWeight (C t) = 2 := by
       rw [← colOfNat_colVal (C t), h5]
-      native_decide
+      decide
     constructor
     · intro _
       exact Or.inl h5
@@ -2744,7 +2746,7 @@ lemma colWeight_eq_two_iff_C0form {n : ℕ} (C : Code n) (h : C0form C) (t : Fin
       exact hw
   · have hw : colWeight (C t) = 2 := by
       rw [← colOfNat_colVal (C t), h6]
-      native_decide
+      decide
     constructor
     · intro _
       exact Or.inr h6
@@ -2775,7 +2777,7 @@ lemma twobitCount_C0form {n : ℕ} (C : Code n) (h : C0form C) :
   refine ⟨a + b + 1, ?_⟩
   omega
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- Replacing a zero column by the type-5 column adds one two-bit column. -/
 lemma twobitCount_replace_0_5 {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col0) :
     twobitCount (replaceColumn C t col5) = twobitCount C + 1 := by
@@ -2793,13 +2795,13 @@ lemma twobitCount_replace_0_5 {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col
     have hu' : u ≠ t := (Finset.mem_erase.mp hu).1
     simp [replaceColumn, hu']
   have ht1 : (if colWeight ((replaceColumn C t col5) t) = 2 then 1 else 0) = 1 := by
-    have hw : colWeight col5 = 2 := by native_decide
+    have hw : colWeight col5 = 2 := by decide
     simp [replaceColumn, hw]
   have ht0 : (if colWeight (C t) = 2 then 1 else 0) = 0 := by
     have hcv : colVal (C t) = 0 := (colVal_eq_zero_iff_col0 (C t)).mpr h0
     have hw : colWeight (C t) = 0 := by
       rw [← colOfNat_colVal (C t), hcv]
-      native_decide
+      decide
     simp [hw]
   calc
     (∑ u : Fin n, if colWeight ((replaceColumn C t col5) u) = 2 then 1 else 0)
@@ -2815,15 +2817,15 @@ lemma twobitCount_replace_0_5 {n : ℕ} (C : Code n) (t : Fin n) (h0 : C t = col
 lemma count_replace_0_nonzero {n : ℕ} (C : Code n) (t : Fin n) (s' : Column)
     (h0 : C t = col0) (hs : s' ≠ col0) :
     count (replaceColumn C t s') 0 = count C 0 - 1 := by
-  exact count_replace_dec C t s' 0 (by rw [h0]; native_decide)
+  exact count_replace_dec C t s' 0 (by rw [h0]; decide)
     (by intro h; exact hs ((colVal_eq_zero_iff_col0 s').mp h))
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- A column of type 3, 5, or 6 is not the zero column. -/
 lemma col0_ne_of_colVal_356 {s : Column} (h : colVal s = 3 ∨ colVal s = 5 ∨ colVal s = 6) :
     s ≠ col0 := by
   intro hs
-  have : colVal s = 0 := by rw [hs]; native_decide
+  have : colVal s = 0 := by rw [hs]; decide
   rcases h with h3 | h5 | h6 <;> omega
 
 /-- Better then strictly better is strictly better. -/
@@ -2835,7 +2837,7 @@ lemma strict_of_better_strict {n : ℕ} (C₁ C₂ C₃ : Code n)
 
 /-- Corollary `cor:0col` (Corollary 7): with |0| ≥ 2, two 0-columns can be replaced by two
 nonzero linear-type columns to strictly improve. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem two_zero_columns {n : ℕ} (C : Code n) (h : count C 0 ≥ 2) :
     ∃ t₁ t₂ : Fin n, t₁ ≠ t₂ ∧ C t₁ = col0 ∧ C t₂ = col0 ∧
       ∃ s₁ s₂ : Column,
@@ -2848,7 +2850,7 @@ theorem two_zero_columns {n : ℕ} (C : Code n) (h : count C 0 ≥ 2) :
     rcases exists_col0_of_count_pos C (by omega : 1 ≤ count C 0) with ⟨t₁, ht₁⟩
     let Cn : Code n := replaceColumn C t₁ col5
     have hcntn : 1 ≤ count Cn 0 := by
-      have hc := count_replace_0_nonzero C t₁ col5 ht₁ (by native_decide : col5 ≠ col0)
+      have hc := count_replace_0_nonzero C t₁ col5 ht₁ (by decide : col5 ≠ col0)
       rw [hc]
       have h' : 1 < count C 0 := by omega
       exact Nat.le_pred_of_lt h'
@@ -2880,8 +2882,8 @@ theorem two_zero_columns {n : ℕ} (C : Code n) (h : count C 0 ≥ 2) :
         simp [Cn, replaceColumn] at this
         have hcv0 : colVal col5 = 0 := by
           rw [this]
-          native_decide
-        have hcv5 : colVal col5 = 5 := by native_decide
+          decide
+        have hcv5 : colVal col5 = 5 := by decide
         omega
       simpa [Cn, replaceColumn, hne] using ht₂
     have heq : UniversalEqual Cn C :=
@@ -2898,10 +2900,10 @@ theorem two_zero_columns {n : ℕ} (C : Code n) (h : count C 0 ≥ 2) :
       simp [Cn, replaceColumn] at this
       have hcv0 : colVal col5 = 0 := by
         rw [this]
-        native_decide
-      have hcv5 : colVal col5 = 5 := by native_decide
+        decide
+      have hcv5 : colVal col5 = 5 := by decide
       omega
-    · exact Or.inr (Or.inl (by native_decide : colVal col5 = 5))
+    · exact Or.inr (Or.inl (by decide : colVal col5 = 5))
     · simpa [Cn] using hstrictC
   · -- case A: C is not equivalent to the C0 code
     rcases zero_column_strict C (by omega : 1 ≤ count C 0) (by simpa [C0form] using hC0) with
@@ -2927,7 +2929,7 @@ theorem two_zero_columns {n : ℕ} (C : Code n) (h : count C 0 ≥ 2) :
     have hstrict : UniversalStrictBetter (replaceColumn Cn t₂ col5) C :=
       strict_of_better_strict _ _ _ hbetter hstrict₁
     refine ⟨t₁, t₂, hne.symm, ht₁, ht₂C, s₁, col5, hs₁, ?_, ?_⟩
-    · exact Or.inr (Or.inl (by native_decide : colVal col5 = 5))
+    · exact Or.inr (Or.inl (by decide : colVal col5 = 5))
     · simpa [Cn] using hstrict
 
 end N4Code

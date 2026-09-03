@@ -21,6 +21,8 @@ that phase modules own their statement stubs, it now lives here.
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-- The `thm:condition_optimalcode` (Theorem 4) hypothesis holds for n ≤ 8: a Class-I
 code with |1| ≥ 3 has |3|+|5|+|6| = n − |1| ≤ 5, hence
 min{|3|,|5|,|6|} ≤ 1, so `thm:301` (Theorem 17) (`class1_min`) applies. -/
@@ -73,15 +75,15 @@ lemma word2_cases : ∀ y : Word 2, y = w00 ∨ y = w01 ∨ y = w10 ∨ y = w11 
 /-- The full (2,4) code (columns of types 3 and 5). -/
 def F2 : Code 2 := fun t => if t.val = 0 then col3 else col5
 
--- native_decide: Contentful · n=2 · checked 2026-08-28
+-- decide: Contentful · n=2 · checked 2026-08-28
 /-- The rows of `F2` are w00..w11 in order. -/
-lemma F2_row0 : row F2 0 = w00 := by native_decide
--- native_decide: Contentful · n=2 · checked 2026-08-28
-lemma F2_row1 : row F2 1 = w01 := by native_decide
--- native_decide: Contentful · n=2 · checked 2026-08-28
-lemma F2_row2 : row F2 2 = w10 := by native_decide
--- native_decide: Contentful · n=2 · checked 2026-08-28
-lemma F2_row3 : row F2 3 = w11 := by native_decide
+lemma F2_row0 : row F2 0 = w00 := by decide
+-- decide: Contentful · n=2 · checked 2026-08-28
+lemma F2_row1 : row F2 1 = w01 := by decide
+-- decide: Contentful · n=2 · checked 2026-08-28
+lemma F2_row2 : row F2 2 = w10 := by decide
+-- decide: Contentful · n=2 · checked 2026-08-28
+lemma F2_row3 : row F2 3 = w11 := by decide
 
 /-- The rows of `F2` are exactly the four words. -/
 lemma F2_rows_all (y : Word 2) : ∃ j : Fin 4, row F2 j = y := by
@@ -91,13 +93,13 @@ lemma F2_rows_all (y : Word 2) : ∃ j : Fin 4, row F2 j = y := by
   · exact ⟨2, by simpa [F2_row2] using hy.symm⟩
   · exact ⟨3, by simpa [F2_row3] using hy.symm⟩
 
--- native_decide: Contentful · n=2 · checked 2026-08-28
+-- decide: Contentful · n=2 · checked 2026-08-28
 /-- `F2` is a linear code. -/
 lemma F2_linear : IsLinear F2 := by
   constructor
   · intro t
-    fin_cases t <;> native_decide
-  · exact Or.inl ⟨by native_decide, by native_decide⟩
+    fin_cases t <;> decide
+  · exact Or.inl ⟨by decide, by decide⟩
 
 /-- The word set of blocklength 2 has cardinality 4. -/
 lemma word2_card : (Finset.univ : Finset (Word 2)).card = 4 := by
@@ -195,7 +197,7 @@ lemma n2_strict_better_of_not_distinct {C : Code 2} (hnd : ¬ DistinctRows C) :
 
 /-- A `(2,4)` code with distinct rows has all four words as rows, so it is a
 row permutation of `F2` (hence equivalent to it). -/
--- native_decide: Contentful · n=2 · checked 2026-08-28
+-- decide: Contentful · n=2 · checked 2026-08-28
 lemma n2_distinct_equiv_F2 {C : Code 2} (hdist : DistinctRows C) :
     Equivalent C F2 := by
   have hsurj : ∀ y : Word 2, ∃ j : Fin 4, row C j = y := by
@@ -233,7 +235,7 @@ lemma n2_distinct_equiv_F2 {C : Code 2} (hdist : DistinctRows C) :
         _ = row C (ρ0 b) := by rw [hab]
         _ = row F2 b := hρ b
     have hinjF2 : Function.Injective (fun j : Fin 4 => row F2 j) := by
-      native_decide
+      decide
     exact hinjF2 hrow
   have hρsurj : Function.Surjective ρ0 := by
     intro j
@@ -345,13 +347,13 @@ lemma colVal_unique_of_count_one {n : ℕ} {C : Code n} {i : ℕ} (t0 : Fin n)
 
 /-- A column of type 0 is unique when |0| = 1 (the col0 form of
 `colVal_unique_of_count_one`). -/
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 lemma col_of_count_one {n : ℕ} {C : Code n} (t0 : Fin n)
     (ht0 : C t0 = col0) (h1 : count C 0 = 1) :
     ∀ u : Fin n, C u = col0 → u = t0 := by
-  have hcv0 : colVal (C t0) = 0 := by rw [ht0]; native_decide
+  have hcv0 : colVal (C t0) = 0 := by rw [ht0]; decide
   intro u hu
-  have hcvu : colVal (C u) = 0 := by rw [hu]; native_decide
+  have hcvu : colVal (C u) = 0 := by rw [hu]; decide
   exact colVal_unique_of_count_one (C := C) t0 hcv0 h1 u hcvu
 
 /-- Every Class-III `(3,4)` code is equivalent to `code135` (subclass a,
@@ -505,7 +507,7 @@ lemma n3_class3_equiv (C : Code 3) (h : ClassIII C) :
 /-- A C0-form `(3,4)` code is equivalent to C_A: its three columns have types
 0, 5, 6, and swapping rows 1,3 turns the type-6 column into a type-3 column
 (C_A = (3,5,0)). -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_c0form_equiv_CA (C0 : Code 3) (h : C0form C0) : Equivalent C0 CA := by
   rcases n3_c0form_counts h with ⟨h0, h5, h6⟩
   have h5pos : 1 ≤ count C0 5 := by rw [h5]
@@ -520,7 +522,7 @@ lemma n3_c0form_equiv_CA (C0 : Code 3) (h : C0form C0) : Equivalent C0 CA := by
   have huniq5 : ∀ u : Fin 3, C0 u = col5 → u = t5 := by
     intro u hu
     by_contra hne
-    have hcv : colVal (C0 u) = 5 := by rw [hu]; native_decide
+    have hcv : colVal (C0 u) = 5 := by rw [hu]; decide
     have hu' : u ∈ (Finset.univ.filter fun v : Fin 3 => colVal (C0 v) = 5) := by
       rw [Finset.mem_filter]; exact ⟨Finset.mem_univ u, hcv⟩
     have ht5' : t5 ∈ (Finset.univ.filter fun v : Fin 3 => colVal (C0 v) = 5) := by
@@ -542,7 +544,7 @@ lemma n3_c0form_equiv_CA (C0 : Code 3) (h : C0form C0) : Equivalent C0 CA := by
   have huniq6 : ∀ u : Fin 3, C0 u = col6 → u = t6 := by
     intro u hu
     by_contra hne
-    have hcv : colVal (C0 u) = 6 := by rw [hu]; native_decide
+    have hcv : colVal (C0 u) = 6 := by rw [hu]; decide
     have hu' : u ∈ (Finset.univ.filter fun v : Fin 3 => colVal (C0 v) = 6) := by
       rw [Finset.mem_filter]; exact ⟨Finset.mem_univ u, hcv⟩
     have ht6' : t6 ∈ (Finset.univ.filter fun v : Fin 3 => colVal (C0 v) = 6) := by
@@ -603,15 +605,15 @@ lemma n3_c0form_equiv_CA (C0 : Code 3) (h : C0form C0) : Equivalent C0 CA := by
   · subst t
     have hp : p t0 = ⟨2, by decide⟩ := by simp [p, toFun, posOf, ht0]
     simp [CA, hp, hc0]
-    native_decide
+    decide
   · subst t
     have hp : p t5 = ⟨1, by decide⟩ := by simp [p, toFun, posOf, ht5]
     simp [CA, hp, hc5]
-    native_decide
+    decide
   · subst t
     have hp : p t6 = ⟨0, by decide⟩ := by simp [p, toFun, posOf, ht6]
     simp [CA, hp, hc6]
-    native_decide
+    decide
 
 /-- Membership in the five-code list up to equivalence. -/
 def InSet3 (C : Code 3) : Prop := ∃ C' : Code 3, Equivalent C C' ∧ InOptimal3 C'
@@ -651,7 +653,7 @@ lemma n3_classify_col0 (C : Code 3) (t : Fin 3) (ht0 : C t = col0) :
     have hCA : Equivalent C0 CA := n3_c0form_equiv_CA C0 hc0f
     exact Or.inl ⟨CA, equivalent_trans hEq hCA, by simp [InOptimal3]⟩
   · have h0pos : 1 ≤ count C 0 := by
-      have hcv : colVal (C t) = 0 := by rw [ht0]; native_decide
+      have hcv : colVal (C t) = 0 := by rw [ht0]; decide
       exact count_pos_of_colVal C t hcv
     rcases zero_column_strict C h0pos hc0 with ⟨t', ht'0, s', hs', hstrict⟩
     exact Or.inr ⟨replaceColumn C t' s', hstrict⟩
@@ -665,7 +667,7 @@ lemma n3_classify_has_0_or_15 (C : Code 3)
   · exact n3_classify_col0 C t ht0
   · let Ct : Code 3 := replaceColumn C t col0
     have hflip : Ct t = col0 := by simp [Ct, replaceColumn]
-    have hfc : flipCol (C t) = col0 := by rw [ht15]; native_decide
+    have hfc : flipCol (C t) = col0 := by rw [ht15]; decide
     have h1 : Equivalent C (replaceColumn C t (flipCol (C t))) := equivalent_replace_flip C t
     have hcodes : replaceColumn C t (flipCol (C t)) = Ct := by
       ext u
@@ -826,35 +828,35 @@ def code111 : Code 3 := fun _ => col1
 /-- The code (1,1,3). -/
 def code113 : Code 3 := fun t => if t.val ≤ 1 then col1 else col3
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- `C(1,2,0)` = (3,5,5) strictly dominates the (1,3,3) variant. -/
 lemma n3_strict_133 : UniversalStrictBetter (linearCode 1 2 0) code133 :=
-  universalStrictBetter_of_dCode_le_lt code133 (linearCode 1 2 0) (by native_decide) (by native_decide)
+  universalStrictBetter_of_dCode_le_lt code133 (linearCode 1 2 0) (by decide) (by decide)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- `C(1,2,0)` strictly dominates the (1,5,5) variant. -/
 lemma n3_strict_155 : UniversalStrictBetter (linearCode 1 2 0) code155 :=
-  universalStrictBetter_of_dCode_le_lt code155 (linearCode 1 2 0) (by native_decide) (by native_decide)
+  universalStrictBetter_of_dCode_le_lt code155 (linearCode 1 2 0) (by decide) (by decide)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- `C(1,2,0)` strictly dominates the (1,6,6) variant. -/
 lemma n3_strict_166 : UniversalStrictBetter (linearCode 1 2 0) code166 :=
-  universalStrictBetter_of_dCode_le_lt code166 (linearCode 1 2 0) (by native_decide) (by native_decide)
+  universalStrictBetter_of_dCode_le_lt code166 (linearCode 1 2 0) (by decide) (by decide)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- (1,1,3) strictly dominates (1,1,1) (row-superset with a new row). -/
 lemma n3_strict_111 : UniversalStrictBetter code113 code111 := by
   have hsup : ∀ j : Fin 4, ∃ j' : Fin 4, row code111 j = row code113 j' := by
     intro j
     fin_cases j
-    · exact ⟨0, by native_decide⟩
-    · exact ⟨1, by native_decide⟩
-    · exact ⟨0, by native_decide⟩
-    · exact ⟨3, by native_decide⟩
+    · exact ⟨0, by decide⟩
+    · exact ⟨1, by decide⟩
+    · exact ⟨0, by decide⟩
+    · exact ⟨3, by decide⟩
   have hnew : ∃ j' : Fin 4, ∀ j : Fin 4, row code111 j ≠ row code113 j' := by
     refine ⟨2, ?_⟩
     intro j
-    fin_cases j <;> native_decide
+    fin_cases j <;> decide
   exact universalStrictBetter_of_rows_subset code111 code113 hsup hnew
 
 /-- A code with one type-1 column and two type-X columns is a column
@@ -911,7 +913,7 @@ lemma equiv_code1xx (C : Code 3) (colX : Column) (t1 tu tv : Fin 3)
 
 /-- A code with |1| = 1, |X| = 2 and all columns of types 1 or X is
 equivalent to (1,X,X). -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma equiv_1xx_of_counts (C : Code 3) (colX : Column) (i : ℕ)
     (hci : ∀ c : Column, colVal c = i → c = colX)
     (hcolX : colVal colX = i) (hne_i_1 : i ≠ 1)
@@ -940,7 +942,7 @@ lemma equiv_1xx_of_counts (C : Code 3) (colX : Column) (i : ℕ)
   have hcv : C tv = colX := hci (C tv) htv
   have huniq1 : ∀ u : Fin 3, C u = col1 → u = t1 := by
     intro u hu
-    have hcvu : colVal (C u) = 1 := by rw [hu]; native_decide
+    have hcvu : colVal (C u) = 1 := by rw [hu]; decide
     exact colVal_unique_of_count_one (C := C) t1 ht1 h1 u hcvu
   have huniqX : ∀ u : Fin 3, C u = colX → u = tu ∨ u = tv := by
     intro u hu
@@ -1009,23 +1011,23 @@ lemma n3_class1_types_166 (C : Code 3) (h : ClassI C) (h1 : count C 1 = 1) (h6 :
   simpa [Finset.mem_insert, Finset.mem_singleton] using
     (colVal_mem_of_totalCounts C ({1, 6} : Finset ℕ) htot16 t)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- The |3| = 2 variant of Class-I is equivalent to (1,3,3). -/
 lemma n3_class1_equiv_133 (C : Code 3) (h : ClassI C) (h1 : count C 1 = 1) (h3 : count C 3 = 2) :
     Equivalent C code133 :=
-  equiv_1xx_of_counts C col3 3 (fun c hc => (colVal_eq_three_iff_col3 c).mp hc) (by native_decide) (by norm_num) h1 h3 (n3_class1_types_133 C h h1 h3)
+  equiv_1xx_of_counts C col3 3 (fun c hc => (colVal_eq_three_iff_col3 c).mp hc) (by decide) (by norm_num) h1 h3 (n3_class1_types_133 C h h1 h3)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- The |5| = 2 variant of Class-I is equivalent to (1,5,5). -/
 lemma n3_class1_equiv_155 (C : Code 3) (h : ClassI C) (h1 : count C 1 = 1) (h5 : count C 5 = 2) :
     Equivalent C code155 :=
-  equiv_1xx_of_counts C col5 5 (fun c hc => (colVal_eq_five_iff_col5 c).mp hc) (by native_decide) (by norm_num) h1 h5 (n3_class1_types_155 C h h1 h5)
+  equiv_1xx_of_counts C col5 5 (fun c hc => (colVal_eq_five_iff_col5 c).mp hc) (by decide) (by norm_num) h1 h5 (n3_class1_types_155 C h h1 h5)
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- The |6| = 2 variant of Class-I is equivalent to (1,6,6). -/
 lemma n3_class1_equiv_166 (C : Code 3) (h : ClassI C) (h1 : count C 1 = 1) (h6 : count C 6 = 2) :
     Equivalent C code166 :=
-  equiv_1xx_of_counts C col6 6 (fun c hc => (colVal_eq_six_iff_col6 c).mp hc) (by native_decide) (by norm_num) h1 h6 (n3_class1_types_166 C h h1 h6)
+  equiv_1xx_of_counts C col6 6 (fun c hc => (colVal_eq_six_iff_col6 c).mp hc) (by decide) (by norm_num) h1 h6 (n3_class1_types_166 C h h1 h6)
 
 /-- The |1| = 3 Class-I code is (1,1,1) itself. -/
 lemma n3_class1_equiv_111 (C : Code 3) (_h : ClassI C) (h1 : count C 1 = 3) :
@@ -1204,7 +1206,7 @@ lemma n3_caseB_types_3567 (C : Code 3)
 
 /-- Case-B reduction for |2| > 0: swapping rows 2,3 maps type 2 to 1, so the
 code is equivalent to one with |1| > 0 and columns only in {1,3,5,6}. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseB_col2_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h2 : 0 < count C 2) (h1 : count C 1 = 0) (h4 : count C 4 = 0) (h7 : count C 7 = 0) :
@@ -1218,32 +1220,32 @@ lemma n3_caseB_col2_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho23 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · intro t
     rcases n3_caseB_types_236 C hcols h1 h4 h7 t with hv2 | hv3 | hv5 | hv6
     · have hc : C t = colOfNat 2 := by rw [← colOfNat_colVal (C t), hv2]
       change colVal (rowPermute rho23 (C t)) = 1 ∨ colVal (rowPermute rho23 (C t)) = 3 ∨
         colVal (rowPermute rho23 (C t)) = 5 ∨ colVal (rowPermute rho23 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 3 := by rw [← colOfNat_colVal (C t), hv3]
       change colVal (rowPermute rho23 (C t)) = 1 ∨ colVal (rowPermute rho23 (C t)) = 3 ∨
         colVal (rowPermute rho23 (C t)) = 5 ∨ colVal (rowPermute rho23 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 5 := by rw [← colOfNat_colVal (C t), hv5]
       change colVal (rowPermute rho23 (C t)) = 1 ∨ colVal (rowPermute rho23 (C t)) = 3 ∨
         colVal (rowPermute rho23 (C t)) = 5 ∨ colVal (rowPermute rho23 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 6 := by rw [← colOfNat_colVal (C t), hv6]
       change colVal (rowPermute rho23 (C t)) = 1 ∨ colVal (rowPermute rho23 (C t)) = 3 ∨
         colVal (rowPermute rho23 (C t)) = 5 ∨ colVal (rowPermute rho23 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
 
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 /-- Case-B reduction for |4| > 0: swapping rows 1,3 maps type 4 to 1. -/
 lemma n3_caseB_col4_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
@@ -1258,34 +1260,34 @@ lemma n3_caseB_col4_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho13 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · intro t
     rcases n3_caseB_types_346 C hcols h1 h2 h7 t with hv3 | hv4 | hv5 | hv6
     · have hc : C t = colOfNat 3 := by rw [← colOfNat_colVal (C t), hv3]
       change colVal (rowPermute rho13 (C t)) = 1 ∨ colVal (rowPermute rho13 (C t)) = 3 ∨
         colVal (rowPermute rho13 (C t)) = 5 ∨ colVal (rowPermute rho13 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 4 := by rw [← colOfNat_colVal (C t), hv4]
       change colVal (rowPermute rho13 (C t)) = 1 ∨ colVal (rowPermute rho13 (C t)) = 3 ∨
         colVal (rowPermute rho13 (C t)) = 5 ∨ colVal (rowPermute rho13 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 5 := by rw [← colOfNat_colVal (C t), hv5]
       change colVal (rowPermute rho13 (C t)) = 1 ∨ colVal (rowPermute rho13 (C t)) = 3 ∨
         colVal (rowPermute rho13 (C t)) = 5 ∨ colVal (rowPermute rho13 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 6 := by rw [← colOfNat_colVal (C t), hv6]
       change colVal (rowPermute rho13 (C t)) = 1 ∨ colVal (rowPermute rho13 (C t)) = 3 ∨
         colVal (rowPermute rho13 (C t)) = 5 ∨ colVal (rowPermute rho13 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
 
 /-- Case-B reduction for |7| > 0: swapping rows 0,3 maps type 7 to 14 and
 `flipHighColumns` flips it to 1. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseB_col7_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h7 : 0 < count C 7) (h1 : count C 1 = 0) (h2 : count C 2 = 0) (h4 : count C 4 = 0) :
@@ -1302,8 +1304,8 @@ lemma n3_caseB_col7_reduce (C : Code 3)
       change (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · intro t
     rcases n3_caseB_types_3567 C hcols h1 h2 h4 t with hv3 | hv5 | hv6 | hv7
     · have hc : C t = colOfNat 3 := by rw [← colOfNat_colVal (C t), hv3]
@@ -1316,7 +1318,7 @@ lemma n3_caseB_col7_reduce (C : Code 3)
         colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 5 := by rw [← colOfNat_colVal (C t), hv5]
       change colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 1 ∨
@@ -1327,7 +1329,7 @@ lemma n3_caseB_col7_reduce (C : Code 3)
         colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 6 := by rw [← colOfNat_colVal (C t), hv6]
       change colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 1 ∨
@@ -1338,7 +1340,7 @@ lemma n3_caseB_col7_reduce (C : Code 3)
         colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
     · have hc : C t = colOfNat 7 := by rw [← colOfNat_colVal (C t), hv7]
       change colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 1 ∨
@@ -1349,7 +1351,7 @@ lemma n3_caseB_col7_reduce (C : Code 3)
         colVal (if decide (7 < colVal (rowPermute rho03 (C t))) then
           flipCol (rowPermute rho03 (C t)) else rowPermute rho03 (C t)) = 6
       rw [hc]
-      native_decide
+      decide
 
 /-! ## n = 3: Case-1 analysis (|1| > 0, columns in {1,3,5,6})
 
@@ -1419,7 +1421,7 @@ lemma equiv_types3 (C D : Code 3) (i j k : ℕ) (ρ : Equiv (Fin 4) (Fin 4)) (f 
 def rho01 : Equiv (Fin 4) (Fin 4) := Equiv.swap (0 : Fin 4) (1 : Fin 4)
 
 -- (1,3,5) is equivalent to code136 (row swap (0,1) + flip of the col5 column)
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_135_equiv_136 (C : Code 3)
     (h1 : count C 1 = 1) (h3 : count C 3 = 1) (h5 : count C 5 = 1) (h6 : count C 6 = 0)
     (hcols : ∀ t : Fin 3, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨ colVal (C t) = 5 ∨ colVal (C t) = 6) :
@@ -1458,19 +1460,19 @@ lemma n3_135_equiv_136 (C : Code 3)
   have hc5 : C t5 = col5 := (colVal_eq_five_iff_col5 (C t5)).mp ht5
   have hD0 : code136 0 = rowPermute rho01 (if f135 t1 then flipCol (C t1) else C t1) := by
     simp [code136, f135, htne15, hc1]
-    native_decide
+    decide
   have hD1 : code136 1 = rowPermute rho01 (if f135 t3 then flipCol (C t3) else C t3) := by
     simp [code136, f135, htne35]
     rw [hc3]
-    native_decide
+    decide
   have hD2 : code136 2 = rowPermute rho01 (if f135 t5 then flipCol (C t5) else C t5) := by
     simp [code136, f135]
     rw [hc5]
-    native_decide
+    decide
   exact equiv_types3 C code136 1 3 5 rho01 f135 t1 t3 t5 ht1 ht3 ht5 huniq1 huniq3 huniq5 htypes htne13 htne15 htne35 hD0 hD1 hD2
 
 -- (1,5,6) is equivalent to code136 (row swap (1,2) = rho15 swaps col5 and col3)
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_156_equiv_136 (C : Code 3)
     (h1 : count C 1 = 1) (h5 : count C 5 = 1) (h6 : count C 6 = 1) (h3 : count C 3 = 0)
     (hcols : ∀ t : Fin 3, colVal (C t) = 1 ∨ colVal (C t) = 3 ∨ colVal (C t) = 5 ∨ colVal (C t) = 6) :
@@ -1508,13 +1510,13 @@ lemma n3_156_equiv_136 (C : Code 3)
   have hc6 : C t6 = col6 := (colVal_eq_six_iff_col6 (C t6)).mp ht6
   have hD0 : code136 0 = rowPermute rho15 (C t1) := by
     simp [code136, hc1]
-    native_decide
+    decide
   have hD1 : code136 1 = rowPermute rho15 (C t5) := by
     simp [code136, hc5]
-    native_decide
+    decide
   have hD2 : code136 2 = rowPermute rho15 (C t6) := by
     simp [code136, hc6]
-    native_decide
+    decide
   exact equiv_types3 C code136 1 5 6 rho15 (fun _ => false) t1 t5 t6 ht1 ht5 ht6 huniq1 huniq5 huniq6 htypes htne15 htne16 htne56 hD0 hD1 hD2
 
 -- the canonical codes (1,1,X) and (3,3,5)
@@ -1524,15 +1526,15 @@ def code116 : Code 3 := code11x col6
 def code335 : Code 3 := fun t => if t.val = 2 then col5 else col3
 
 -- (3,3,5) strictly dominates (1,1,5) and (1,1,6)
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_strict_115 : UniversalStrictBetter code335 code115 :=
-  universalStrictBetter_of_dCode_le_lt code115 code335 (by native_decide) (by native_decide)
--- native_decide: Contentful · n=3 · checked 2026-08-28
+  universalStrictBetter_of_dCode_le_lt code115 code335 (by decide) (by decide)
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_strict_116 : UniversalStrictBetter code335 code116 :=
-  universalStrictBetter_of_dCode_le_lt code116 code335 (by native_decide) (by native_decide)
+  universalStrictBetter_of_dCode_le_lt code116 code335 (by decide) (by decide)
 
 -- a code with two type-1 columns and one type-X column is equivalent to (1,1,X)
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma equiv_11x_of_counts (C : Code 3) (colX : Column) (i : ℕ)
     (hci : ∀ c : Column, colVal c = i → c = colX)
     (hcolX : colVal colX = i) (hne_i_1 : i ≠ 1)
@@ -1571,7 +1573,7 @@ lemma equiv_11x_of_counts (C : Code 3) (colX : Column) (i : ℕ)
   have htri : ∀ t : Fin 3, t = t1a ∨ t = t1b ∨ t = tx := by
     intro t
     rcases hall t with hv1 | hvX
-    · have hcv : colVal (C t) = 1 := by rw [hv1]; native_decide
+    · have hcv : colVal (C t) = 1 := by rw [hv1]; decide
       rcases huniq1 t hcv with ht1a | ht1b
       · left; exact ht1a
       · right; left; exact ht1b
@@ -1775,13 +1777,13 @@ lemma n3_classify_caseB_analysis (C : Code 3)
     · by_cases h5z : count C 5 = 0
       · have h6 : count C 6 = 1 := by omega
         have hEq : Equivalent C code116 := equiv_11x_of_counts C col6 6
-          (fun c hc => (colVal_eq_six_iff_col6 c).mp hc) (by native_decide) (by norm_num) h1 h6 (n3_types_116 C hcols h3z h5z)
+          (fun c hc => (colVal_eq_six_iff_col6 c).mp hc) (by decide) (by norm_num) h1 h6 (n3_types_116 C hcols h3z h5z)
         exact Or.inr ⟨code335, universalStrictBetter_of_eq_left n3_strict_116
           (universalEqual_of_equivalent C code116 hEq)⟩
       · by_cases h6z : count C 6 = 0
         · have h5 : count C 5 = 1 := by omega
           have hEq : Equivalent C code115 := equiv_11x_of_counts C col5 5
-            (fun c hc => (colVal_eq_five_iff_col5 c).mp hc) (by native_decide) (by norm_num) h1 h5 (n3_types_115 C hcols h3z h6z)
+            (fun c hc => (colVal_eq_five_iff_col5 c).mp hc) (by decide) (by norm_num) h1 h5 (n3_types_115 C hcols h3z h6z)
           exact Or.inr ⟨code335, universalStrictBetter_of_eq_left n3_strict_115
             (universalEqual_of_equivalent C code115 hEq)⟩
         · exfalso
@@ -1805,7 +1807,7 @@ contradicts optimality.
 
 /-- (1,3,7) is equivalent to (1,5,7) = `code135` (row swap (1,2) swaps
 columns 3 and 5). -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_137_equiv_135 (C : Code 3)
     (h1 : count C 1 = 1) (h3 : count C 3 = 1) (h7 : count C 7 = 1)
     (_h5 : count C 5 = 0) (_h2 : count C 2 = 0) (_h4 : count C 4 = 0) (_h6 : count C 6 = 0)
@@ -1847,13 +1849,13 @@ lemma n3_137_equiv_135 (C : Code 3)
   have hc7 : C t7 = colOfNat 7 := by rw [← colOfNat_colVal (C t7), ht7]
   have hD0 : code135 0 = rowPermute rho15 (C t1) := by
     simp [code135, hc1]
-    native_decide
+    decide
   have hD1 : code135 1 = rowPermute rho15 (C t3) := by
     simp [code135, hc3]
-    native_decide
+    decide
   have hD2 : code135 2 = rowPermute rho15 (C t7) := by
     simp [code135, hc7]
-    native_decide
+    decide
   exact equiv_types3 C code135 1 3 7 rho15 (fun _ => false) t1 t3 t7 ht1 ht3 ht7 huniq1 huniq3 huniq7 htypes htne13 htne17 htne37 hD0 hD1 hD2
 
 /-- (1,5,7) with Condition-A is Class-III-a. -/
@@ -1982,7 +1984,7 @@ lemma n3_case1_types_1356 (C : Code 3)
 
 /-- Case-C reduction for |7| > 0 and |2| > 0: the row swap (2,3) maps type 2
 to 1 and fixes type 7, so the result has |1| > 0 ∧ |7| > 0. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseC_2_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h2 : 0 < count C 2) (h7 : 0 < count C 7) :
@@ -1996,8 +1998,8 @@ lemma n3_caseC_2_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho23 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · constructor
     · have h7pos : 1 ≤ count C 7 := by omega
       rcases exists_col_of_colVal C 7 h7pos with ⟨t, ht⟩
@@ -2005,15 +2007,15 @@ lemma n3_caseC_2_reduce (C : Code 3)
       have hct : Ct t = col7 := by
         change rowPermute rho23 (C t) = col7
         rw [hc]
-        native_decide
-      exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+        decide
+      exact count_pos_of_colVal Ct t (by rw [hct]; decide)
     · intro t
       change 1 ≤ colVal (rowPermute rho23 (C t)) ∧ colVal (rowPermute rho23 (C t)) ≤ 7
-      exact rowPermute_fix0_cols17 C rho23 (by native_decide) hcols t
+      exact rowPermute_fix0_cols17 C rho23 (by decide) hcols t
 
 /-- Case-C reduction for |7| > 0 and |4| > 0: the row swap (1,3) maps type 4
 to 1 and fixes type 7. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseC_4_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h4 : 0 < count C 4) (h7 : 0 < count C 7) :
@@ -2027,8 +2029,8 @@ lemma n3_caseC_4_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho13 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · constructor
     · have h7pos : 1 ≤ count C 7 := by omega
       rcases exists_col_of_colVal C 7 h7pos with ⟨t, ht⟩
@@ -2036,17 +2038,17 @@ lemma n3_caseC_4_reduce (C : Code 3)
       have hct : Ct t = col7 := by
         change rowPermute rho13 (C t) = col7
         rw [hc]
-        native_decide
-      exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+        decide
+      exact count_pos_of_colVal Ct t (by rw [hct]; decide)
     · intro t
       change 1 ≤ colVal (rowPermute rho13 (C t)) ∧ colVal (rowPermute rho13 (C t)) ≤ 7
-      exact rowPermute_fix0_cols17 C rho13 (by native_decide) hcols t
+      exact rowPermute_fix0_cols17 C rho13 (by decide) hcols t
 
 /-- Case-C reduction for |1| > 0 and |2| > 0: flip the columns of types 2,3,6
 and swap rows 0,2 (Fig. fig:iwla of `lm:all` (Lemma 15)).  The transformation maps types
 1,2,3,4,5,6 to 1,7,6,4,5,3 (a type-7 column would map to type 13, which is why
 the |7| = 0 hypothesis is needed), so |1| and |7| become positive. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseC_no7_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h7z : count C 7 = 0)
@@ -2063,8 +2065,8 @@ lemma n3_caseC_no7_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho02 (if colVal (C t) = 2 ∨ colVal (C t) = 3 ∨ colVal (C t) = 6 then flipCol (C t) else C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · constructor
     · have h2pos : 1 ≤ count C 2 := by omega
       rcases exists_col_of_colVal C 2 h2pos with ⟨t, ht⟩
@@ -2072,8 +2074,8 @@ lemma n3_caseC_no7_reduce (C : Code 3)
       have hct : Ct t = col7 := by
         change rowPermute rho02 (if colVal (C t) = 2 ∨ colVal (C t) = 3 ∨ colVal (C t) = 6 then flipCol (C t) else C t) = col7
         rw [hc]
-        native_decide
-      exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+        decide
+      exact count_pos_of_colVal Ct t (by rw [hct]; decide)
     · intro t
       rcases hcols t with ⟨hge, hle⟩
       change 1 ≤ colVal (rowPermute rho02
@@ -2086,29 +2088,29 @@ lemma n3_caseC_no7_reduce (C : Code 3)
       rcases hcases with hv1 | hv2 | hv3 | hv4 | hv5 | hv6 | hv7
       · have hct : C t = colOfNat 1 := by rw [← colOfNat_colVal (C t), hv1]
         rw [hct]
-        native_decide
+        decide
       · have hct : C t = colOfNat 2 := by rw [← colOfNat_colVal (C t), hv2]
         rw [hct]
-        native_decide
+        decide
       · have hct : C t = colOfNat 3 := by rw [← colOfNat_colVal (C t), hv3]
         rw [hct]
-        native_decide
+        decide
       · have hct : C t = colOfNat 4 := by rw [← colOfNat_colVal (C t), hv4]
         rw [hct]
-        native_decide
+        decide
       · have hct : C t = colOfNat 5 := by rw [← colOfNat_colVal (C t), hv5]
         rw [hct]
-        native_decide
+        decide
       · have hct : C t = colOfNat 6 := by rw [← colOfNat_colVal (C t), hv6]
         rw [hct]
-        native_decide
+        decide
       · have h7pos : 1 ≤ count C 7 := count_pos_of_colVal C t hv7
         omega
 
 /-- Case-C pre-reduction for |1| > 0 and |4| > 0 (|7| = 0): the row swap (1,2)
 maps type 4 to 2 and fixes type 1, giving |1| > 0 ∧ |2| > 0 for
 `n3_caseC_no7_reduce`. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseC_14_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h7z : count C 7 = 0)
@@ -2123,8 +2125,8 @@ lemma n3_caseC_14_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho15 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · constructor
     · have h4pos : 1 ≤ count C 4 := by omega
       rcases exists_col_of_colVal C 4 h4pos with ⟨t, ht⟩
@@ -2132,17 +2134,17 @@ lemma n3_caseC_14_reduce (C : Code 3)
       have hct : Ct t = colOfNat 2 := by
         change rowPermute rho15 (C t) = colOfNat 2
         rw [hc]
-        native_decide
-      exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+        decide
+      exact count_pos_of_colVal Ct t (by rw [hct]; decide)
     · constructor
-      · rw [count_fix7_rowPermute rho15 (by native_decide) C, h7z]
+      · rw [count_fix7_rowPermute rho15 (by decide) C, h7z]
       · intro t
         change 1 ≤ colVal (rowPermute rho15 (C t)) ∧ colVal (rowPermute rho15 (C t)) ≤ 7
-        exact rowPermute_fix0_cols17 C rho15 (by native_decide) hcols t
+        exact rowPermute_fix0_cols17 C rho15 (by decide) hcols t
 
 /-- Case-C pre-reduction for |2| > 0 and |4| > 0 (|7| = 0): the row swap (1,3)
 maps type 4 to 1 and fixes type 2. -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma n3_caseC_24_reduce (C : Code 3)
     (hcols : ∀ t : Fin 3, 1 ≤ colVal (C t) ∧ colVal (C t) ≤ 7)
     (h7z : count C 7 = 0)
@@ -2157,8 +2159,8 @@ lemma n3_caseC_24_reduce (C : Code 3)
     have hct : Ct t = col1 := by
       change rowPermute rho13 (C t) = col1
       rw [hc]
-      native_decide
-    exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+      decide
+    exact count_pos_of_colVal Ct t (by rw [hct]; decide)
   · constructor
     · have h2pos : 1 ≤ count C 2 := by omega
       rcases exists_col_of_colVal C 2 h2pos with ⟨t, ht⟩
@@ -2166,13 +2168,13 @@ lemma n3_caseC_24_reduce (C : Code 3)
       have hct : Ct t = colOfNat 2 := by
         change rowPermute rho13 (C t) = colOfNat 2
         rw [hc]
-        native_decide
-      exact count_pos_of_colVal Ct t (by rw [hct]; native_decide)
+        decide
+      exact count_pos_of_colVal Ct t (by rw [hct]; decide)
     · constructor
-      · rw [count_fix7_rowPermute rho13 (by native_decide) C, h7z]
+      · rw [count_fix7_rowPermute rho13 (by decide) C, h7z]
       · intro t
         change 1 ≤ colVal (rowPermute rho13 (C t)) ∧ colVal (rowPermute rho13 (C t)) ≤ 7
-        exact rowPermute_fix0_cols17 C rho13 (by native_decide) hcols t
+        exact rowPermute_fix0_cols17 C rho13 (by decide) hcols t
 
 /-- Strong n = 3 columns-in-{1..7} classification. -/
 lemma n3_classify_columns17 (C : Code 3)
@@ -2258,19 +2260,19 @@ lemma n3_strict_better_of_not_InOptimal3 (C : Code 3)
 
 /-- The five n=3 representatives have equal decoding performance. -/
 lemma n3_code135_eq_linear120 : UniversalEqual code135 (linearCode 1 2 0) :=
-  universalEqual_of_alpha_eq (by native_decide)
+  universalEqual_of_alpha_eq (by decide)
 
 /-- The five n=3 representatives have equal decoding performance. -/
 lemma n3_code136_eq_linear120 : UniversalEqual code136 (linearCode 1 2 0) :=
-  universalEqual_of_alpha_eq (by native_decide)
+  universalEqual_of_alpha_eq (by decide)
 
 /-- The five n=3 representatives have equal decoding performance. -/
 lemma n3_CA_eq_linear120 : UniversalEqual CA (linearCode 1 2 0) :=
-  universalEqual_of_alpha_eq (by native_decide)
+  universalEqual_of_alpha_eq (by decide)
 
 /-- The five n=3 representatives have equal decoding performance. -/
 lemma n3_linear111_eq_linear120 : UniversalEqual (linearCode 1 1 1) (linearCode 1 2 0) :=
-  universalEqual_of_alpha_eq (by native_decide)
+  universalEqual_of_alpha_eq (by decide)
 
 /-- Every n=3 code equivalent to one of the five representatives has the same performance
 as `linearCode 1 2 0`. -/

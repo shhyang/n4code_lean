@@ -19,6 +19,8 @@ a comment pointing back (as done for `thm:0column` (Theorem 6) in `ZeroColumn.le
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 /-! ## Linear-code facts
 
 The representative `C(n3,n5,n6) = linearCode n3 n5 n6` has columns of types
@@ -26,17 +28,17 @@ The representative `C(n3,n5,n6) = linearCode n3 n5 n6` has columns of types
 distances (paper eq. d in §5), which drive every α-formula in this module.
 -/
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `colVal col3 = 3`. -/
-lemma colVal_col3 : colVal col3 = 3 := by native_decide
+lemma colVal_col3 : colVal col3 = 3 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `colVal col5 = 5`. -/
-lemma colVal_col5 : colVal col5 = 5 := by native_decide
+lemma colVal_col5 : colVal col5 = 5 := by decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `colVal col6 = 6`. -/
-lemma colVal_col6 : colVal col6 = 6 := by native_decide
+lemma colVal_col6 : colVal col6 = 6 := by decide
 
 /-- Every column of `linearCode n3 n5 n6` has type 3, 5, or 6. -/
 lemma linear_col_type {n3 n5 n6 : ℕ} (t : Fin (n3 + n5 + n6)) :
@@ -335,19 +337,19 @@ lemma linear_dRow_eq {n3 n5 n6 : ℕ} (j : Fin 4) (y : Word (n3 + n5 + n6)) :
   rw [linear_count_3, linear_count_5, linear_count_6]
   ac_rfl
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `d_{row 1}` of a linear code: `w3 + w5 + w6`. -/
 lemma linear_dRow0 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
     dRow (linearCode n3 n5 n6) ⟨0, by decide⟩ y =
       w_i (linearCode n3 n5 n6) 3 y + w_i (linearCode n3 n5 n6) 5 y +
         w_i (linearCode n3 n5 n6) 6 y := by
   rw [linear_dRow_eq]
-  have ht3 : (3).testBit 3 = false := by native_decide
-  have ht5 : (5).testBit 3 = false := by native_decide
-  have ht6 : (6).testBit 3 = false := by native_decide
+  have ht3 : (3).testBit 3 = false := by decide
+  have ht5 : (5).testBit 3 = false := by decide
+  have ht6 : (6).testBit 3 = false := by decide
   simp [ht3, ht5, ht6, add_assoc]
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `d_{row 2}` of a linear code: `w3 + (n5 − w5) + (n6 − w6)`. -/
 lemma linear_dRow1 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
     dRow (linearCode n3 n5 n6) ⟨1, by decide⟩ y =
@@ -355,12 +357,12 @@ lemma linear_dRow1 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
         (n5 - w_i (linearCode n3 n5 n6) 5 y) +
           (n6 - w_i (linearCode n3 n5 n6) 6 y) := by
   rw [linear_dRow_eq]
-  have ht3 : (3).testBit 2 = false := by native_decide
-  have ht5 : (5).testBit 2 = true := by native_decide
-  have ht6 : (6).testBit 2 = true := by native_decide
+  have ht3 : (3).testBit 2 = false := by decide
+  have ht5 : (5).testBit 2 = true := by decide
+  have ht6 : (6).testBit 2 = true := by decide
   simp [ht3, ht5, ht6, add_assoc]
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `d_{row 3}` of a linear code: `(n3 − w3) + w5 + (n6 − w6)`. -/
 lemma linear_dRow2 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
     dRow (linearCode n3 n5 n6) ⟨2, by decide⟩ y =
@@ -368,12 +370,12 @@ lemma linear_dRow2 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
         w_i (linearCode n3 n5 n6) 5 y +
           (n6 - w_i (linearCode n3 n5 n6) 6 y) := by
   rw [linear_dRow_eq]
-  have ht3 : (3).testBit 1 = true := by native_decide
-  have ht5 : (5).testBit 1 = false := by native_decide
-  have ht6 : (6).testBit 1 = true := by native_decide
+  have ht3 : (3).testBit 1 = true := by decide
+  have ht5 : (5).testBit 1 = false := by decide
+  have ht6 : (6).testBit 1 = true := by decide
   simp [ht3, ht5, ht6, add_assoc]
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `d_{row 4}` of a linear code: `(n3 − w3) + (n5 − w5) + w6`. -/
 lemma linear_dRow3 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
     dRow (linearCode n3 n5 n6) ⟨3, by decide⟩ y =
@@ -381,9 +383,9 @@ lemma linear_dRow3 {n3 n5 n6 : ℕ} (y : Word (n3 + n5 + n6)) :
         (n5 - w_i (linearCode n3 n5 n6) 5 y) +
           w_i (linearCode n3 n5 n6) 6 y := by
   rw [linear_dRow_eq]
-  have ht3 : (3).testBit 0 = true := by native_decide
-  have ht5 : (5).testBit 0 = true := by native_decide
-  have ht6 : (6).testBit 0 = false := by native_decide
+  have ht3 : (3).testBit 0 = true := by decide
+  have ht5 : (5).testBit 0 = true := by decide
+  have ht6 : (6).testBit 0 = false := by decide
   simp [ht3, ht5, ht6, add_assoc]
 
 /-- `w3 + w5 + w6 = hammingWeight y` for a linear code. -/
@@ -8096,29 +8098,29 @@ lemma fin3_perm_of_cover {t0 t1 t2 : Fin 3}
   · change g 2 = t0
     simp [g]
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Swapping rows 2 and 3 fixes `col3`. -/
 lemma rowPermute_swap23_col3 :
     rowPermute (Equiv.swap (2 : Fin 4) (3 : Fin 4)) col3 = col3 := by
-  native_decide
+  decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- Swapping rows 2 and 3 maps `col5` to `col6`. -/
 lemma rowPermute_swap23_col5 :
     rowPermute (Equiv.swap (2 : Fin 4) (3 : Fin 4)) col5 = col6 := by
-  native_decide
+  decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- The row 3-cycle (1 2 3) maps `col3` to `col5`. -/
 lemma rowPermute_cycle_col3_col5 :
     rowPermute ((Equiv.swap (1 : Fin 4) (3 : Fin 4)).trans (Equiv.swap (1 : Fin 4) (2 : Fin 4))) col3 = col5 := by
-  native_decide
+  decide
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- The row 3-cycle (1 2 3) maps `col5` to `col6`. -/
 lemma rowPermute_cycle_col5_col6 :
     rowPermute ((Equiv.swap (1 : Fin 4) (3 : Fin 4)).trans (Equiv.swap (1 : Fin 4) (2 : Fin 4))) col5 = col6 := by
-  native_decide
+  decide
 
 /-- Sorted counts with spread ≤ 1 and sum 3k−1 are exactly (k,k,k−1). -/
 lemma r2_base_counts {A B C k : ℕ} (hk : 1 ≤ k) (hord : C ≤ B ∧ B ≤ A)
@@ -8242,20 +8244,20 @@ lemma count_linCode_6 {n a b c : ℕ} (hsum : a + b + c = n) :
 
 /-- Replacing a zero column keeps counts of types other than 0 and
 `colVal s'` unchanged. -/
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 lemma count_replace_0_eq {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (h0 : C t = col0)
     {i : ℕ} (hi0 : i ≠ 0) (his : i ≠ colVal s') : count (replaceColumn C t s') i = count C i := by
   exact count_replace_eq C t s' i
-    (by rw [h0]; intro h; exact hi0 (h.symm.trans (by native_decide : colVal col0 = 0)))
+    (by rw [h0]; intro h; exact hi0 (h.symm.trans (by decide : colVal col0 = 0)))
     (by intro h; exact his h.symm)
 
 /-- Replacing a zero column by `s'` increases the count of type `colVal s'`
 by one. -/
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 lemma count_replace_0_self {n : ℕ} (C : Code n) (t : Fin n) (s' : Column) (h0 : C t = col0)
     (hs : colVal s' ≠ 0) : count (replaceColumn C t s') (colVal s') = count C (colVal s') + 1 := by
   exact count_replace_inc C t s' (colVal s')
-    (by rw [h0]; intro h; exact hs (h.symm.trans (by native_decide : colVal col0 = 0)))
+    (by rw [h0]; intro h; exact hs (h.symm.trans (by decide : colVal col0 = 0)))
     rfl
 
 /-- Replacing a zero column does not decrease the count of any nonzero type. -/
@@ -8300,13 +8302,13 @@ lemma isLinear_replace_0 {n : ℕ} (C : Code n) (hlin : IsLinear C) (t : Fin n) 
 
 def col356 (i : ℕ) : Column := if i = 3 then col3 else if i = 5 then col5 else col6
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- `colVal (col356 i) = i` for i ∈ {3,5,6}. -/
 lemma col356_val (i : ℕ) (hi : i = 3 ∨ i = 5 ∨ i = 6) : colVal (col356 i) = i := by
   rcases hi with h3 | h5 | h6
-  · subst i; native_decide
-  · subst i; native_decide
-  · subst i; native_decide
+  · subst i; decide
+  · subst i; decide
+  · subst i; decide
 
 /-- The image type of a type-`i` column under a row permutation and an
 optional flip. -/
@@ -8780,7 +8782,7 @@ lemma linear_sum_counts {n : ℕ} {C : Code n} (hC : IsLinear C) :
     simp [Finset.sum_insert]
   omega
 
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 /-- The number of zero columns does not decrease along an equivalence. -/
 lemma count0_le {n : ℕ} {C C' : Code n} (_hC : IsLinear C) (hC' : IsLinear C')
     {ρ : Equiv (Fin 4) (Fin 4)} {p : Equiv (Fin n) (Fin n)} {f : Fin n → Bool}
@@ -8804,7 +8806,7 @@ lemma count0_le {n : ℕ} {C C' : Code n} (_hC : IsLinear C) (hC' : IsLinear C')
           rw [hf0]
           have hr : rowPermute ρ col15 = col15 := by funext k; simp [rowPermute, col15]
           rw [hr]
-          native_decide
+          decide
         rw [hc] at hcv'
         rcases hcv' with h0 | h3 | h5 | h6 <;> omega
       · by_cases hb0 : f t = true
@@ -8815,7 +8817,7 @@ lemma count0_le {n : ℕ} {C C' : Code n} (_hC : IsLinear C) (hC' : IsLinear C')
       simp [hh t, hf, hc0]
       have hf0 : rowPermute ρ col0 = col0 := rowPermute_col0 ρ
       rw [hf0]
-      native_decide
+      decide
     exact Finset.mem_filter.mpr ⟨by simp, heq⟩
   calc
     (Finset.univ.filter fun t : Fin n => colVal (C t) = 0).card =
@@ -9552,7 +9554,7 @@ lemma c0_counts_perm {n : ℕ} {C C' : Code n} (hC : IsLinear C) (hC' : IsLinear
 equivalent to a C0-form code by the type whose count is zero yields a linear
 code with no zero columns, universally equal to the original, and with all of
 |3|,|5|,|6| odd. -/
--- native_decide: Mechanical · n=any · checked 2026-08-24
+-- decide: Mechanical · n=any · checked 2026-08-24
 lemma zero_column_all_odd {n : ℕ} {D : Code n} (hlin : IsLinear D) (h1 : count D 0 = 1)
     (t : Fin n) (ht : D t = col0)
     (hC0 : ∃ C0 : Code n, Equivalent D C0 ∧ count C0 0 + count C0 5 + count C0 6 = n ∧
@@ -9650,15 +9652,15 @@ lemma zero_column_all_odd {n : ℕ} {D : Code n} (hlin : IsLinear D) (h1 : count
   · -- count D 3 = 0: add a 3
     rcases hperm with ⟨h3z, h5o, h6o⟩
     let D' : Code n := replaceColumn D t col3
-    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col3 (Or.inl (by native_decide : colVal col3 = 3))
+    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col3 (Or.inl (by decide : colVal col3 = 3))
     have hcnt' : count D' 0 = 0 := by
-      rw [count_replace_0_nonzero D t col3 ht (by native_decide : col3 ≠ col0)]
+      rw [count_replace_0_nonzero D t col3 ht (by decide : col3 ≠ col0)]
       omega
     have hEq : UniversalEqual D' D :=
       zero_column D t ht ⟨C0, hEqC0, hcnt, h5odd, h6odd⟩ col3
     have hodd3 : Odd (count D' 3) := by
-      have hself := count_replace_0_self D t col3 ht (by native_decide : colVal col3 ≠ 0)
-      have hcv : colVal col3 = 3 := by native_decide
+      have hself := count_replace_0_self D t col3 ht (by decide : colVal col3 ≠ 0)
+      have hcv : colVal col3 = 3 := by decide
       rw [hcv] at hself
       have hc : count D' 3 = count D 3 + 1 := by simpa [D', hcv] using hself
       rw [hc, h3z]
@@ -9679,15 +9681,15 @@ lemma zero_column_all_odd {n : ℕ} {D : Code n} (hlin : IsLinear D) (h1 : count
   · -- count D 5 = 0: add a 5
     rcases hperm with ⟨h5z, h3o, h6o⟩
     let D' : Code n := replaceColumn D t col5
-    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col5 (Or.inr (Or.inl (by native_decide : colVal col5 = 5)))
+    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col5 (Or.inr (Or.inl (by decide : colVal col5 = 5)))
     have hcnt' : count D' 0 = 0 := by
-      rw [count_replace_0_nonzero D t col5 ht (by native_decide : col5 ≠ col0)]
+      rw [count_replace_0_nonzero D t col5 ht (by decide : col5 ≠ col0)]
       omega
     have hEq : UniversalEqual D' D :=
       zero_column D t ht ⟨C0, hEqC0, hcnt, h5odd, h6odd⟩ col5
     have hodd5 : Odd (count D' 5) := by
-      have hself := count_replace_0_self D t col5 ht (by native_decide : colVal col5 ≠ 0)
-      have hcv : colVal col5 = 5 := by native_decide
+      have hself := count_replace_0_self D t col5 ht (by decide : colVal col5 ≠ 0)
+      have hcv : colVal col5 = 5 := by decide
       rw [hcv] at hself
       have hc : count D' 5 = count D 5 + 1 := by simpa [D', hcv] using hself
       rw [hc, h5z]
@@ -9708,15 +9710,15 @@ lemma zero_column_all_odd {n : ℕ} {D : Code n} (hlin : IsLinear D) (h1 : count
   · -- count D 6 = 0: add a 6
     rcases hperm with ⟨h6z, h3o, h5o⟩
     let D' : Code n := replaceColumn D t col6
-    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col6 (Or.inr (Or.inr (by native_decide : colVal col6 = 6)))
+    have hlin' : IsLinear D' := isLinear_replace_0 D hlin t ht col6 (Or.inr (Or.inr (by decide : colVal col6 = 6)))
     have hcnt' : count D' 0 = 0 := by
-      rw [count_replace_0_nonzero D t col6 ht (by native_decide : col6 ≠ col0)]
+      rw [count_replace_0_nonzero D t col6 ht (by decide : col6 ≠ col0)]
       omega
     have hEq : UniversalEqual D' D :=
       zero_column D t ht ⟨C0, hEqC0, hcnt, h5odd, h6odd⟩ col6
     have hodd6 : Odd (count D' 6) := by
-      have hself := count_replace_0_self D t col6 ht (by native_decide : colVal col6 ≠ 0)
-      have hcv : colVal col6 = 6 := by native_decide
+      have hself := count_replace_0_self D t col6 ht (by decide : colVal col6 ≠ 0)
+      have hcv : colVal col6 = 6 := by decide
       rw [hcv] at hself
       have hc : count D' 6 = count D 6 + 1 := by simpa [D', hcv] using hself
       rw [hc, h6z]
@@ -9888,7 +9890,7 @@ theorem's "not equivalent to any of them" hypothesis is contradictory.
 
 /-- The linear (3,4) codes fall into the three classes [C_A], [C(1,1,1)],
 [C(1,2,0)] (paper Table `table:optimal-linear`, n = 3). -/
--- native_decide: Contentful · n=3 · checked 2026-08-28
+-- decide: Contentful · n=3 · checked 2026-08-28
 lemma linear3_classified (D : Code 3) (hlin : IsLinear D) :
     Equivalent CA D ∨ Equivalent (linearCode 1 1 1) D ∨ Equivalent (linearCode 1 2 0) D := by
   by_cases hz : count D 0 = 0
@@ -10109,31 +10111,31 @@ lemma linear3_classified (D : Code 3) (hlin : IsLinear D) :
         subst t2
         have hc : col3 = col5 := by
           rw [← ht1c, ← ht2c]
-        have h3 : colVal col3 = 3 := by native_decide
-        have h5 : colVal col5 = 5 := by native_decide
+        have h3 : colVal col3 = 3 := by decide
+        have h5 : colVal col5 = 5 := by decide
         omega
       have hdist01 : t1 ≠ t0 := by
         intro h
         subst t0
         have hc : col3 = col0 := by
           rw [← ht1c, ← ht0c]
-        have hv : colVal col3 = 0 := by rw [hc]; native_decide
-        have h3 : colVal col3 = 3 := by native_decide
+        have hv : colVal col3 = 0 := by rw [hc]; decide
+        have h3 : colVal col3 = 3 := by decide
         omega
       have hdist02 : t2 ≠ t0 := by
         intro h
         subst t0
         have hc : col5 = col0 := by
           rw [← ht2c, ← ht0c]
-        have hv : colVal col5 = 0 := by rw [hc]; native_decide
-        have h5 : colVal col5 = 5 := by native_decide
+        have hv : colVal col5 = 0 := by rw [hc]; decide
+        have h5 : colVal col5 = 5 := by decide
         omega
       have hcover : ∀ u : Fin 3, u = t1 ∨ u = t2 ∨ u = t0 := by
         intro u
         have hcu := hlin.1 u
         by_cases hz : colVal (D u) = 0
         · right; right
-          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; native_decide)
+          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; decide)
         · -- u has a nonzero type — u is t1 or t2 (the only nonzero positions)
           rcases hcu with h0 | h3 | h5 | h6
           · exfalso; exact hz h0
@@ -10181,31 +10183,31 @@ lemma linear3_classified (D : Code 3) (hlin : IsLinear D) :
         subst t2
         have hc : col3 = col6 := by
           rw [← ht1c, ← ht2c]
-        have h3 : colVal col3 = 3 := by native_decide
-        have h6 : colVal col6 = 6 := by native_decide
+        have h3 : colVal col3 = 3 := by decide
+        have h6 : colVal col6 = 6 := by decide
         omega
       have hdist01 : t1 ≠ t0 := by
         intro h
         subst t0
         have hc : col3 = col0 := by
           rw [← ht1c, ← ht0c]
-        have hv : colVal col3 = 0 := by rw [hc]; native_decide
-        have h3 : colVal col3 = 3 := by native_decide
+        have hv : colVal col3 = 0 := by rw [hc]; decide
+        have h3 : colVal col3 = 3 := by decide
         omega
       have hdist02 : t2 ≠ t0 := by
         intro h
         subst t0
         have hc : col6 = col0 := by
           rw [← ht2c, ← ht0c]
-        have hv : colVal col6 = 0 := by rw [hc]; native_decide
-        have h6 : colVal col6 = 6 := by native_decide
+        have hv : colVal col6 = 0 := by rw [hc]; decide
+        have h6 : colVal col6 = 6 := by decide
         omega
       have hcover : ∀ u : Fin 3, u = t1 ∨ u = t2 ∨ u = t0 := by
         intro u
         have hcu := hlin.1 u
         by_cases hz : colVal (D u) = 0
         · right; right
-          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; native_decide)
+          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; decide)
         · rcases hcu with h0 | h3 | h5 | h6
           · exfalso; exact hz h0
           · left
@@ -10249,31 +10251,31 @@ lemma linear3_classified (D : Code 3) (hlin : IsLinear D) :
         subst t2
         have hc : col5 = col6 := by
           rw [← ht1c, ← ht2c]
-        have h5 : colVal col5 = 5 := by native_decide
-        have h6 : colVal col6 = 6 := by native_decide
+        have h5 : colVal col5 = 5 := by decide
+        have h6 : colVal col6 = 6 := by decide
         omega
       have hdist01 : t1 ≠ t0 := by
         intro h
         subst t0
         have hc : col5 = col0 := by
           rw [← ht1c, ← ht0c]
-        have hv : colVal col5 = 0 := by rw [hc]; native_decide
-        have h5 : colVal col5 = 5 := by native_decide
+        have hv : colVal col5 = 0 := by rw [hc]; decide
+        have h5 : colVal col5 = 5 := by decide
         omega
       have hdist02 : t2 ≠ t0 := by
         intro h
         subst t0
         have hc : col6 = col0 := by
           rw [← ht2c, ← ht0c]
-        have hv : colVal col6 = 0 := by rw [hc]; native_decide
-        have h6 : colVal col6 = 6 := by native_decide
+        have hv : colVal col6 = 0 := by rw [hc]; decide
+        have h6 : colVal col6 = 6 := by decide
         omega
       have hcover : ∀ u : Fin 3, u = t1 ∨ u = t2 ∨ u = t0 := by
         intro u
         have hcu := hlin.1 u
         by_cases hz : colVal (D u) = 0
         · right; right
-          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; native_decide)
+          exact eq_of_count_one hcnt0 hz (by rw [ht0c]; decide)
         · rcases hcu with h0 | h3 | h5 | h6
           · exfalso; exact hz h0
           · exfalso

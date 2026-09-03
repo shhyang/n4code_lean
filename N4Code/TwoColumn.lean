@@ -17,6 +17,8 @@ comment pointing back (as done for `thm:0column` (Theorem 6) in `ZeroColumn.lean
 
 namespace N4Code
 
+set_option maxRecDepth 1000000
+
 open scoped BigOperators
 
 /-! ## Two-flip distance machinery (paper §4, eq. thm2a/thm2b) -/
@@ -861,7 +863,7 @@ theorem z_rel_5 {n : ℕ} (C C' : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t
         dRow (replaceColumn (replaceColumn C t₁ col3) t₂ col5) ⟨2, by decide⟩ y
       rw [dRow_replace_27_2 C t₁ t₂ htne y h1 h7]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- w(c₂ ⊕ c₃) = |2|+|3|+|4|+|5| for a Columns07 code (paper eq. w4, published (28)). -/
 lemma hammingDist_row1_row2_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
     hammingDist (row1 C) (row2 C) = count C 2 + count C 3 + count C 4 + count C 5 := by
@@ -871,25 +873,25 @@ lemma hammingDist_row1_row2_eq {n : ℕ} (C : Code n) (h07 : Columns07 C) :
     exact ⟨Nat.zero_le _, Columns07_le7 C h07 t⟩
   unfold row1 row2
   rw [hammingDist_rows_of_types C ⟨1, by decide⟩ ⟨2, by decide⟩ (Finset.Icc 0 7) hS, sum_Icc0_7]
-  have h20 : (2 : ℕ).testBit 2 = false := by native_decide
-  have h21 : (2 : ℕ).testBit 1 = true := by native_decide
-  have h30 : (3 : ℕ).testBit 2 = false := by native_decide
-  have h31 : (3 : ℕ).testBit 1 = true := by native_decide
-  have h40 : (4 : ℕ).testBit 2 = true := by native_decide
-  have h41 : (4 : ℕ).testBit 1 = false := by native_decide
-  have h50 : (5 : ℕ).testBit 2 = true := by native_decide
-  have h51 : (5 : ℕ).testBit 1 = false := by native_decide
-  have h10 : (1 : ℕ).testBit 2 = false := by native_decide
-  have h11 : (1 : ℕ).testBit 1 = false := by native_decide
-  have h60 : (6 : ℕ).testBit 2 = true := by native_decide
-  have h61 : (6 : ℕ).testBit 1 = true := by native_decide
-  have h70 : (7 : ℕ).testBit 2 = true := by native_decide
-  have h71 : (7 : ℕ).testBit 1 = true := by native_decide
-  have h00 : (0 : ℕ).testBit 2 = false := by native_decide
-  have h01 : (0 : ℕ).testBit 1 = false := by native_decide
+  have h20 : (2 : ℕ).testBit 2 = false := by decide
+  have h21 : (2 : ℕ).testBit 1 = true := by decide
+  have h30 : (3 : ℕ).testBit 2 = false := by decide
+  have h31 : (3 : ℕ).testBit 1 = true := by decide
+  have h40 : (4 : ℕ).testBit 2 = true := by decide
+  have h41 : (4 : ℕ).testBit 1 = false := by decide
+  have h50 : (5 : ℕ).testBit 2 = true := by decide
+  have h51 : (5 : ℕ).testBit 1 = false := by decide
+  have h10 : (1 : ℕ).testBit 2 = false := by decide
+  have h11 : (1 : ℕ).testBit 1 = false := by decide
+  have h60 : (6 : ℕ).testBit 2 = true := by decide
+  have h61 : (6 : ℕ).testBit 1 = true := by decide
+  have h70 : (7 : ℕ).testBit 2 = true := by decide
+  have h71 : (7 : ℕ).testBit 1 = true := by decide
+  have h00 : (0 : ℕ).testBit 2 = false := by decide
+  have h01 : (0 : ℕ).testBit 1 = false := by decide
   simp [h00, h01, h10, h11, h20, h21, h30, h31, h40, h41, h50, h51, h60, h61, h70, h71]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- d₁ and d₂ in terms of the per-type weights for a Columns07 code. -/
 lemma dRow12_columns07 {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 C) :
     dRow C 1 y = w_i C 0 y + w_i C 1 y + w_i C 2 y + w_i C 3 y +
@@ -910,22 +912,22 @@ lemma dRow12_columns07 {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 C) :
       if i.testBit (3 - j.val) then count C i - w_i C i y else w_i C i y := by
     intro j
     exact dRow_eq_sum_types C j y (Finset.Icc 0 7) hSle hS
-  have h12 : (1 : ℕ).testBit 2 = false := by native_decide
-  have h22 : (2 : ℕ).testBit 2 = false := by native_decide
-  have h32 : (3 : ℕ).testBit 2 = false := by native_decide
-  have h42 : (4 : ℕ).testBit 2 = true := by native_decide
-  have h52 : (5 : ℕ).testBit 2 = true := by native_decide
-  have h62 : (6 : ℕ).testBit 2 = true := by native_decide
-  have h72 : (7 : ℕ).testBit 2 = true := by native_decide
-  have h02 : (0 : ℕ).testBit 2 = false := by native_decide
-  have h11 : (1 : ℕ).testBit 1 = false := by native_decide
-  have h21 : (2 : ℕ).testBit 1 = true := by native_decide
-  have h31 : (3 : ℕ).testBit 1 = true := by native_decide
-  have h41 : (4 : ℕ).testBit 1 = false := by native_decide
-  have h51 : (5 : ℕ).testBit 1 = false := by native_decide
-  have h61 : (6 : ℕ).testBit 1 = true := by native_decide
-  have h71 : (7 : ℕ).testBit 1 = true := by native_decide
-  have h01 : (0 : ℕ).testBit 1 = false := by native_decide
+  have h12 : (1 : ℕ).testBit 2 = false := by decide
+  have h22 : (2 : ℕ).testBit 2 = false := by decide
+  have h32 : (3 : ℕ).testBit 2 = false := by decide
+  have h42 : (4 : ℕ).testBit 2 = true := by decide
+  have h52 : (5 : ℕ).testBit 2 = true := by decide
+  have h62 : (6 : ℕ).testBit 2 = true := by decide
+  have h72 : (7 : ℕ).testBit 2 = true := by decide
+  have h02 : (0 : ℕ).testBit 2 = false := by decide
+  have h11 : (1 : ℕ).testBit 1 = false := by decide
+  have h21 : (2 : ℕ).testBit 1 = true := by decide
+  have h31 : (3 : ℕ).testBit 1 = true := by decide
+  have h41 : (4 : ℕ).testBit 1 = false := by decide
+  have h51 : (5 : ℕ).testBit 1 = false := by decide
+  have h61 : (6 : ℕ).testBit 1 = true := by decide
+  have h71 : (7 : ℕ).testBit 1 = true := by decide
+  have h01 : (0 : ℕ).testBit 1 = false := by decide
   have hd1 : dRow C 1 y = w_i C 0 y + w_i C 1 y + w_i C 2 y + w_i C 3 y +
       (count C 4 - w_i C 4 y) + (count C 5 - w_i C 5 y) +
       (count C 6 - w_i C 6 y) + (count C 7 - w_i C 7 y) := by
@@ -1368,7 +1370,7 @@ lemma Z41_of_htrue_hfalse_d2_d3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne
   refine ⟨⟨?_, hgt1, hgt2, hgt3⟩, hgt4⟩
   · simp [hy1, hy2]
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 /-- d₀ and d₄ in terms of the per-type weights for a Columns07 code. -/
 lemma dRow03_columns07 {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 C) :
     dRow C 0 y = w_i C 0 y + w_i C 1 y + w_i C 2 y + w_i C 3 y + w_i C 4 y +
@@ -1388,22 +1390,22 @@ lemma dRow03_columns07 {n : ℕ} (C : Code n) (y : Word n) (h07 : Columns07 C) :
       if i.testBit (3 - j.val) then count C i - w_i C i y else w_i C i y := by
     intro j
     exact dRow_eq_sum_types C j y (Finset.Icc 0 7) hSle hS
-  have h03 : (0 : ℕ).testBit 3 = false := by native_decide
-  have h13 : (1 : ℕ).testBit 3 = false := by native_decide
-  have h23 : (2 : ℕ).testBit 3 = false := by native_decide
-  have h33 : (3 : ℕ).testBit 3 = false := by native_decide
-  have h43 : (4 : ℕ).testBit 3 = false := by native_decide
-  have h53 : (5 : ℕ).testBit 3 = false := by native_decide
-  have h63 : (6 : ℕ).testBit 3 = false := by native_decide
-  have h73 : (7 : ℕ).testBit 3 = false := by native_decide
-  have h00 : (0 : ℕ).testBit 0 = false := by native_decide
-  have h10 : (1 : ℕ).testBit 0 = true := by native_decide
-  have h20 : (2 : ℕ).testBit 0 = false := by native_decide
-  have h30 : (3 : ℕ).testBit 0 = true := by native_decide
-  have h40 : (4 : ℕ).testBit 0 = false := by native_decide
-  have h50 : (5 : ℕ).testBit 0 = true := by native_decide
-  have h60 : (6 : ℕ).testBit 0 = false := by native_decide
-  have h70 : (7 : ℕ).testBit 0 = true := by native_decide
+  have h03 : (0 : ℕ).testBit 3 = false := by decide
+  have h13 : (1 : ℕ).testBit 3 = false := by decide
+  have h23 : (2 : ℕ).testBit 3 = false := by decide
+  have h33 : (3 : ℕ).testBit 3 = false := by decide
+  have h43 : (4 : ℕ).testBit 3 = false := by decide
+  have h53 : (5 : ℕ).testBit 3 = false := by decide
+  have h63 : (6 : ℕ).testBit 3 = false := by decide
+  have h73 : (7 : ℕ).testBit 3 = false := by decide
+  have h00 : (0 : ℕ).testBit 0 = false := by decide
+  have h10 : (1 : ℕ).testBit 0 = true := by decide
+  have h20 : (2 : ℕ).testBit 0 = false := by decide
+  have h30 : (3 : ℕ).testBit 0 = true := by decide
+  have h40 : (4 : ℕ).testBit 0 = false := by decide
+  have h50 : (5 : ℕ).testBit 0 = true := by decide
+  have h60 : (6 : ℕ).testBit 0 = false := by decide
+  have h70 : (7 : ℕ).testBit 0 = true := by decide
   have hd0 : dRow C 0 y = w_i C 0 y + w_i C 1 y + w_i C 2 y + w_i C 3 y + w_i C 4 y +
       w_i C 5 y + w_i C 6 y + w_i C 7 y := by
     rw [hsum (0 : Fin 4), sum_Icc0_7]
@@ -1495,7 +1497,7 @@ lemma tableZ_bounds {n : ℕ} (C : Code n) (a1 a2 a3 a4 a5 a6 a7 : ℕ)
 
 /-- A Z4¹ witness from a feasible table assignment satisfying the three
 weight conditions (paper eq. 2cw1-2cw3, published (204)-(206)). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma z4_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (a1 a2 a3 a4 a5 a6 a7 : ℕ)
@@ -1513,8 +1515,8 @@ lemma z4_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t�
   have hk7' : k 7 + 1 ≤ count C 7 := by simp [k, tableZ, ha7]
   have hkfeas : ∀ i ∈ Finset.Icc 0 15, k i ≤ count C i := by
     apply tableZ_bounds C a1 a2 a3 a4 a5 a6 a7 hb1 hb2 hb3 hb4 hb5 hb6 hb7
-  have ht1 : colVal (C t₁) = 1 := by rw [h1]; native_decide
-  have ht2 : colVal (C t₂) = 7 := by rw [h7]; native_decide
+  have ht1 : colVal (C t₁) = 1 := by rw [h1]; decide
+  have ht2 : colVal (C t₂) = 7 := by rw [h7]; decide
   rcases exists_goodWord_fixed C k t₁ t₂ ht1 ht2 hk1' hk7' hkfeas with ⟨y, hy1, hy2, hw⟩
   have hw1 : w_i C 1 y = a1 := by
     have := hw 1 (by simp)
@@ -1549,7 +1551,7 @@ lemma z4_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t�
 /-- Lemma `lemma:y4` (Lemma 23): if w(c2 ⊕ c3) is odd and the parities of
 (|2|,|3|,|4|,|5|) match cases 1, 4, 5, or 6, then Z4¹ is nonempty. Note that
 the four cases imply that w(c2 ⊕ c3) is odd. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem z4_nonempty_cases {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (_h : Odd (hammingDist (row1 C) (row2 C)))
@@ -1559,8 +1561,8 @@ theorem z4_nonempty_cases {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t�
         (Odd (count C 2) ∧ Even (count C 3) ∧ Odd (count C 4) ∧ Odd (count C 5)) ∨
         (Even (count C 2) ∧ Odd (count C 3) ∧ Odd (count C 4) ∧ Odd (count C 5))) :
     ∃ y : Word n, Z41 C t₁ t₂ y := by
-  have ht1 : colVal (C t₁) = 1 := by rw [h1]; native_decide
-  have ht2 : colVal (C t₂) = 7 := by rw [h7]; native_decide
+  have ht1 : colVal (C t₁) = 1 := by rw [h1]; decide
+  have ht2 : colVal (C t₂) = 7 := by rw [h7]; decide
   have hc1 : 1 ≤ count C 1 := count_pos_of_colVal C t₁ ht1
   have hc7 : 1 ≤ count C 7 := count_pos_of_colVal C t₂ ht2
   rcases hcase with hcase | hcase | hcase | hcase
@@ -1757,7 +1759,7 @@ lemma Z5_of_w {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
 /-- A Z5 witness from a feasible table assignment (c = 1 in the odd case,
 c = 0 in the even case; paper eq. 4cw1/3cw1, 4cw2/3cw2, 4cw3/3cw3,
 published (208)-(210) for the odd case, (211)-(213) for the even case). -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 lemma z5_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (a1 a2 a3 a4 a5 a6 a7 : ℕ) (c : ℕ) (hc : c ≤ 1)
@@ -1776,8 +1778,8 @@ lemma z5_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t�
   have hk7' : k 7 + 1 ≤ count C 7 := by simp [k, tableZ, ha7]
   have hkfeas : ∀ i ∈ Finset.Icc 0 15, k i ≤ count C i := by
     apply tableZ_bounds C a1 a2 a3 a4 a5 a6 a7 hb1 hb2 hb3 hb4 hb5 hb6 hb7
-  have ht1 : colVal (C t₁) = 1 := by rw [h1]; native_decide
-  have ht2 : colVal (C t₂) = 7 := by rw [h7]; native_decide
+  have ht1 : colVal (C t₁) = 1 := by rw [h1]; decide
+  have ht2 : colVal (C t₂) = 7 := by rw [h7]; decide
   rcases exists_goodWord_fixed C k t₁ t₂ ht1 ht2 hk1' hk7' hkfeas with ⟨y, hy1, hy2, hw⟩
   have hw1 : w_i C 1 y = a1 := by
     have := hw 1 (by simp)
@@ -1816,7 +1818,7 @@ lemma z5_nonempty_of_table {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t�
   · rw [hw1, hw2, hw5, hw6]
     omega
 
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem z5_nonempty {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (hcase :
@@ -1825,8 +1827,8 @@ theorem z5_nonempty {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ 
         (Even (hammingDist (row1 C) (row2 C)) ∧
           ¬ (Even (count C 2) ∧ Even (count C 4) ∧ Odd (count C 3) ∧ Odd (count C 5)))) :
     ∃ y : Word n, Z5 C t₁ t₂ y := by
-  have hc1 : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; native_decide)
-  have hc7 : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; native_decide)
+  have hc1 : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; decide)
+  have hc7 : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; decide)
   rcases hcase with hcase | hcase | hcase
   · -- case 7: |2|,|3|,|5| odd, |4| even
     rcases hcase with ⟨h2o, h3o, h5o, h4e⟩
@@ -2293,7 +2295,7 @@ lemma Z5_implies_dRow {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ �
 
 /-- Lemma `lm:2` (Lemma 25) (case 2: |3| odd, |2|,|4|,|5| even): Z4¹ ∪ Z5 = ∅ iff
 |1|=|7|=1, |2|=|4|=|6|=0, |3| odd, |5| even. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem z45_empty_case2 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (hcase : Odd (count C 3) ∧ Even (count C 2) ∧ Even (count C 4) ∧ Even (count C 5)) :
@@ -2307,8 +2309,8 @@ theorem z45_empty_case2 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
     rcases h2e with ⟨p2, hp2⟩
     rcases h4e with ⟨p4, hp4⟩
     rcases h5e with ⟨p5, hp5⟩
-    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; native_decide)
-    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; native_decide)
+    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; decide)
+    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; decide)
     constructor
     · by_contra h1ne
       have h1ge2 : 2 ≤ count C 1 := by omega
@@ -2420,9 +2422,9 @@ theorem z45_empty_case2 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
       have hz := Z41_implies_htrue_hfalse_d2_d3 C t₁ t₂ htne h1 h7 hy
       rcases hz with ⟨hy1, hy2, hd2, hd3⟩
       have hw1 : w_i C 1 y = 1 :=
-        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; native_decide) hy1
+        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; decide) hy1
       have hw7 : w_i C 7 y = 0 :=
-        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; native_decide) hy2
+        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; decide) hy2
       have hw2 : w_i C 2 y = 0 := w_i_eq_zero_of_count_zero C 2 y h2eq0
       have hw4 : w_i C 4 y = 0 := w_i_eq_zero_of_count_zero C 4 y h4eq0
       have hw6 : w_i C 6 y = 0 := w_i_eq_zero_of_count_zero C 6 y h6eq0
@@ -2447,9 +2449,9 @@ theorem z45_empty_case2 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
       have hz := Z5_implies_dRow C t₁ t₂ htne h1 h7 hy
       rcases hz with ⟨hy1, hy2, hd13, hd30, hd34, _⟩
       have hw1 : w_i C 1 y = 1 :=
-        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; native_decide) hy1
+        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; decide) hy1
       have hw7 : w_i C 7 y = 0 :=
-        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; native_decide) hy2
+        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; decide) hy2
       have hw2 : w_i C 2 y = 0 := w_i_eq_zero_of_count_zero C 2 y h2eq0
       have hw4 : w_i C 4 y = 0 := w_i_eq_zero_of_count_zero C 4 y h4eq0
       have hw6 : w_i C 6 y = 0 := w_i_eq_zero_of_count_zero C 6 y h6eq0
@@ -2478,7 +2480,7 @@ theorem z45_empty_case2 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
 
 /-- Lemma `lm:3` (Lemma 26) (case 3: |5| odd, |2|,|3|,|4| even): Z4¹ ∪ Z5 = ∅ iff
 |1|=|7|=1, |2|=|4|=|6|=0, |3| even, |5| odd. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem z45_empty_case3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (hcase : Odd (count C 5) ∧ Even (count C 2) ∧ Even (count C 3) ∧ Even (count C 4)) :
@@ -2492,8 +2494,8 @@ theorem z45_empty_case3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
     rcases h2e with ⟨p2, hp2⟩
     rcases h3e with ⟨p3, hp3⟩
     rcases h4e with ⟨p4, hp4⟩
-    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; native_decide)
-    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; native_decide)
+    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; decide)
+    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; decide)
     constructor
     · by_contra h1ne
       have h1ge2 : 2 ≤ count C 1 := by omega
@@ -2605,9 +2607,9 @@ theorem z45_empty_case3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
       have hz := Z41_implies_htrue_hfalse_d2_d3 C t₁ t₂ htne h1 h7 hy
       rcases hz with ⟨hy1, hy2, hd2, hd3⟩
       have hw1 : w_i C 1 y = 1 :=
-        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; native_decide) hy1
+        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; decide) hy1
       have hw7 : w_i C 7 y = 0 :=
-        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; native_decide) hy2
+        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; decide) hy2
       have hw2 : w_i C 2 y = 0 := w_i_eq_zero_of_count_zero C 2 y h2eq0
       have hw4 : w_i C 4 y = 0 := w_i_eq_zero_of_count_zero C 4 y h4eq0
       have hw6 : w_i C 6 y = 0 := w_i_eq_zero_of_count_zero C 6 y h6eq0
@@ -2632,9 +2634,9 @@ theorem z45_empty_case3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
       have hz := Z5_implies_dRow C t₁ t₂ htne h1 h7 hy
       rcases hz with ⟨hy1, hy2, hd13, hd30, hd34, _⟩
       have hw1 : w_i C 1 y = 1 :=
-        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; native_decide) hy1
+        w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; decide) hy1
       have hw7 : w_i C 7 y = 0 :=
-        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; native_decide) hy2
+        w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; decide) hy2
       have hw2 : w_i C 2 y = 0 := w_i_eq_zero_of_count_zero C 2 y h2eq0
       have hw4 : w_i C 4 y = 0 := w_i_eq_zero_of_count_zero C 4 y h4eq0
       have hw6 : w_i C 6 y = 0 := w_i_eq_zero_of_count_zero C 6 y h6eq0
@@ -2668,7 +2670,7 @@ theorem z45_empty_case3 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
 
 /-- Lemma `lm:16` (Lemma 27) (case 16: |2|,|4| even, |3|,|5| odd): Z5 = ∅ iff
 |1|=|7|=1, |2|=|4|=|6|=0, |3|,|5| odd. -/
--- native_decide: Mechanical · n=any · checked 2026-08-27
+-- decide: Mechanical · n=any · checked 2026-08-27
 theorem z5_empty_case16 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ ≠ t₂)
     (h1 : C t₁ = col1) (h7 : C t₂ = col7) (h07 : Columns07 C)
     (hcase : Even (count C 2) ∧ Even (count C 4) ∧ Odd (count C 3) ∧ Odd (count C 5)) :
@@ -2682,8 +2684,8 @@ theorem z5_empty_case16 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
     rcases h4e with ⟨p4, hp4⟩
     rcases h3o with ⟨p3, hp3⟩
     rcases h5o with ⟨p5, hp5⟩
-    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; native_decide)
-    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; native_decide)
+    have h1ge : 1 ≤ count C 1 := count_pos_of_colVal C t₁ (by rw [h1]; decide)
+    have h7ge : 1 ≤ count C 7 := count_pos_of_colVal C t₂ (by rw [h7]; decide)
     constructor
     · by_contra h1ne
       have h1ge2 : 2 ≤ count C 1 := by omega
@@ -2793,9 +2795,9 @@ theorem z5_empty_case16 {n : ℕ} (C : Code n) (t₁ t₂ : Fin n) (htne : t₁ 
     have hz := Z5_implies_dRow C t₁ t₂ htne h1 h7 hy
     rcases hz with ⟨hy1, hy2, hd13, hd30, hd34, _⟩
     have hw1 : w_i C 1 y = 1 :=
-      w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; native_decide) hy1
+      w_i_eq_of_single C 1 t₁ y h1eq1 (by rw [h1]; decide) hy1
     have hw7 : w_i C 7 y = 0 :=
-      w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; native_decide) hy2
+      w_i_eq_zero_of_single_false C 7 t₂ y h7eq1 (by rw [h7]; decide) hy2
     have hw2 : w_i C 2 y = 0 := w_i_eq_zero_of_count_zero C 2 y h2eq0
     have hw4 : w_i C 4 y = 0 := w_i_eq_zero_of_count_zero C 4 y h4eq0
     have hw6 : w_i C 6 y = 0 := w_i_eq_zero_of_count_zero C 6 y h6eq0
