@@ -69,7 +69,15 @@ automation:
   notes: "The proof scripts were developed with substantial AI assistance. Authors wrote the theorem statements, definitions, and overall architecture, and reviewed the machine-checked proofs."
 
 fidelity:
-  divergences: "No known divergence for the registered Theorem 1-5 statements. The companion note documents proof simplifications and notation/label clarifications in supporting material."
+  divergences: >-
+    Known supporting-result mismatch: the paper's Theorem 16 equality clause
+    for n = 3 presumes a genuine code with pairwise distinct codewords, but
+    Lean's Code type permits duplicate rows. The Lean development states
+    class1_one with a DistinctRows hypothesis and handles duplicate-row
+    Class-I codes separately. This discrepancy is confined to that supporting
+    reduction and does not alter the registered Theorem 1-5 statements or
+    their proofs, which are formalized in the enlarged Code type and do not
+    rely on the paper's unqualified n = 3 equality clause.
 
 review:
   status: "self-assessed"
